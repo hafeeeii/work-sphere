@@ -1,6 +1,5 @@
 import {
   Home,
-  Users,
   Briefcase,
   Building2,
   GraduationCap,
@@ -24,6 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import Link from "next/link";
 
 // Menu items.
 const items = [
@@ -33,13 +33,8 @@ const items = [
     icon: Home, 
   },
   {
-    title: "Managers",
-    url: "/managers",
-    icon: Users, 
-  },
-  {
     title: "Employees",
-    url: "/employees",
+    url: "/employees/list",
     icon: Briefcase,
   },
   {
@@ -101,7 +96,7 @@ const others = [
 export function AppSidebar() {
   return (
     <Sidebar>
-      <SidebarContent>
+      <SidebarContent className="bg-background">
         <SidebarGroup>
           <SidebarGroupLabel>MENU</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -109,10 +104,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title} className="mt-3 pl-2">
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
