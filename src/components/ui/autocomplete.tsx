@@ -21,7 +21,7 @@ import {
 
 
 type Props = {
-   list: {value: string, label: string}[],
+   list: {id: string, name: string}[],
    placeholder: string,
    value: string,
    onChange: (value: string) => void,
@@ -43,7 +43,7 @@ export function Autocomplete(props:Props) {
           className="w-full justify-between"
         >
           {value
-            ? list.find((framework) => framework.value === value)?.label
+            ? list.find((item) => item.id === value)?.name
             : placeholder}
           <ChevronsUpDown className="opacity-50" />
         </Button>
@@ -54,20 +54,20 @@ export function Autocomplete(props:Props) {
           <CommandList>
             <CommandEmpty>Not found.</CommandEmpty>
             <CommandGroup>
-              {list.map((framework) => (
+              {list.map((item) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={item.id}
+                  value={item.id}
                   onSelect={(currentValue) => {
                     onChange(currentValue === value ? "" : currentValue)
                     setOpen(false)
                   }}
                 >
-                  {framework.label}
+                  {item.name}
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      value === item.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

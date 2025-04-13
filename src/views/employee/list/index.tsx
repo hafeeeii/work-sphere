@@ -2,6 +2,9 @@ import { SharedTable } from "@/components/shared-table";
 import React from "react";
 import Form from "./form";
 import { getDepartments } from "@/services/department";
+import { getDesignations } from "@/services/designation";
+import { getWorkLocations } from "@/services/work-location";
+import Typography from "@/components/ui/typography";
 
 const tableData = {
   columnData: [
@@ -28,10 +31,18 @@ const tableData = {
 
 const EmployeeList = async () => {
   const departments = await getDepartments()
-  console.log(departments,'this is department data')
+  const designations = await getDesignations()
+  const workLocations = await getWorkLocations()
   return (
-    <div className="flex flex-col gap-4">
-       <Form />
+    <div className="flex flex-col gap-6">
+      <Typography variant="h5">
+        Employees
+      </Typography>
+       <Form 
+         departments={departments} 
+         designations={designations} 
+         workLocations={workLocations}
+       />
       <SharedTable tableData={tableData} />
     </div>
   );

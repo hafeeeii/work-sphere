@@ -1,3 +1,4 @@
+'use client'
 import {
   Home,
   Briefcase,
@@ -24,6 +25,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Menu items.
 const items = [
@@ -94,16 +96,17 @@ const others = [
 ]
 
 export function AppSidebar() {
+  const path = usePathname()
   return (
     <Sidebar>
-      <SidebarContent className="bg-background">
+      <SidebarContent className="bg-background" >
         <SidebarGroup>
           <SidebarGroupLabel>MENU</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title} className="mt-3 pl-2">
-                  <SidebarMenuButton asChild>
+                <SidebarMenuItem key={item.title}  className="mt-3 pl-2 bg">
+                  <SidebarMenuButton asChild isActive={path === item.url}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -118,11 +121,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {others.map((item) => (
                 <SidebarMenuItem key={item.title} className="mt-3 pl-2">
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                  <SidebarMenuButton asChild isActive={path === item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

@@ -16,15 +16,8 @@ import { FIELD_METADATA } from '@/data/field-metadata'
 import { Autocomplete } from '@/components/ui/autocomplete'
 import { Controller, useForm } from 'react-hook-form'
 import RequiredLabel from '@/components/ui/required-label'
-import { TEmployeeFormSchema } from '@/lib/types'
+import { Department, Designation, Employee, WorkLocation } from '@/generated/prisma'
 
-const frameworks = [
-  { value: 'next.js', label: 'Next.js' },
-  { value: 'sveltekit', label: 'SvelteKit' },
-  { value: 'nuxt.js', label: 'Nuxt.js' },
-  { value: 'remix', label: 'Remix' },
-  { value: 'astro', label: 'Astro' }
-]
 
 const {
   dateOfBirth,
@@ -41,8 +34,17 @@ const {
   workLocation
 } = FIELD_METADATA
 
-const Form = () => {
+type Props = {
+  departments: Department[]
+  designations: Designation[]
+  workLocations: WorkLocation[]
+}
+
+const Form = (props:Props) => {
+  const { departments, designations, workLocations } = props
   const [isOpen, setIsOpen] = useState(false)
+
+
   const defaultValues = {
     [firstName.name]: '',
     [lastName.name]: '',
@@ -61,15 +63,13 @@ const Form = () => {
   const {
     handleSubmit,
     control,
-    formState: { errors },
-    setValue
-  } = useForm<TEmployeeFormSchema>({
+  } = useForm<Employee>({
     defaultValues
   })
 
   const onClose = () => setIsOpen(!isOpen)
 
-  const onSubmit = (data: TEmployeeFormSchema) => {
+  const onSubmit = (data: Employee) => {
     console.log(data, 'this is the data')
   }
 
@@ -136,7 +136,7 @@ const Form = () => {
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className='w-auto p-0'>
-                                <Calendar mode='single' selected={field.value} onSelect={field.onChange} initialFocus />
+                                <Calendar mode='single' selected={field.value as Date} onSelect={field.onChange} initialFocus />
                               </PopoverContent>
                             </Popover>
                           )}
@@ -192,16 +192,6 @@ const Form = () => {
                           )}
                         />
                       </div> */}
-                      <div className='grid w-1/2 items-center gap-1.5'>
-                        <RequiredLabel htmlFor='designation'>{manager.label}</RequiredLabel>
-                        <Controller
-                          name={manager.name}
-                          control={control}
-                          render={({ field }) => (
-                            <Autocomplete {...field} list={frameworks} placeholder={manager.placeholder} />
-                          )}
-                        />
-                      </div>
                     </div>
 
                     <div className='flex gap-4'>
@@ -211,7 +201,7 @@ const Form = () => {
                           name={designation.name}
                           control={control}
                           render={({ field }) => (
-                            <Autocomplete {...field} list={frameworks} placeholder={designation.placeholder} />
+                            <Autocomplete {...field} list={designations} placeholder={designation.placeholder} />
                           )}
                         />
                       </div>
@@ -221,7 +211,7 @@ const Form = () => {
                           name={department.name}
                           control={control}
                           render={({ field }) => (
-                            <Autocomplete {...field} list={frameworks} placeholder={department.placeholder} />
+                            <Autocomplete {...field} list={departments} placeholder={department.placeholder} />
                           )}
                         />
                       </div>
@@ -266,7 +256,7 @@ const Form = () => {
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className='w-auto p-0'>
-                                <Calendar mode='single' selected={field.value} onSelect={field.onChange} initialFocus />
+                                <Calendar mode='single' selected={field.value as Date} onSelect={field.onChange} initialFocus />
                               </PopoverContent>
                             </Popover>
                           )}
@@ -281,7 +271,7 @@ const Form = () => {
                           name={workLocation.name}
                           control={control}
                           render={({ field }) => (
-                            <Autocomplete {...field} list={frameworks} placeholder={workLocation.placeholder} />
+                            <Autocomplete {...field} list={workLocations} placeholder={workLocation.placeholder} />
                           )}
                         />
                       </div>
