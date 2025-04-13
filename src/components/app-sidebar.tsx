@@ -34,7 +34,7 @@ const items = [
   },
   {
     title: "Employees",
-    url: "/employees/list",
+    url: "/employee/list",
     icon: Briefcase,
   },
   {

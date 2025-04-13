@@ -1,6 +1,7 @@
 import { SharedTable } from "@/components/shared-table";
 import React from "react";
 import Form from "./form";
+import { getDepartments } from "@/services/department";
 
 const tableData = {
   columnData: [
@@ -25,7 +26,9 @@ const tableData = {
   ],
 };
 
-const EmployeesList = () => {
+const EmployeeList = async () => {
+  const departments = await getDepartments()
+  console.log(departments,'this is department data')
   return (
     <div className="flex flex-col gap-4">
        <Form />
@@ -34,4 +37,4 @@ const EmployeesList = () => {
   );
 };
 
-export default EmployeesList;
+export default EmployeeList;

@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+
+model Employee {
+  id               String   @id @default(uuid())
+  firstName        String
+  lastName         String
+  dateOfBirth      DateTime
+  gender           String
+  email            String
+  manager          String
+  designation      String
+  department       String
+  employeementType String
+  dateOfJoining    DateTime
+  workLocation     String
+  createAt         DateTime @default(now())
+  updateAt         DateTime @updatedAt
+}
+
+model Designation {
+  id       String   @id @default(uuid())
+  name     String
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+model Department {
+  id       String   @id @default(uuid())
+  name     String
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+model WorkLocation {
+  id       String   @id @default(uuid())
+  name     String
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}

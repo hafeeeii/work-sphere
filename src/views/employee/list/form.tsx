@@ -16,7 +16,6 @@ import { FIELD_METADATA } from '@/data/field-metadata'
 import { Autocomplete } from '@/components/ui/autocomplete'
 import { Controller, useForm } from 'react-hook-form'
 import RequiredLabel from '@/components/ui/required-label'
-import { z } from 'zod'
 import { TEmployeeFormSchema } from '@/lib/types'
 
 const frameworks = [
@@ -33,7 +32,7 @@ const {
   lastName,
   gender,
   email,
-  employeeId,
+  // employeeId,
   manager,
   designation,
   department,
@@ -50,7 +49,7 @@ const Form = () => {
     [dateOfBirth.name]: new Date(),
     [gender.name]: 'male',
     [email.name]: '',
-    [employeeId.name]: 'EMP1',
+    // [employeeId.name]: 'EMP1',
     [manager.name]: '',
     [designation.name]: '',
     [department.name]: '',
@@ -183,7 +182,7 @@ const Form = () => {
                   <Label className='text-lg'>Job Details</Label>
                   <div className='flex flex-col gap-4'>
                     <div className='flex gap-4'>
-                      <div className='grid w-1/2 items-center gap-1.5'>
+                      {/* <div className='grid w-1/2 items-center gap-1.5'>
                         <RequiredLabel htmlFor='employeeId'>{employeeId.label}</RequiredLabel>
                         <Controller
                           name={employeeId.name}
@@ -192,7 +191,7 @@ const Form = () => {
                             <Input {...field} id='employeeId' placeholder={employeeId.placeholder} />
                           )}
                         />
-                      </div>
+                      </div> */}
                       <div className='grid w-1/2 items-center gap-1.5'>
                         <RequiredLabel htmlFor='designation'>{manager.label}</RequiredLabel>
                         <Controller
