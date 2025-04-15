@@ -13,9 +13,8 @@ datasource db {
 //   url      = env("DATABASE_URL")
 // }
 
-
 model Employee {
-  id               String   @id @default(uuid())
+  id               String       @id @default(uuid())
   firstName        String
   lastName         String
   dateOfBirth      DateTime
@@ -23,31 +22,47 @@ model Employee {
   email            String
   manager          String
   designation      String
+  designationMeta  Designation  @relation(fields: [designation], references: [id])
   department       String
+  departmentMeta   Department   @relation(fields: [department], references: [id])
   employeementType String
   dateOfJoining    DateTime
   workLocation     String
-  createAt         DateTime @default(now())
-  updateAt         DateTime @updatedAt
+  workLocationMeta WorkLocation @relation(fields: [workLocation], references: [id])
+  createAt         DateTime     @default(now())
+  updateAt         DateTime     @updatedAt
 }
 
 model Designation {
-  id       String   @id @default(uuid())
-  name     String
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  id             String     @id @default(uuid())
+  name           String
+  employees      Employee[]
+  totalEmployees Int        @default(0)
+  createAt       DateTime   @default(now())
+  updateAt       DateTime   @updatedAt
 }
 
 model Department {
-  id       String   @id @default(uuid())
-  name     String
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  id             String     @id @default(uuid())
+  name           String
+  employees      Employee[]
+  totalEmployees Int        @default(0)
+  code           String
+  description    String
+  createAt       DateTime   @default(now())
+  updateAt       DateTime   @updatedAt
 }
 
 model WorkLocation {
-  id       String   @id @default(uuid())
-  name     String
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  id             String     @id @default(uuid())
+  name           String
+  state          String
+  city           String
+  pincode        String
+  addressLine1   String
+  addressLine2   String
+  employees      Employee[]
+  totalEmployees Int        @default(0)
+  createAt       DateTime   @default(now())
+  updateAt       DateTime   @updatedAt
 }

@@ -82,12 +82,11 @@ const Form = (props:Props) => {
         </Button>
       </div>
       <DrawerContent>
-        <div className='flex h-full w-full flex-col items-stretch px-8'>
           <DrawerHeader>
             <DrawerTitle>Create Employee</DrawerTitle>
           </DrawerHeader>
 
-          <div className='h-full w-full overflow-y-auto px-2'>
+          <div className='h-full w-full overflow-y-auto'>
             <NextForm action='' className='w-full space-y-6' onSubmit={handleSubmit(onSubmit)}>
               <div className='space-y-10'>
                 {/* Personal Info */}
@@ -287,12 +286,11 @@ const Form = (props:Props) => {
                       Cancel
                     </Button>
                   </DrawerClose>
-                  <Button type='submit'>Create Employee</Button>
+                  <Button type='submit'>Save</Button>
                 </div>
               </DrawerFooter>
             </NextForm>
           </div>
-        </div>
       </DrawerContent>
     </Drawer>
   )

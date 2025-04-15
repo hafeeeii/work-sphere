@@ -1,3 +1,6 @@
+import { z} from 'zod'
+const required = () => z.string().min(1)
+const optional = () => z.string().nullable()
 export const FIELD_METADATA = {
   firstName: {
     name: 'firstName',
@@ -38,11 +41,14 @@ export const FIELD_METADATA = {
     name: 'designation',
     label: 'Designation',
     placeholder: 'Select Designation',
+    schema: required()
   },
   department: {
     name: 'department',
     label: 'Department',
     placeholder: 'Select Department',
+    schema: required()
+
   },
   employeementType: {
     name: 'employeementType',
@@ -64,4 +70,16 @@ export const FIELD_METADATA = {
     label: 'Phone',
     placeholder: '123455677',
   },
+  departmentDescription: {
+    name: 'departmentDescription',
+    label: 'Description',
+    placeholder: 'Description',
+    schema: optional()
+  },
+  departmentCode:{
+    name: 'departmentCode',
+    label: 'Department Code',
+    placeholder: 'Department Code',
+    schema: optional()
+  }
 } as const;

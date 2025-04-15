@@ -1,9 +1,25 @@
-import React from 'react'
+import { SharedTable } from "@/components/shared-table";
+import React from "react";
+import Form from "./form";
+import { getDesignations } from "@/services/designation";
 
-const DesignationTab = () => {
+const DesignationTab = async () => {
+  const designations = await getDesignations()
+
+  const tableData = {
+    columnData: [
+      { header: "Name", accessorKey: "name" },
+      { header: "Total Employees", accessorKey: "totalEmployees" },
+    ],
+    data: designations,
+  };
+
   return (
-    <div>DesignationTab</div>
-  )
-}
+    <div className="flex flex-col gap-6">
+       <Form />
+      <SharedTable tableData={tableData} />
+    </div>
+  );
+};
 
-export default DesignationTab
+export default DesignationTab;

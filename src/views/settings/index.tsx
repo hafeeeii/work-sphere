@@ -11,6 +11,7 @@ import {
 import DesignationTab from "./tabs/designation"
 import DepartmentTab from "./tabs/department"
 import WorkLocationTab from "./tabs/work-location"
+import Typography from "@/components/ui/typography"
 
 const tabs = [
   {tab:'Designation', content: <DesignationTab/>},
@@ -20,6 +21,9 @@ const tabs = [
  const Settings = () => {
   return (
     <div className="flex flex-col gap-4">
+      <Typography variant="h5"> 
+        Settings
+      </Typography>
         <Tabs defaultValue={tabs[0].tab} >
       <TabsList className="grid w-full grid-cols-3">
         {tabs.map((tab) => (

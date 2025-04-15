@@ -43,7 +43,7 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed right-0 w-[50vw] h-full bottom-0 z-50 mt-24 flex flex-col rounded-t-[10px] border bg-background",
+        "fixed right-0 w-[50vw] h-full bottom-0 z-50 mt-24 flex flex-col rounded-t-[10px] border bg-background p-6",
         className
       )}
       {...props}
@@ -59,7 +59,7 @@ const DrawerHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)}
+    className={cn("grid gap-1.5 p-4 pl-0 text-center sm:text-left", className)}
     {...props}
   />
 )

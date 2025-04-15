@@ -1,8 +1,25 @@
+import { getDepartments } from '@/services/department'
 import React from 'react'
+import Form from './form'
+import { SharedTable } from '@/components/shared-table'
 
-const DepartmentTab = () => {
+const DepartmentTab = async () => {
+  const departments = await getDepartments()
+  
+  const tableData = {
+    columnData: [
+      { header: "Name", accessorKey: "name" },
+      { header: "Code", accessorKey: "code" },  
+      { header: "Description", accessorKey: "description" },
+      { header: "Total Employees", accessorKey: "totalEmployees" },
+    ],
+    data: departments,
+  };
   return (
-    <div>DepartmentTab</div>
+    <div className="flex flex-col gap-6">
+    <Form />
+   <SharedTable tableData={tableData} />
+ </div>
   )
 }
 
