@@ -31,7 +31,7 @@ const {
   department,
   employeementType,
   dateOfJoining,
-  workLocation
+  workLocationAutocomplete
 } = FIELD_METADATA
 
 type Props = {
@@ -57,7 +57,7 @@ const Form = (props:Props) => {
     [department.name]: '',
     [employeementType.name]: 'permanent',
     [dateOfJoining.name]: new Date(),
-    [workLocation.name]: ''
+    [workLocationAutocomplete.name]: ''
   }
 
   const {
@@ -265,12 +265,12 @@ const Form = (props:Props) => {
 
                     <div className='flex gap-4'>
                       <div className='grid w-1/2 items-center gap-1.5'>
-                        <RequiredLabel htmlFor='workLocation'>{workLocation.label}</RequiredLabel>
+                        <RequiredLabel htmlFor='workLocation'>{workLocationAutocomplete.label}</RequiredLabel>
                         <Controller
-                          name={workLocation.name}
+                          name={workLocationAutocomplete.name}
                           control={control}
                           render={({ field }) => (
-                            <Autocomplete {...field} list={workLocations} placeholder={workLocation.placeholder} />
+                            <Autocomplete {...field} list={workLocations} placeholder={workLocationAutocomplete.placeholder} />
                           )}
                         />
                       </div>
