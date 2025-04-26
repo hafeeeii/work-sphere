@@ -1,5 +1,5 @@
-import Dashboard from '@/views/dashboard'
 import React from 'react'
+import Dashboard from './views'
 
 const DashboardPage = () => {
   return (

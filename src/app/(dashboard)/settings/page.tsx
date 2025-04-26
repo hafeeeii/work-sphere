@@ -1,5 +1,5 @@
-import Settings from '@/views/settings'
 import React from 'react'
+import Settings from './views'
 
 const SettingsPage = () => {
   return (

@@ -8,11 +8,6 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
 model Employee {
   id               String       @id @default(uuid())
   firstName        String
@@ -22,35 +17,35 @@ model Employee {
   email            String
   manager          String
   designation      String
-  designationMeta  Designation  @relation(fields: [designation], references: [id])
   department       String
-  departmentMeta   Department   @relation(fields: [department], references: [id])
   employeementType String
   dateOfJoining    DateTime
   workLocation     String
-  workLocationMeta WorkLocation @relation(fields: [workLocation], references: [id])
   createAt         DateTime     @default(now())
   updateAt         DateTime     @updatedAt
+  workLocationMeta WorkLocation @relation(fields: [workLocation], references: [id])
+  departmentMeta   Department   @relation(fields: [department], references: [id])
+  designationMeta  Designation  @relation(fields: [designation], references: [id])
 }
 
 model Designation {
   id             String     @id @default(uuid())
   name           String
-  employees      Employee[]
   totalEmployees Int        @default(0)
   createAt       DateTime   @default(now())
   updateAt       DateTime   @updatedAt
+  employees      Employee[]
 }
 
 model Department {
   id             String     @id @default(uuid())
   name           String
-  employees      Employee[]
   totalEmployees Int        @default(0)
   code           String
   description    String
   createAt       DateTime   @default(now())
   updateAt       DateTime   @updatedAt
+  employees      Employee[]
 }
 
 model WorkLocation {
@@ -61,8 +56,8 @@ model WorkLocation {
   pincode        String
   addressLine1   String
   addressLine2   String
-  employees      Employee[]
   totalEmployees Int        @default(0)
   createAt       DateTime   @default(now())
   updateAt       DateTime   @updatedAt
+  employees      Employee[]
 }
