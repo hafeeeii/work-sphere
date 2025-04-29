@@ -1,5 +1,5 @@
 import { z } from 'zod'
-const required = () => z.string().min(1)
+const required = () => z.string().min(1).trim()
 const optional = () => z.string().nullable()
 export const FIELD_METADATA = {
   firstName: {
@@ -11,6 +11,12 @@ export const FIELD_METADATA = {
     name: 'lastName',
     label: 'Last Name',
     placeholder: 'Doe',
+  },
+  name:{
+    name: 'name',
+    label: 'Name',
+    placeholder: 'John doe',
+    schema: required()
   },
   dateOfBirth: {
     name: 'dateOfBirth',
@@ -26,6 +32,11 @@ export const FIELD_METADATA = {
     name: 'email',
     label: 'Email',
     placeholder: 'john@example.com',
+    schema : z.string().email({message:'Please enter a valid email'}).trim()
+  },
+  password:{
+    placeholder: '*********',
+    schema: z.string().min(8,{message:'Password must be at least 8 characters'}).trim()
   },
   employeeId: {
     name: 'employeeId',

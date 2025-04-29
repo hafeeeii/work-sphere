@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {FIELD_METADATA} from '@/data/field-metadata'
 
-const {designation, department, departmentCode, departmentDescription, workLocation, state, city, pincode, addressLine1, addressLine2} = FIELD_METADATA
+const {designation, department, departmentCode, departmentDescription, workLocation, state, city, pincode, addressLine1, addressLine2, password, name, email} = FIELD_METADATA
 
 export const designationSchema = z.object({
     [designation.name]:designation.schema
@@ -27,3 +27,18 @@ export const workLocationSchema = z.object({
 })
 
 export type WorkLocationFormValues = z.infer<typeof workLocationSchema>
+
+export const SignUpSchema = z.object({
+    name: name.schema,
+    email: email.schema,
+    password: password.schema
+})
+
+export type SignUpFormValues = z.infer<typeof SignUpSchema>
+
+export const LoginSchema = z.object({
+    email: email.schema,
+    password: password.schema
+})
+
+export type LoginFormValues = z.infer<typeof LoginSchema>

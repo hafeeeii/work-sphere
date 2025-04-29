@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { logout } from "@/app/(auth)/actions";
 
 // Menu items.
 const items = [
@@ -90,13 +91,17 @@ const others = [
   },
   {
     title: "Logout",
-    url: "/logut",
+    url: "/login",
     icon: LogOut, 
   },
 ]
 
 export function AppSidebar() {
   const path = usePathname()
+
+  const handleLogout = () => {
+    logout()
+  }
   return (
     <Sidebar>
       <SidebarContent className="bg-background" >
@@ -121,8 +126,8 @@ export function AppSidebar() {
             <SidebarMenu>
               {others.map((item) => (
                 <SidebarMenuItem key={item.title} className="mt-3 pl-2">
-                  <SidebarMenuButton asChild isActive={path === item.url}>
-                    <Link href={item.url}>
+                  <SidebarMenuButton asChild isActive={path === item.url} {...(item.url === '/login' ? {onClick: handleLogout} : {})}>
+                    <Link  href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
