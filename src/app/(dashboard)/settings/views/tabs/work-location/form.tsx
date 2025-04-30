@@ -4,27 +4,25 @@ import React, { useActionState, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
-import { FIELD_METADATA } from '@/data/field-metadata'
 import { Controller, useForm } from 'react-hook-form'
 import RequiredLabel from '@/components/ui/required-label'
 import { Loader, PlusIcon } from 'lucide-react'
 import { saveWorkLocation } from './action'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { WorkLocationFormValues, workLocationSchema } from '@/lib/types'
-
-const { addressLine1, addressLine2, state: workLocationState, workLocation, city, pincode } = FIELD_METADATA
+import { toast } from 'sonner'
 
 const Form = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [state, action, isLoading] = useActionState(saveWorkLocation, '')
+  const [state, action, isLoading] = useActionState(saveWorkLocation, undefined)
 
   const defaultValues = {
-    [workLocation.name]: '',
-    [addressLine1.name]: '',
-    [addressLine2.name]: '',
-    [workLocationState.name]: '',
-    [city.name]: '',
-    [pincode.name]: ''
+    name: '',
+    addressLine1: '',
+    addressLine2: '',
+    state: '',
+    city: '',
+    pincode: ''
   }
 
   const {
@@ -33,12 +31,14 @@ const Form = () => {
     formState: { isValid }
   } = useForm<WorkLocationFormValues>({
     defaultValues,
-    resolver: zodResolver(workLocationSchema)
+    resolver: zodResolver(workLocationSchema),
+    mode: 'onChange'
   })
 
   useEffect(() => {
-    if (state === 'sucess') {
+    if (state?.status) {
       reset()
+      toast.success(state.message)
       setIsOpen(false)
     }
   }, [state, reset])
@@ -46,12 +46,10 @@ const Form = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div>
-          <Button className='max-w-fit' onClick={() => setIsOpen(!isOpen)}>
-            <PlusIcon />
-            Create Work Location
-          </Button>
-        </div>
+        <Button className='max-w-fit' onClick={() => setIsOpen(true)}>
+          <PlusIcon />
+          Create Work Location
+        </Button>
       </DialogTrigger>
       <DialogContent className='sm:min-w-[600px]'>
         <DialogHeader>
@@ -60,27 +58,22 @@ const Form = () => {
         <form action={action} className='space-y-6'>
           <div className='flex gap-4'>
             <div className='grid w-1/2 items-center gap-1.5'>
-              <RequiredLabel htmlFor={workLocation.name}>{workLocation.label}</RequiredLabel>
+              <RequiredLabel htmlFor="name">Work Location Name</RequiredLabel>
               <Controller
-                name={workLocation.name}
+                name="name"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} id={workLocation.name} placeholder={workLocation.placeholder} />
+                  <Input {...field} id="name" placeholder="Head Office" />
                 )}
               />
             </div>
             <div className='grid w-1/2 items-center gap-1.5'>
-              <RequiredLabel htmlFor={workLocationState.name}>{workLocationState.label}</RequiredLabel>
+              <RequiredLabel htmlFor="state">State</RequiredLabel>
               <Controller
-                name={workLocationState.name}
+                name="state"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    value={field.value || ''}
-                    id={workLocationState.name}
-                    placeholder={workLocationState.placeholder}
-                  />
+                  <Input {...field} id="state" placeholder="Maharashtra" value={field.value || ''} />
                 )}
               />
             </div>
@@ -88,20 +81,22 @@ const Form = () => {
 
           <div className='flex gap-4'>
             <div className='grid w-1/2 items-center gap-1.5'>
-              <RequiredLabel htmlFor={city.name}>{city.label}</RequiredLabel>
+              <RequiredLabel htmlFor="city">City</RequiredLabel>
               <Controller
-                name={city.name}
+                name="city"
                 control={control}
-                render={({ field }) => <Input {...field} id={city.name} placeholder={city.placeholder} />}
+                render={({ field }) => (
+                  <Input {...field} id="city" placeholder="Mumbai" />
+                )}
               />
             </div>
             <div className='grid w-1/2 items-center gap-1.5'>
-              <RequiredLabel htmlFor={pincode.name}>{pincode.label}</RequiredLabel>
+              <RequiredLabel htmlFor="pincode">Pincode</RequiredLabel>
               <Controller
-                name={pincode.name}
+                name="pincode"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} value={field.value || ''} id={pincode.name} placeholder={pincode.placeholder} />
+                  <Input {...field} id="pincode" placeholder="400001" value={field.value || ''} />
                 )}
               />
             </div>
@@ -109,32 +104,33 @@ const Form = () => {
 
           <div className='flex gap-4'>
             <div className='grid w-full items-center gap-1.5'>
-              <RequiredLabel htmlFor={addressLine1.name}>{addressLine1.label}</RequiredLabel>
+              <RequiredLabel htmlFor="addressLine1">Address Line 1</RequiredLabel>
               <Controller
-                name={addressLine1.name}
+                name="addressLine1"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} id={addressLine1.name} placeholder={addressLine1.placeholder} />
+                  <Input {...field} id="addressLine1" placeholder="Building A, 3rd Floor" />
                 )}
               />
             </div>
           </div>
+
           <div className='flex gap-4'>
             <div className='grid w-full items-center gap-1.5'>
-              <RequiredLabel htmlFor={addressLine2.name}>{addressLine2.label}</RequiredLabel>
+              <RequiredLabel htmlFor="addressLine2">Address Line 2</RequiredLabel>
               <Controller
-                name={addressLine2.name}
+                name="addressLine2"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} id={addressLine2.name} placeholder={addressLine2.placeholder} />
+                  <Input {...field} id="addressLine2" placeholder="Opposite Tech Park" />
                 )}
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button disabled={!isValid || isLoading} type='submit'>
-              {isLoading && <Loader className='animate-spin' />}
+            <Button disabled={!isValid || isLoading} type="submit">
+              {isLoading && <Loader className="animate-spin mr-2 h-4 w-4" />}
               Save
             </Button>
           </DialogFooter>

@@ -1,10 +1,10 @@
 'use client'
+
 import { Input } from '@/components/ui/input'
 import React, { useActionState, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
-import { FIELD_METADATA } from '@/data/field-metadata'
 import { Controller, useForm } from 'react-hook-form'
 import RequiredLabel from '@/components/ui/required-label'
 import { Loader, PlusIcon } from 'lucide-react'
@@ -13,17 +13,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { DepartmentFormValues, departmentSchema } from '@/lib/types'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-
-const { department, departmentCode, departmentDescription } = FIELD_METADATA
+import { toast } from 'sonner'
 
 const Form = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [state, action, isLoading] = useActionState(saveDepartment, '')
+  const [state, action, isLoading] = useActionState(saveDepartment, undefined)
 
   const defaultValues = {
-    [department.name]: '',
-    [departmentCode.name]: '',
-    [departmentDescription.name]: ''
+    name: '',
+    code: '',
+    description: '',
   }
 
   const {
@@ -32,25 +31,25 @@ const Form = () => {
     formState: { isValid }
   } = useForm<DepartmentFormValues>({
     defaultValues,
-    resolver: zodResolver(departmentSchema)
+    resolver: zodResolver(departmentSchema),
+    mode: 'onChange',
   })
 
   useEffect(() => {
-    if (state === 'sucess') {
+    if (state?.status) {
       reset()
       setIsOpen(false)
+      toast.success(state.message)
     }
   }, [state, reset])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div>
-          <Button className='max-w-fit' onClick={() => setIsOpen(!isOpen)}>
-            <PlusIcon />
-            Create Department
-          </Button>
-        </div>
+        <Button className='max-w-fit' onClick={() => setIsOpen(true)}>
+          <PlusIcon />
+          Create Department
+        </Button>
       </DialogTrigger>
       <DialogContent className='sm:min-w-[600px]'>
         <DialogHeader>
@@ -59,41 +58,41 @@ const Form = () => {
         <form action={action} className='space-y-6'>
           <div className='flex gap-4'>
             <div className='grid w-1/2 items-center gap-1.5'>
-              <RequiredLabel htmlFor={department.name}>{department.label}</RequiredLabel>
+              <RequiredLabel htmlFor="name">Department Name</RequiredLabel>
               <Controller
-                name={department.name}
+                name="name"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} id={department.name} placeholder={'Engineering'} />
+                  <Input {...field} id="name" placeholder="Engineering" />
                 )}
               />
             </div>
             <div className='grid w-1/2 items-center gap-1.5'>
-              <Label htmlFor={departmentCode.name}>{departmentCode.label}</Label>
+              <Label htmlFor="code">Department Code</Label>
               <Controller
-                name={departmentCode.name}
+                name="code"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} value={field.value || ''} id={departmentCode.name} placeholder={departmentCode.placeholder} />
+                  <Input {...field} id="code" placeholder="ENG001" />
                 )}
               />
             </div>
           </div>
           <div className='flex gap-4'>
             <div className='grid w-full items-center gap-1.5 h-full'>
-              <Label htmlFor={departmentDescription.name}>{departmentDescription.label}</Label>
+              <Label htmlFor="description">Description</Label>
               <Controller
-                name={departmentDescription.name}
+                name="description"
                 control={control}
                 render={({ field }) => (
-                  <Textarea {...field} value={field.value || ''}   id={departmentDescription.name} placeholder={departmentDescription.placeholder} />
+                  <Textarea {...field} id="description" placeholder="Brief description about this department" />
                 )}
               />
             </div>
           </div>
           <DialogFooter>
             <Button disabled={!isValid || isLoading} type='submit'>
-              {isLoading && <Loader className='animate-spin' />}
+              {isLoading && <Loader className='mr-2 h-4 w-4 animate-spin' />}
               Save
             </Button>
           </DialogFooter>

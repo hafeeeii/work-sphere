@@ -5,23 +5,23 @@ import { designationSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
 
 
-export async function saveDesignation(prevState: string,
+export async function saveDesignation(prevState: any,
     formData: FormData
 ) {
-    const designationValue = formData.get('designation')
     
-    const validateData = designationSchema.safeParse({
-        designation: designationValue
+    const result = designationSchema.safeParse(Object.fromEntries(formData))
+    if (!result.success) {
+        return {
+            status:false,
+            message: 'Invalid designation'
+        }
+    }
+    await prisma.designation.create({
+        data: result.data
     })
-    if (validateData.success) {
-         await prisma.designation.create({
-            data: {
-                name: validateData.data.designation
-            }
-        })
-        revalidatePath('/settings')
-        return 'sucess'
-    } else {
-        return "failed"
+    revalidatePath('/settings')
+    return {
+        status:true,
+        message: 'Designation created successfully'
     }
 }

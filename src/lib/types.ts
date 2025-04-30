@@ -1,44 +1,59 @@
 import { z } from "zod";
-import {FIELD_METADATA} from '@/data/field-metadata'
 
-const {designation, department, departmentCode, departmentDescription, workLocation, state, city, pincode, addressLine1, addressLine2, password, name, email} = FIELD_METADATA
+const required = (name:string) => z.string().min(1, {message:`${name} is required`}).trim()
 
 export const designationSchema = z.object({
-    [designation.name]:designation.schema
+    name:required('designation'),
 })
 
 export type DesignationFormValues = z.infer<typeof designationSchema>
 
 export const departmentSchema = z.object({
-    [department.name]:department.schema,
-    [departmentCode.name]: departmentCode.schema,
-    [departmentDescription.name]:departmentDescription.schema
+    name:required('department'),
+    code:required('department code'),
+    description:required('department description')
 })
+
 
 export type DepartmentFormValues = z.infer<typeof departmentSchema>
 
 export const workLocationSchema = z.object({
-    [workLocation.name]: workLocation.schema,
-    [state.name]: state.schema,
-    [city.name]: city.schema,
-    [pincode.name]: pincode.schema,
-    [addressLine1.name]: addressLine1.schema,
-    [addressLine2.name]: addressLine2.schema
+    name: required('work location'),
+    state: required('state'),
+    city: required('city'),
+    pincode: required('pincode'),
+    addressLine1: required('address line 1'),
+    addressLine2: required('address line 2')
 })
+
 
 export type WorkLocationFormValues = z.infer<typeof workLocationSchema>
 
 export const SignUpSchema = z.object({
-    name: name.schema,
-    email: email.schema,
-    password: password.schema
+    name: required('Name'),
+    email: required('Email'),
+    password: required('Password'),
 })
 
 export type SignUpFormValues = z.infer<typeof SignUpSchema>
 
 export const LoginSchema = z.object({
-    email: email.schema,
-    password: password.schema
+    email: required('Email'),
+    password: required('Password')
 })
 
+
 export type LoginFormValues = z.infer<typeof LoginSchema>
+
+// export const EmployeeSchema = z.object({
+//     firstName:name.schema,
+//     lastName:name.schema,
+//     dateOfBirth: name.schema,
+//     gender: name.schema,
+//     dateOfJoining: name.schema,
+//     email: email.schema,
+//     password: password.schema,
+//     designation: designation.schema,
+//     department: department.schema,
+//     workLocation: workLocation.schema
+// })
