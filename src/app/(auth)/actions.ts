@@ -4,43 +4,52 @@ import prisma from "@/lib/prisma"
 import { createSession, deleteSession } from "@/lib/session"
 import { LoginSchema, SignUpSchema } from "@/lib/types"
 import { redirect } from "next/navigation"
-import { z } from "zod"
 import bcrypt from "bcrypt"
 
 
 export async function signUp(prevState: any, formData: FormData) {
-    const result = SignUpSchema.safeParse(Object.fromEntries(formData))
+    const parsed = SignUpSchema.safeParse(Object.fromEntries(formData))
 
-    if (!result.success) {
+    if (!parsed.success) {
         return {
-            status:false,
+            status: false,
             message: 'Invalid credentials'
         }
     }
 
-    const { email } = result.data
-    const user = await prisma.user.findUnique({
-        where: {
-            email: email
-        }
-    })
+    const { email } = parsed.data
 
-    if (user?.id) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        })
+
+        if (user?.id) {
+            return {
+                status: false,
+                message: 'Email already exists'
+            }
+        }
+
+        const newUser = await prisma.user.create({
+            data: {
+                email: parsed.data.email,
+                name: parsed.data.name,
+                passwordHash: await bcrypt.hash(parsed.data.password, 10),
+            }
+        })
+
+        await createSession(newUser.id)
+    } catch (err) {
         return {
-            status:false,
-            message: 'Email already exists'
+            status: false,
+            message: 'Data base error occurred',
+            error: null
         }
     }
 
-    const newUser = await prisma.user.create({
-        data: {
-            email: result.data.email,
-            name: result.data.name,
-            passwordHash: await bcrypt.hash(result.data.password, 10),
-        }
-    })
-
-    await createSession(newUser.id)
     redirect('/dashboard')
 
 }
@@ -49,36 +58,44 @@ export async function login(prevState: any, formData: FormData) {
     const result = LoginSchema.safeParse(Object.fromEntries(formData))
     if (!result.success) {
         return {
-            status:false,
+            status: false,
             message: 'Invalid credentials'
         }
     }
 
     const { email, password } = result.data
 
-    const user = await prisma.user.findUnique({
-        where: {
-            email: email
-        }
-    })
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        })
 
-    if (!user) {
+        if (!user) {
+            return {
+                status: false,
+                message: 'No user found'
+            }
+        }
+
+        const isValidPassword = await bcrypt.compare(password, user?.passwordHash)
+
+        if (!isValidPassword) {
+            return {
+                status: false,
+                message: 'Invalid email or password'
+            }
+        }
+
+        await createSession(user.id)
+    } catch (err) {
         return {
-            status:false,
-            message: 'No user found'
+            status: false,
+            message: 'Data base error occurred',
+            error: null
         }
     }
-
-    const isValidPassword = await bcrypt.compare(password, user?.passwordHash)
-
-    if (!isValidPassword) {
-        return {
-            status:false,
-            message: 'Invalid email or password'
-        }
-    }
-
-    await createSession(user.id)
     redirect('/dashboard')
 }
 

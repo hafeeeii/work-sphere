@@ -10,16 +10,14 @@ datasource db {
 
 model Employee {
   id               String       @id @default(uuid())
-  firstName        String
-  lastName         String
-  dateOfBirth      DateTime
+  name             String
+  dateOfBirth      String
   gender           String
   email            String
-  manager          String
   designation      String
   department       String
-  employeementType String
-  dateOfJoining    DateTime
+  employmentType String
+  dateOfJoining    String
   workLocation     String
   createAt         DateTime     @default(now())
   updateAt         DateTime     @updatedAt

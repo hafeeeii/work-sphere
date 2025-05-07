@@ -2,11 +2,20 @@ import { getDepartments } from '@/services/department'
 import React from 'react'
 import Form from './form'
 import { SharedTable } from '@/components/shared-table'
+import { Department } from '@/generated/prisma'
 
+
+  type TableData = {
+    columnData:{
+      header: string,
+      accessorKey: keyof Department,
+    }[],
+    data: Department[]
+  }
+  
 const DepartmentTab = async () => {
   const departments = await getDepartments()
-  
-  const tableData = {
+  const tableData:TableData = {
     columnData: [
       { header: "Name", accessorKey: "name" },
       { header: "Code", accessorKey: "code" },  

@@ -1,3 +1,4 @@
+import { Department, Designation, Employee, Prisma, WorkLocation } from "@/generated/prisma";
 import { z } from "zod";
 
 const required = (name:string) => z.string().min(1, {message:`${name} is required`}).trim()
@@ -45,15 +46,25 @@ export const LoginSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof LoginSchema>
 
-// export const EmployeeSchema = z.object({
-//     firstName:name.schema,
-//     lastName:name.schema,
-//     dateOfBirth: name.schema,
-//     gender: name.schema,
-//     dateOfJoining: name.schema,
-//     email: email.schema,
-//     password: password.schema,
-//     designation: designation.schema,
-//     department: department.schema,
-//     workLocation: workLocation.schema
-// })
+export const EmployeeSchema = z.object({
+    name: required('Name'),
+    dateOfBirth: required('Date of birth'),
+    gender: required('Gender'),
+    dateOfJoining: required('Date of joining'),
+    email: required('Email'),
+    designation: required('Designation'),
+    department: required('Department'),
+    workLocation: required('Work Location'),
+    employmentType: required('Employment Type'),
+})
+
+export type EmployeeFormValues = z.infer<typeof EmployeeSchema>
+
+export type EmployeeWithRelations = Employee & {
+    workLocationMeta: WorkLocation,
+    departmentMeta: Department,
+    designationMeta: Designation
+}
+
+
+

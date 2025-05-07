@@ -29,7 +29,7 @@ import {
 type Props<T extends object> = {
   tableData: {
     data: T[];
-    columnData: { header: string; accessorKey: string }[];
+    columnData: { header: string; accessorKey: keyof T, accessorFn?: (row:T) => any }[];
   };
   pageIndex?: number;
   pageSize?: number;
@@ -54,7 +54,7 @@ export function SharedTable<T extends object>({
     accessorKey: val.accessorKey,
     header: () => <div>{val.header}</div>,
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue(val.accessorKey)}</div>
+      <div className="lowercase">{row.getValue(val.accessorKey as string)}</div>
     ),
   }));
 

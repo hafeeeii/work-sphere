@@ -1,6 +1,6 @@
 'use client'
 import { Input } from '@/components/ui/input'
-import React, { useState } from 'react'
+import React, { startTransition, useActionState, useEffect, useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -15,6 +15,11 @@ import { Controller, useForm } from 'react-hook-form'
 import RequiredLabel from '@/components/ui/required-label'
 import { Department, Designation, Employee, WorkLocation } from '@/generated/prisma'
 import { DrawerClose, DrawerFooter } from '@/components/ui/drawer'
+import { saveEmployee } from './action'
+import { toast } from 'sonner'
+import SubmitButton from '@/components/ui/submit-button'
+import { EmployeeFormValues, EmployeeSchema } from '@/lib/types'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 type Props = {
   departments: Department[]
@@ -24,29 +29,58 @@ type Props = {
 
 const Form = ({ departments, designations, workLocations }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [state, action, isPending] = useActionState(saveEmployee, undefined)
 
-  const defaultValues: Partial<Employee> = {
-    firstName: '',
-    lastName: '',
-    dateOfBirth: new Date(),
+  const defaultValues: Partial<EmployeeFormValues> = {
+    name:'hafis',
+    dateOfBirth: format(new Date(), 'yyyy-MM-dd'),
     gender: 'male',
-    email: '',
+    email: 'hafis@gmail.com',
     designation: '',
     department: '',
-    employeementType: 'permanent',
-    dateOfJoining: new Date(),
-    workLocation: '',
+    employmentType: 'PERMANENT',
+    dateOfJoining: format(new Date(), 'yyyy-MM-dd'),
+    workLocation: ''
   }
 
-  const { handleSubmit, control } = useForm<Employee>({
-    defaultValues
+  const {
+    control,
+    reset,
+    handleSubmit,
+    watch,
+    formState: { isValid }
+  } = useForm<EmployeeFormValues>({
+    mode: 'onChange',
+    defaultValues,
+    resolver: zodResolver(EmployeeSchema)
   })
 
   const onClose = () => setIsOpen(false)
 
-  const onSubmit = (data: Employee) => {
-    console.log(data, 'this is the data')
+  useEffect(() => {
+    if (state?.status) {
+      reset()
+      setIsOpen(false)
+    }
+
+    if (state?.message) {
+      toast.success(state.message)
+    }
+
+    console.log(state?.error, 'this is error')
+  }, [state])
+
+  const onSubmit = (data: EmployeeFormValues) => {
+    const formData = new FormData()
+
+    Object.keys(data).forEach(key => {
+      formData.append(key, data[key as keyof typeof data].toString())
+    })
+    startTransition(() => action(formData)) 
+
   }
+
+  console.log(watch('dateOfJoining'), 'this sdata')
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -60,199 +94,206 @@ const Form = ({ departments, designations, workLocations }: Props) => {
         <DialogHeader>
           <DialogTitle>Create Employee</DialogTitle>
         </DialogHeader>
-        <div className='h-full w-full overflow-y-auto px-6'>
-          <form className='w-full space-y-6' onSubmit={handleSubmit(onSubmit)}>
-            <div className='space-y-4'>
-
-              {/* Personal Info */}
-              <Label className='text-lg'>Personal Info</Label>
-              <div className='flex flex-col gap-4'>
-                <div className='flex gap-4'>
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='firstName'>First Name</RequiredLabel>
-                    <Controller
-                      name='firstName'
-                      control={control}
-                      render={({ field }) => <Input {...field} id='firstName' placeholder='John' />}
-                    />
-                  </div>
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='lastName'>Last Name</RequiredLabel>
-                    <Controller
-                      name='lastName'
-                      control={control}
-                      render={({ field }) => <Input {...field} id='lastName' placeholder='Doe' />}
-                    />
-                  </div>
-                </div>
-
-                <div className='flex gap-4'>
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='dateOfBirth'>Date of Birth</RequiredLabel>
-                    <Controller
-                      name='dateOfBirth'
-                      control={control}
-                      render={({ field }) => (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant='outline'
-                              className={cn('h-10 w-full justify-start text-left font-normal', !field.value && 'text-muted-foreground')}
-                            >
-                              <CalendarIcon className='mr-2 h-4 w-4' />
-                              {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className='w-auto p-0'>
-                            <Calendar
-                              mode='single'
-                              selected={field.value as Date}
-                              onSelect={field.onChange}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      )}
-                    />
-                  </div>
-
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='gender'>Gender</RequiredLabel>
-                    <Controller
-                      name='gender'
-                      control={control}
-                      render={({ field }) => (
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger className='h-10'>
-                            <SelectValue placeholder='Select gender' />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value='male'>Male</SelectItem>
-                            <SelectItem value='female'>Female</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <div className='flex gap-4'>
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='email'>Email</RequiredLabel>
-                    <Controller
-                      name='email'
-                      control={control}
-                      render={({ field }) => <Input {...field} id='email' placeholder='john@example.com' />}
-                    />
-                  </div>
-                  <div className='w-1/2'></div>
+        <form onSubmit={handleSubmit(onSubmit)} className='w-full space-y-6'>
+          <div className='space-y-4'>
+            {/* Personal Info */}
+            <Label className='text-lg'>Personal Info</Label>
+            <div className='flex flex-col gap-4'>
+              <div className='flex gap-4'>
+                <div className='grid w-full gap-1.5'>
+                  <RequiredLabel htmlFor='firstName'>First Name</RequiredLabel>
+                  <Controller
+                    name='name'
+                    control={control}
+                    render={({ field }) => <Input {...field} id='name' placeholder='John Doe' />}
+                  />
                 </div>
               </div>
 
-              {/* Job Details */}
-              <Label className='text-lg'>Job Details</Label>
-              <div className='flex flex-col gap-4'>
-                <div className='flex gap-4'>
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='designation'>Designation</RequiredLabel>
-                    <Controller
-                      name='designation'
-                      control={control}
-                      render={({ field }) => (
-                        <Autocomplete {...field} list={designations} placeholder='Select designation' />
-                      )}
-                    />
-                  </div>
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='department'>Department</RequiredLabel>
-                    <Controller
-                      name='department'
-                      control={control}
-                      render={({ field }) => (
-                        <Autocomplete {...field} list={departments} placeholder='Select department' />
-                      )}
-                    />
-                  </div>
+              <div className='flex gap-4'>
+                <div className='grid w-1/2 gap-1.5'>
+                  <RequiredLabel htmlFor='dateOfBirth'>Date of Birth</RequiredLabel>
+                  <Controller
+                    name='dateOfBirth'
+                    control={control}
+                    render={({ field }) => (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant='outline'
+                            className={cn(
+                              'h-10 w-full justify-start text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            <CalendarIcon className='mr-2 h-4 w-4' />
+                            {field.value ? format(new Date(field.value), 'PPP') : 'Pick a date'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className='w-auto p-0'>
+                          <Calendar
+                            mode='single'
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={selected => {
+                              if (selected) {
+                                const formatted = format(selected, 'yyyy-MM-dd')
+                                field.onChange(formatted)
+                              }
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  />
                 </div>
 
-                <div className='flex gap-4'>
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='employeementType'>Employment Type</RequiredLabel>
-                    <Controller
-                      name='employeementType'
-                      control={control}
-                      render={({ field }) => (
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger className='h-10'>
-                            <SelectValue placeholder='Select type' />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value='permanent'>Permanent</SelectItem>
-                            <SelectItem value='contract'>Contract</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  </div>
-
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='dateOfJoining'>Date of Joining</RequiredLabel>
-                    <Controller
-                      name='dateOfJoining'
-                      control={control}
-                      render={({ field }) => (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant='outline'
-                              className={cn('h-10 w-full justify-start text-left font-normal', !field.value && 'text-muted-foreground')}
-                            >
-                              <CalendarIcon className='mr-2 h-4 w-4' />
-                              {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className='w-auto p-0'>
-                            <Calendar
-                              mode='single'
-                              selected={field.value as Date}
-                              onSelect={field.onChange}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      )}
-                    />
-                  </div>
+                <div className='grid w-1/2 gap-1.5'>
+                  <RequiredLabel htmlFor='gender'>Gender</RequiredLabel>
+                  <Controller
+                    name='gender'
+                    control={control}
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger className='h-10'>
+                          <SelectValue placeholder='Select gender' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='male'>Male</SelectItem>
+                          <SelectItem value='female'>Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                 </div>
+              </div>
 
-                <div className='flex gap-4'>
-                  <div className='grid w-1/2 gap-1.5'>
-                    <RequiredLabel htmlFor='workLocation'>Work Location</RequiredLabel>
-                    <Controller
-                      name='workLocation'
-                      control={control}
-                      render={({ field }) => (
-                        <Autocomplete {...field} list={workLocations} placeholder='Select work location' />
-                      )}
-                    />
-                  </div>
-                  <div className='w-1/2'></div>
+              <div className='flex gap-4'>
+                <div className='grid w-1/2 gap-1.5'>
+                  <RequiredLabel htmlFor='email'>Email</RequiredLabel>
+                  <Controller
+                    name='email'
+                    control={control}
+                    render={({ field }) => <Input {...field} id='email' placeholder='john@example.com' />}
+                  />
                 </div>
+                <div className='w-1/2'></div>
               </div>
             </div>
 
-            <DrawerFooter>
-              <div className='flex justify-between'>
-                <DrawerClose asChild>
-                  <Button variant='outline' onClick={onClose}>
-                    Cancel
-                  </Button>
-                </DrawerClose>
-                <Button type='submit'>Save</Button>
+            {/* Job Details */}
+            <Label className='text-lg'>Job Details</Label>
+            <div className='flex flex-col gap-4'>
+              <div className='flex gap-4'>
+                <div className='grid w-1/2 gap-1.5'>
+                  <RequiredLabel htmlFor='designation'>Designation</RequiredLabel>
+                  <Controller
+                    name='designation'
+                    control={control}
+                    render={({ field }) => (
+                      <Autocomplete {...field} list={designations ?? []} placeholder='Select designation' />
+                    )}
+                  />
+                </div>
+                <div className='grid w-1/2 gap-1.5'>
+                  <RequiredLabel htmlFor='department'>Department</RequiredLabel>
+                  <Controller
+                    name='department'
+                    control={control}
+                    render={({ field }) => (
+                      <Autocomplete {...field} list={departments ?? []} placeholder='Select department' />
+                    )}
+                  />
+                </div>
               </div>
-            </DrawerFooter>
-          </form>
-        </div>
+
+              <div className='flex gap-4'>
+                <div className='grid w-1/2 gap-1.5'>
+                  <RequiredLabel htmlFor='employmentType'>Employment Type</RequiredLabel>
+                  <Controller
+                    name='employmentType'
+                    control={control}
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger className='h-10'>
+                          <SelectValue placeholder='Select type' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='PERMANENT'>Permanent</SelectItem>
+                          <SelectItem value='CONTRACT'>Contract</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+
+                <div className='grid w-1/2 gap-1.5'>
+                  <RequiredLabel htmlFor='dateOfJoining'>Date of Joining</RequiredLabel>
+                  <Controller
+                    name='dateOfJoining'
+                    control={control}
+                    render={({ field }) => (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant='outline'
+                            className={cn(
+                              'h-10 w-full justify-start text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            <CalendarIcon className='mr-2 h-4 w-4' />
+                            {field.value ? format(new Date(field.value), 'PPP') : 'Pick a date'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className='w-auto p-0'>
+                          <Calendar
+                            mode='single'
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={selected => {
+                              if (selected) {
+                                const formatted = format(selected, 'yyyy-MM-dd')
+                                field.onChange(formatted)
+                              }
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className='flex gap-4'>
+                <div className='grid w-1/2 gap-1.5'>
+                  <RequiredLabel htmlFor='workLocation'>Work Location</RequiredLabel>
+                  <Controller
+                    name='workLocation'
+                    control={control}
+                    render={({ field }) => (
+                      <Autocomplete {...field} list={workLocations ?? []} placeholder='Select work location' />
+                    )}
+                  />
+                </div>
+                <div className='w-1/2'></div>
+              </div>
+            </div>
+          </div>
+
+          <DrawerFooter>
+            <div className='flex justify-between'>
+              <DrawerClose asChild>
+                <Button variant='outline' onClick={onClose}>
+                  Cancel
+                </Button>
+              </DrawerClose>
+              <SubmitButton isLoading={isPending} isValid={isValid} type='submit'>
+                Save
+              </SubmitButton>
+            </div>
+          </DrawerFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

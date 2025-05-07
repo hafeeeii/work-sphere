@@ -9,16 +9,24 @@ export async function saveDesignation(prevState: any,
     formData: FormData
 ) {
     
-    const result = designationSchema.safeParse(Object.fromEntries(formData))
-    if (!result.success) {
+    const parsed = designationSchema.safeParse(Object.fromEntries(formData))
+    if (!parsed.success) {
         return {
             status:false,
             message: 'Invalid designation'
         }
     }
-    await prisma.designation.create({
-        data: result.data
-    })
+    try {
+        await prisma.designation.create({
+            data: parsed.data
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+        }
+    }
+
     revalidatePath('/settings')
     return {
         status:true,

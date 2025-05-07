@@ -17,9 +17,17 @@ export async function saveDepartment(prevState: any,
         }
     }
 
-    await prisma.department.create({
-        data: result.data
-    })
+    try {
+        await prisma.department.create({
+            data: result.data
+        })
+    } catch (err) { 
+        return {
+            status: false,
+            message: 'Data base error occurred',
+        }
+    }
+    
     revalidatePath('/settings')
     return {
         status: true,
