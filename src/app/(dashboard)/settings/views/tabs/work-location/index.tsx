@@ -2,7 +2,6 @@ import React from 'react'
 import Form from './form'
 import { SharedTable } from '@/components/shared-table'
 import { getWorkLocations } from '@/services/work-location'
-import { departmentSchema } from '@/lib/types'
 import { WorkLocation } from '@/generated/prisma'
 
 type TableData = {

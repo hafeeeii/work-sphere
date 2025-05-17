@@ -7,8 +7,8 @@ import { getWorkLocations } from '@/services/work-location'
 import Typography from '@/components/ui/typography'
 import { getEmployees } from '@/services/employee'
 
-const EmployeeList = async () => {
-  const employees = await getEmployees()
+const EmployeeList = async ({ queryParams }: { queryParams: { [key: string]: string } }) => {
+  const employees = await getEmployees(queryParams)
   const departments = await getDepartments()
   const designations = await getDesignations()
   const workLocations = await getWorkLocations()
@@ -23,15 +23,15 @@ const EmployeeList = async () => {
   })
 
   type TableData = {
-    columnData: { header: string; accessorKey: keyof (typeof processedEmployees)[number] }[]
+    columnData: { header: string; accessorKey: keyof (typeof processedEmployees)[number], sortable?: boolean, filterable?: boolean }[]
     data: typeof processedEmployees
   }
 
   const tableData: TableData = {
     columnData: [
       // { header: 'ID', accessorKey: 'id' },
-      { header: 'Name', accessorKey: 'name' },
-      { header: 'Email', accessorKey: 'email' },
+      { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
+      { header: 'Email', accessorKey: 'email', sortable: true, filterable: true },
       { header: 'Department', accessorKey: 'departmentName' },
       { header: 'Designation', accessorKey: 'designationName' },
       { header: 'Work Location', accessorKey: 'workLocationName' }
@@ -41,8 +41,7 @@ const EmployeeList = async () => {
   }
 
   return (
-    <div className='flex flex-col gap-6'>
-      <Typography variant='h5'>Employees</Typography>
+    <div className='flex flex-col gap-6 items-end'>
       <Form departments={departments} designations={designations} workLocations={workLocations} />
       <SharedTable tableData={tableData} />
     </div>

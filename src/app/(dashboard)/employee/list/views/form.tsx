@@ -80,12 +80,11 @@ const Form = ({ departments, designations, workLocations }: Props) => {
 
   }
 
-  console.log(watch('dateOfJoining'), 'this sdata')
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className='max-w-fit' onClick={() => setIsOpen(true)}>
+        <Button  className='max-w-fit' onClick={() => setIsOpen(true)}>
           <PlusIcon className='mr-2' />
           Create Employee
         </Button>
@@ -154,7 +153,7 @@ const Form = ({ departments, designations, workLocations }: Props) => {
                     name='gender'
                     control={control}
                     render={({ field }) => (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select  onValueChange={field.onChange} defaultValue={field.value}>
                         <SelectTrigger className='h-10'>
                           <SelectValue placeholder='Select gender' />
                         </SelectTrigger>

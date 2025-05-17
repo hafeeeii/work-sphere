@@ -1,15 +1,38 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+const validSortFields = ['name', 'email'];
+const validSortOrders = ['asc', 'desc'];
+
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams
+    const sortByParam = searchParams.get('sortBy') || 'name'
+    const sortOrderParam = searchParams.get('sortOrder') || 'asc'
+    const name = searchParams.get('name')
+    const email = searchParams.get('email')
+
+    const sortBy = validSortFields.includes(sortByParam) ? sortByParam : 'name'
+    const sortOrder = validSortOrders.includes(sortOrderParam.toLowerCase()) ? sortOrderParam : 'asc'
+
+
     const employees = await prisma.employee.findMany({
-     include:{
-       designationMeta:true,
-       departmentMeta:true,
-       workLocationMeta:true
-     }
+      where: {
+        ...(name && { name: { contains: name } }),
+        ...(email && { email: { contains: email } }),
+      },
+      orderBy: [
+        {
+          [sortBy]: sortOrder
+        }
+      ],
+      include: {
+        designationMeta: true,
+        departmentMeta: true,
+        workLocationMeta: true
+      }
     });
+
     return NextResponse.json(employees);
   } catch (error) {
     console.error(error, "Error fetching employees");

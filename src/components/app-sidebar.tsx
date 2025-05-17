@@ -37,7 +37,7 @@ const items = [
   },
   {
     title: "Employees",
-    url: "/employee/list",
+    url: "/employee/list?sortBy=name&sortOrder=asc",
     icon: Briefcase,
   },
   {
