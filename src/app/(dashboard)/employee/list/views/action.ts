@@ -5,13 +5,12 @@ import { revalidatePath } from "next/cache"
 
 
 export async function saveEmployee(prevState: any, formData: FormData) {
-    console.log(Object.fromEntries(formData),'this is form data')
     const parsed = EmployeeSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
         return {
             status: false,
             message: 'Please fill all the required fields',
-            error:parsed.error.message
+            error: parsed.error.message
         }
     }
 
@@ -21,7 +20,7 @@ export async function saveEmployee(prevState: any, formData: FormData) {
         return {
             status: false,
             message: 'Data base error occurred',
-            error:err
+            error: err
         }
     }
     revalidatePath('/employee/list')
@@ -32,4 +31,37 @@ export async function saveEmployee(prevState: any, formData: FormData) {
         error: null
     }
 
+}
+
+export async function updateEmployee(prevState: any, formData: FormData) {
+    const parsed = EmployeeSchema.safeParse(Object.fromEntries(formData))
+    if (!parsed.success) {
+        return {
+            status: false,
+            message: 'Please fill all the required fields',
+            error: parsed.error.message
+        }
+    }
+
+    try {
+        await prisma.employee.update({
+            where: {
+                id: parsed.data.id
+            },
+            data: parsed.data
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+            error: err
+        }
+    }
+    revalidatePath('/employee/list')
+
+    return {
+        status: true,
+        message: 'Employee updated successfully',
+        error: null
+    }
 }

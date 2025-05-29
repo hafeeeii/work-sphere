@@ -1,35 +1,53 @@
+'use client'
 import { SharedTable } from '@/components/shared-table'
 import React from 'react'
 import Form from './form'
-import { getDepartments } from '@/services/department'
-import { getDesignations } from '@/services/designation'
-import { getWorkLocations } from '@/services/work-location'
-import Typography from '@/components/ui/typography'
-import { getEmployees } from '@/services/employee'
+import { getEmployee, getEmployees } from '@/services/employee'
+import { Department, Designation, Employee, WorkLocation } from '@/generated/prisma'
+import { EmployeeWithRelations } from '@/lib/types'
 
-const EmployeeList = async ({ queryParams }: { queryParams: { [key: string]: string } }) => {
-  const employees = await getEmployees(queryParams)
-  const departments = await getDepartments()
-  const designations = await getDesignations()
-  const workLocations = await getWorkLocations()
+type EmployeeListProps = {
+  employees?: EmployeeWithRelations[]
+  departments?: Department[]
+  designations?: Designation[]
+  workLocations?: WorkLocation[]
+}
 
-  const processedEmployees = employees.map(employee => {
-    return {
-      ...employee,
-      departmentName: employee.departmentMeta?.name || '',
-      designationName: employee.designationMeta?.name || '',
-      workLocationName: employee.workLocationMeta?.name || ''
+const EmployeeList =  ({ employees, departments, designations, workLocations }: EmployeeListProps) => {
+  const [showForm, setShowForm] = React.useState(false)
+  const [employee, setEmployee] = React.useState<Employee | null>(null)
+
+  const toggleForm = () => {
+    setShowForm(!showForm)
+    if (showForm) {
+      setEmployee(null)
     }
-  })
+  }
+
+  const processedEmployees =
+    employees?.map(employee => {
+      return {
+        ...employee,
+        departmentName: employee.departmentMeta?.name || '',
+        designationName: employee.designationMeta?.name || '',
+        workLocationName: employee.workLocationMeta?.name || ''
+      }
+    }) ?? []
 
   type TableData = {
-    columnData: { header: string; accessorKey: keyof (typeof processedEmployees)[number], sortable?: boolean, filterable?: boolean }[]
+    editMode: 'toggle' | 'redirect'
+    columnData: {
+      header: string
+      accessorKey: keyof (typeof processedEmployees)[number]
+      sortable?: boolean
+      filterable?: boolean
+    }[]
     data: typeof processedEmployees
   }
 
   const tableData: TableData = {
+    editMode: 'toggle',
     columnData: [
-      // { header: 'ID', accessorKey: 'id' },
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
       { header: 'Email', accessorKey: 'email', sortable: true, filterable: true },
       { header: 'Department', accessorKey: 'departmentName' },
@@ -40,10 +58,26 @@ const EmployeeList = async ({ queryParams }: { queryParams: { [key: string]: str
     data: processedEmployees
   }
 
+  const onEdit = async (id: string) => {
+    console.log(id,'this is id')
+    if (!id) return null
+    const employee = await getEmployee(id)
+    setEmployee(employee)
+    toggleForm()
+  }
+  
+
   return (
-    <div className='flex flex-col gap-6 items-end'>
-      <Form departments={departments} designations={designations} workLocations={workLocations} />
-      <SharedTable tableData={tableData} />
+    <div className='flex flex-col items-end gap-6'>
+      <Form
+        departments={departments}
+        designations={designations}
+        workLocations={workLocations}
+        showForm={showForm}
+        employee={employee}
+        toggleForm={toggleForm}
+      />
+      <SharedTable tableData={tableData} onEdit={onEdit} />
     </div>
   )
 }

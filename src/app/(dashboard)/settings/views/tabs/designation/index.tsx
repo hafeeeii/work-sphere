@@ -25,7 +25,7 @@ const DesignationTab = async () => {
   return (
     <div className="flex flex-col gap-6">
        <Form />
-      <SharedTable tableData={tableData} />
+      {/* <SharedTable tableData={tableData} /> */}
     </div>
   );
 };

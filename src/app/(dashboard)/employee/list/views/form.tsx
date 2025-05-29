@@ -15,32 +15,40 @@ import { Controller, useForm } from 'react-hook-form'
 import RequiredLabel from '@/components/ui/required-label'
 import { Department, Designation, Employee, WorkLocation } from '@/generated/prisma'
 import { DrawerClose, DrawerFooter } from '@/components/ui/drawer'
-import { saveEmployee } from './action'
+import { saveEmployee, updateEmployee } from './action'
 import { toast } from 'sonner'
 import SubmitButton from '@/components/ui/submit-button'
-import { EmployeeFormValues, EmployeeSchema } from '@/lib/types'
+import { EmployeeFormValues, EmployeeSchema, EmployeeWithRelations } from '@/lib/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 type Props = {
-  departments: Department[]
-  designations: Designation[]
-  workLocations: WorkLocation[]
+  departments?: Department[]
+  designations?: Designation[]
+  workLocations?: WorkLocation[]
+  showForm: boolean
+  employee: Employee | null
+  toggleForm: () => void
 }
 
-const Form = ({ departments, designations, workLocations }: Props) => {
+const Form = ({ departments, designations, workLocations, showForm, employee, toggleForm }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [state, action, isPending] = useActionState(saveEmployee, undefined)
+  const [saveState, saveAction, isSavePending] = useActionState(saveEmployee, undefined)
+  const [updateState, updateAction, isUpdatePending] = useActionState(updateEmployee, undefined)
+
+  const state = saveState || updateState
+  const isPending = isSavePending || isUpdatePending
 
   const defaultValues: Partial<EmployeeFormValues> = {
-    name:'hafis',
-    dateOfBirth: format(new Date(), 'yyyy-MM-dd'),
-    gender: 'male',
-    email: 'hafis@gmail.com',
-    designation: '',
-    department: '',
-    employmentType: 'PERMANENT',
-    dateOfJoining: format(new Date(), 'yyyy-MM-dd'),
-    workLocation: ''
+    id: '',
+    name: employee?.name ?? '',
+    dateOfBirth: employee?.dateOfBirth ?? format(new Date(), 'yyyy-MM-dd'),
+    gender: employee?.gender ?? 'male',
+    email: employee?.email ?? '',
+    designation: employee?.designation ?? '',
+    department: employee?.department ?? '',
+    employmentType: employee?.employmentType ?? 'PERMANENT',
+    dateOfJoining: employee?.dateOfJoining ?? format(new Date(), 'yyyy-MM-dd'),
+    workLocation: employee?.workLocation ?? ''
   }
 
   const {
@@ -55,20 +63,26 @@ const Form = ({ departments, designations, workLocations }: Props) => {
     resolver: zodResolver(EmployeeSchema)
   })
 
-  const onClose = () => setIsOpen(false)
+  const onClose = () => {
+    toggleForm()
+    setIsOpen(false)
+    reset()
+  }
 
   useEffect(() => {
     if (state?.status) {
-      reset()
-      setIsOpen(false)
+      onClose()
     }
 
     if (state?.message) {
       toast.success(state.message)
     }
+  }, [updateState, saveState])
 
-    console.log(state?.error, 'this is error')
-  }, [state])
+  useEffect(() => {
+    if (showForm) setIsOpen(true)
+    reset(defaultValues)
+  }, [showForm, isOpen])
 
   const onSubmit = (data: EmployeeFormValues) => {
     const formData = new FormData()
@@ -76,15 +90,19 @@ const Form = ({ departments, designations, workLocations }: Props) => {
     Object.keys(data).forEach(key => {
       formData.append(key, data[key as keyof typeof data].toString())
     })
-    startTransition(() => action(formData)) 
 
+    formData.append('id', employee?.id ?? '')
+    if (employee?.id) {
+      startTransition(() => updateAction(formData))
+    } else {
+      startTransition(() => saveAction(formData))
+    }
   }
 
-
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogTrigger asChild>
-        <Button  className='max-w-fit' onClick={() => setIsOpen(true)}>
+        <Button className='max-w-fit' onClick={() => setIsOpen(true)}>
           <PlusIcon className='mr-2' />
           Create Employee
         </Button>
@@ -153,7 +171,7 @@ const Form = ({ departments, designations, workLocations }: Props) => {
                     name='gender'
                     control={control}
                     render={({ field }) => (
-                      <Select  onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <SelectTrigger className='h-10'>
                           <SelectValue placeholder='Select gender' />
                         </SelectTrigger>
@@ -279,7 +297,6 @@ const Form = ({ departments, designations, workLocations }: Props) => {
               </div>
             </div>
           </div>
-
           <DrawerFooter>
             <div className='flex justify-between'>
               <DrawerClose asChild>

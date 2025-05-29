@@ -19,9 +19,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { Input } from './ui/input'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { MoreHorizontalIcon, Pencil } from 'lucide-react'
 
 type Props<T extends object> = {
+  onEdit?: (id: string) => void
   tableData: {
+    editMode: 'toggle' | 'redirect'
     data: T[]
     columnData: {
       header: string
@@ -39,7 +43,7 @@ type Props<T extends object> = {
   renderSubComponent?: (props: { row: Row<T> }) => React.ReactElement
 }
 
-export function SharedTable<T extends object>({ tableData: { columnData, data } }: Props<T>) {
+export function SharedTable<T extends object>({ tableData: { columnData, data , editMode }, onEdit }: Props<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -82,7 +86,28 @@ export function SharedTable<T extends object>({ tableData: { columnData, data } 
     loadData()
   }, [sorting, columnFilters])
 
-  const columns: ColumnDef<T>[] = columnData.map(val => ({
+
+  const actions =  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }:any) => {
+      return (
+        <div>
+          <Button variant={'outline'} size={'icon'}
+            onClick={() => {
+                if (onEdit && editMode === 'toggle') {
+                  onEdit(row.original.id)
+                }
+              }}
+          >
+            <Pencil/>
+          </Button>
+        </div>
+      )
+    },
+  }
+
+  let columns: ColumnDef<T>[] = columnData.map(val => ({
     accessorKey: val.accessorKey,
     header: ({ column }) => (
       <div
@@ -92,8 +117,11 @@ export function SharedTable<T extends object>({ tableData: { columnData, data } 
         {val.header}
       </div>
     ),
-    cell: ({ row }) => <div>{row.getValue(val.accessorKey as string)}</div>
+    cell: ({ row }) => <div>{row.getValue(val.accessorKey as string)}</div>,
+    
   }))
+
+  columns.push(actions)
 
   const table = useReactTable({
     data,

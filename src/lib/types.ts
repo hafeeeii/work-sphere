@@ -47,6 +47,7 @@ export const LoginSchema = z.object({
 export type LoginFormValues = z.infer<typeof LoginSchema>
 
 export const EmployeeSchema = z.object({
+    id:z.string(),
     name: required('Name'),
     dateOfBirth: required('Date of birth'),
     gender: required('Gender'),

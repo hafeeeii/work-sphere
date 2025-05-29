@@ -39,3 +39,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Error fetching employees", status: 500 });
   }
 }
+
+
