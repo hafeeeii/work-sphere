@@ -1,12 +1,38 @@
-import { Department } from "@/generated/prisma"
 
-export const getDepartments = async ():Promise<Department[]> => {
+import { Department } from "@/generated/prisma"
+import { toast } from "sonner"
+
+const BASE_URL = 'http://localhost:3000/api/departments'
+
+export const getDepartments = async (queryParams?: { [key: string]: string }): Promise<Department[]> => {
+
+  let params = new URLSearchParams()
+  if (queryParams) {
+    const { sortBy, sortOrder, name,code } = queryParams
+    if (sortBy) params.append('sortBy', sortBy)
+    if (sortOrder) params.append('sortOrder', sortOrder)
+    if (name) params.append('name', name)
+    if (code) params.append('code', code)
+  }
+
   try {
-    const res = await fetch(`http://localhost:3000/api/departments`)
+    const res = await fetch(`${BASE_URL}?${params.toString()}`)
     const data = await res.json()
     return data
   } catch (error) {
-    console.log(error)
+    toast.error('Error fetching department')
     return []
+  }
+}
+
+
+export const getDepartment = async (id: string): Promise<Department | null> => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}`)
+    const data = await res.json()
+    return data
+  } catch (error) {
+    toast.error('Error fetching department')
+    return null
   }
 }

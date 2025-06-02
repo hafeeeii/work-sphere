@@ -35,3 +35,38 @@ export async function saveDepartment(prevState: any,
     }
 
 }
+
+
+
+export async function updateDepartment(prevState: any, formData: FormData) {
+    const parsed = departmentSchema.safeParse(Object.fromEntries(formData))
+    if (!parsed.success) {
+        return {
+            status: false,
+            message: 'Please fill all the required fields',
+            error: parsed.error.message
+        }
+    }
+
+    try {
+        await prisma.department.update({
+            where: {
+                id: parsed.data.id
+            },
+            data: parsed.data
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+            error: err
+        }
+    }
+    revalidatePath('/settings')
+
+    return {
+        status: true,
+        message: 'Department updated successfully',
+        error: null
+    }
+}

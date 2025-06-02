@@ -31,7 +31,6 @@ type Props = {
 }
 
 const Form = ({ departments, designations, workLocations, showForm, employee, toggleForm }: Props) => {
-  const [isOpen, setIsOpen] = useState(false)
   const [saveState, saveAction, isSavePending] = useActionState(saveEmployee, undefined)
   const [updateState, updateAction, isUpdatePending] = useActionState(updateEmployee, undefined)
 
@@ -65,7 +64,6 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
 
   const onClose = () => {
     toggleForm()
-    setIsOpen(false)
     reset()
   }
 
@@ -80,9 +78,9 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
   }, [updateState, saveState])
 
   useEffect(() => {
-    if (showForm) setIsOpen(true)
+    if (showForm) 
     reset(defaultValues)
-  }, [showForm, isOpen])
+  }, [showForm])
 
   const onSubmit = (data: EmployeeFormValues) => {
     const formData = new FormData()
@@ -100,9 +98,9 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={showForm} onOpenChange={onClose}>
       <DialogTrigger asChild>
-        <Button className='max-w-fit' onClick={() => setIsOpen(true)}>
+        <Button className='max-w-fit' onClick={onClose}>
           <PlusIcon className='mr-2' />
           Create Employee
         </Button>

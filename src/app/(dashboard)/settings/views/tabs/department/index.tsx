@@ -1,34 +1,65 @@
-import { getDepartments } from '@/services/department'
+'use client'
+import { SharedTable } from '@/components/shared-table'
 import React from 'react'
 import Form from './form'
-import { SharedTable } from '@/components/shared-table'
-import { Department } from '@/generated/prisma'
+import { Department} from '@/generated/prisma'
+import { getDepartment } from '@/services/department'
+
+type DepartmentTabProps = {
+  departments: Department[]
+}
+
+const DepartmentTab =  ({ departments }: DepartmentTabProps) => {
+  const [showForm, setShowForm] = React.useState(false)
+  const [department, setDepartment] = React.useState<Department | null>(null)
+
+  const toggleForm = () => {
+    setShowForm(!showForm)
+    if (showForm) {
+      setDepartment(null)
+    }
+  }
+
 
 
   type TableData = {
-    columnData:{
-      header: string,
-      accessorKey: keyof Department,
-    }[],
+    editMode: 'toggle' | 'redirect'
+    columnData: {
+      header: string
+      accessorKey: keyof (Department[])[number]
+      sortable?: boolean
+      filterable?: boolean
+    }[]
     data: Department[]
   }
-  
-const DepartmentTab = async () => {
-  const departments = await getDepartments()
-  const tableData:TableData = {
+
+  const tableData: TableData = {
+    editMode: 'toggle',
     columnData: [
-      { header: "Name", accessorKey: "name" },
-      { header: "Code", accessorKey: "code" },  
-      { header: "Description", accessorKey: "description" },
-      { header: "Total Employees", accessorKey: "totalEmployees" },
+      { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
+      { header: 'Code', accessorKey: 'code', sortable: true, filterable: true },
+      { header: 'Description', accessorKey: 'description' },
     ],
-    data: departments,
-  };
+    data: departments ?? []
+  }
+
+  const onEdit = async (id: string) => {
+    if (!id) return null
+    const department = await getDepartment(id)
+    setDepartment(department)
+    toggleForm()
+  }
+  
+
   return (
-    <div className="flex flex-col gap-6">
-    <Form />
-   {/* <SharedTable tableData={tableData} /> */}
- </div>
+    <div className='flex flex-col items-end gap-6'>
+      <Form
+        department={department}
+        showForm={showForm}
+        toggleForm={toggleForm}
+      />
+      <SharedTable tableData={tableData} onEdit={onEdit} />
+    </div>
   )
 }
 

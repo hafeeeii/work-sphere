@@ -12,13 +12,25 @@ import DesignationTab from "./tabs/designation"
 import DepartmentTab from "./tabs/department"
 import WorkLocationTab from "./tabs/work-location"
 import Typography from "@/components/ui/typography"
+import { Department } from "@/generated/prisma"
+import { getDepartments } from "@/services/department"
+import { getDesignations } from "@/services/designation"
+import { getWorkLocations } from "@/services/work-location"
 
-const tabs = [
+
+
+ const Settings = async ({searchParams}:{searchParams:{[key:string]:string}}) => {
+
+   const departments = await getDepartments(searchParams)
+    const designations = await getDesignations()
+    const getWorkLocaitons = await getWorkLocations()
+
+    const tabs = [
   {tab:'Designation', content: <DesignationTab/>},
-  {tab:'Department', content: <DepartmentTab/>},
+  {tab:'Department', content: <DepartmentTab departments={departments}/>},
   {tab:'Work Location', content: <WorkLocationTab/>},
 ]
- const Settings = () => {
+
   return (
     <div className="flex flex-col gap-4">
       <Typography variant="h5"> 

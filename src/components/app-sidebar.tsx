@@ -27,6 +27,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/(auth)/actions";
+import { getDefaultSortById } from "@/lib/sort-utils";
 
 // Menu items.
 const items = [
@@ -37,7 +38,7 @@ const items = [
   },
   {
     title: "Employees",
-    url: "/employee/list?sortBy=name&sortOrder=asc",
+    url: `/employee/list?${getDefaultSortById('name')}`,
     icon: Briefcase,
   },
   {

@@ -10,9 +10,10 @@ export const designationSchema = z.object({
 export type DesignationFormValues = z.infer<typeof designationSchema>
 
 export const departmentSchema = z.object({
+    id:z.string(),
     name:required('department'),
-    code:required('department code'),
-    description:required('department description')
+    code:z.string(),
+    description:z.string(),
 })
 
 

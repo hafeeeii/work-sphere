@@ -59,7 +59,6 @@ const EmployeeList =  ({ employees, departments, designations, workLocations }: 
   }
 
   const onEdit = async (id: string) => {
-    console.log(id,'this is id')
     if (!id) return null
     const employee = await getEmployee(id)
     setEmployee(employee)

@@ -92,7 +92,7 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
     enableHiding: false,
     cell: ({ row }:any) => {
       return (
-        <div>
+        <div className='flex justify-end'>
           <Button variant={'outline'} size={'icon'}
             onClick={() => {
                 if (onEdit && editMode === 'toggle') {
