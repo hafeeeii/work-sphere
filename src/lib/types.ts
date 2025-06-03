@@ -4,6 +4,7 @@ import { z } from "zod";
 const required = (name:string) => z.string().min(1, {message:`${name} is required`}).trim()
 
 export const designationSchema = z.object({
+    id:z.string(),
     name:required('designation'),
 })
 
@@ -20,6 +21,7 @@ export const departmentSchema = z.object({
 export type DepartmentFormValues = z.infer<typeof departmentSchema>
 
 export const workLocationSchema = z.object({
+    id:z.string(),
     name: required('work location'),
     state: required('state'),
     city: required('city'),

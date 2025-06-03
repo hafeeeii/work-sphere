@@ -35,3 +35,36 @@ export async function saveWorkLocation(prevState: any,
         message: 'Work location created successfully'
     }
 }
+
+export async function updateWorkLocation(prevState: any, formData: FormData) {
+    const parsed = workLocationSchema.safeParse(Object.fromEntries(formData))
+    if (!parsed.success) {
+        return {
+            status: false,
+            message: 'Please fill all the required fields',
+            error: parsed.error.message
+        }
+    }
+
+    try {
+        await prisma.workLocation.update({
+            where: {
+                id: parsed.data.id
+            },
+            data: parsed.data
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+            error: err
+        }
+    }
+    revalidatePath('/settings')
+
+    return {
+        status: true,
+        message: 'Work location updated successfully',
+        error: null
+    }
+}

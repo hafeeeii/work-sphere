@@ -26,11 +26,6 @@ export async function GET(request: NextRequest) {
           [sortBy]: sortOrder
         }
       ],
-      include: {
-        designationMeta: true,
-        departmentMeta: true,
-        workLocationMeta: true
-      }
     });
 
     return NextResponse.json(employees);

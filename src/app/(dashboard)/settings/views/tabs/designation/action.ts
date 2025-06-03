@@ -33,3 +33,36 @@ export async function saveDesignation(prevState: any,
         message: 'Designation created successfully'
     }
 }
+
+export async function updateDesignation(prevState: any, formData: FormData) {
+    const parsed = designationSchema.safeParse(Object.fromEntries(formData))
+    if (!parsed.success) {
+        return {
+            status: false,
+            message: 'Please fill all the required fields',
+            error: parsed.error.message
+        }
+    }
+
+    try {
+        await prisma.designation.update({
+            where: {
+                id: parsed.data.id
+            },
+            data: parsed.data
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+            error: err
+        }
+    }
+    revalidatePath('/settings')
+
+    return {
+        status: true,
+        message: 'Designation updated successfully',
+        error: null
+    }
+}

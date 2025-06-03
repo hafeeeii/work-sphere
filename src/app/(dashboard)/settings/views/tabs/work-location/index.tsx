@@ -1,35 +1,59 @@
+'use client'
+import { SharedTable } from '@/components/shared-table'
 import React from 'react'
 import Form from './form'
-import { SharedTable } from '@/components/shared-table'
-import { getWorkLocations } from '@/services/work-location'
 import { WorkLocation } from '@/generated/prisma'
+import { getWorkLocation } from '@/services/work-location'
 
-type TableData = {
-  columnData: {
-    header: string
-    accessorKey: keyof WorkLocation
-  }[]
-  data: WorkLocation[]
+type WorkLocationTabProps = {
+  workLocations: WorkLocation[]
 }
 
-const WorkLocationTab = async () => {
-  const departments = await getWorkLocations()
+const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
+  const [showForm, setShowForm] = React.useState(false)
+  const [workLocation, setWorkLocation] = React.useState<WorkLocation | null>(null)
+
+  const toggleForm = () => {
+    setShowForm(!showForm)
+    if (showForm) {
+      setWorkLocation(null)
+    }
+  }
+
+  type TableData = {
+    editMode: 'toggle' | 'redirect'
+    columnData: {
+      header: string
+      accessorKey: keyof WorkLocation[][number]
+      sortable?: boolean
+      filterable?: boolean
+    }[]
+    data: WorkLocation[]
+  }
 
   const tableData: TableData = {
+    editMode: 'toggle',
     columnData: [
-      { header: 'Name', accessorKey: 'name' },
-      { header: 'State', accessorKey: 'state' },
-      { header: 'City', accessorKey: 'city' },
-      { header: 'Pincode', accessorKey: 'pincode' },
-      { header: 'Address Line 1', accessorKey: 'addressLine1' },
-      { header: 'Address Line 2', accessorKey: 'addressLine2' }
+      { header: 'Name', accessorKey: 'name', sortable: true },
+      { header: 'State', accessorKey: 'state', sortable: true },
+      { header: 'City', accessorKey: 'city', sortable: true },
+      { header: 'Pincode', accessorKey: 'pincode', sortable: true, filterable: true },
+      { header: 'Total Employees', accessorKey: 'totalEmployees' }
     ],
-    data: departments
+    data: workLocations ?? []
   }
+
+  const onEdit = async (id: string) => {
+    if (!id) return null
+    const workLocations = await getWorkLocation(id)
+    setWorkLocation(workLocations)
+    toggleForm()
+  }
+
   return (
-    <div className='flex flex-col gap-6'>
-      <Form />
-      {/* <SharedTable tableData={tableData} /> */}
+    <div className='flex flex-col items-end gap-6'>
+      <Form workLocation={workLocation} showForm={showForm} toggleForm={toggleForm} />
+      <SharedTable tableData={tableData} onEdit={onEdit} />
     </div>
   )
 }

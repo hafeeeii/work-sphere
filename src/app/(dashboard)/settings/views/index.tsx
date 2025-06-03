@@ -12,7 +12,6 @@ import DesignationTab from "./tabs/designation"
 import DepartmentTab from "./tabs/department"
 import WorkLocationTab from "./tabs/work-location"
 import Typography from "@/components/ui/typography"
-import { Department } from "@/generated/prisma"
 import { getDepartments } from "@/services/department"
 import { getDesignations } from "@/services/designation"
 import { getWorkLocations } from "@/services/work-location"
@@ -22,13 +21,13 @@ import { getWorkLocations } from "@/services/work-location"
  const Settings = async ({searchParams}:{searchParams:{[key:string]:string}}) => {
 
    const departments = await getDepartments(searchParams)
-    const designations = await getDesignations()
-    const getWorkLocaitons = await getWorkLocations()
+    const designations = await getDesignations(searchParams)
+    const workLocations = await getWorkLocations(searchParams)
 
     const tabs = [
-  {tab:'Designation', content: <DesignationTab/>},
+  {tab:'Designation', content: <DesignationTab designations={designations}/>},
   {tab:'Department', content: <DepartmentTab departments={departments}/>},
-  {tab:'Work Location', content: <WorkLocationTab/>},
+  {tab:'Work Location', content: <WorkLocationTab workLocations={workLocations}/>},
 ]
 
   return (

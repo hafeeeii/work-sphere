@@ -39,6 +39,7 @@ const DepartmentTab =  ({ departments }: DepartmentTabProps) => {
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
       { header: 'Code', accessorKey: 'code', sortable: true, filterable: true },
       { header: 'Description', accessorKey: 'description' },
+      {header:'Total Employees', accessorKey:'totalEmployees'}
     ],
     data: departments ?? []
   }

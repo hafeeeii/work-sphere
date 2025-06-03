@@ -1,47 +1,85 @@
 'use client'
 import { Input } from '@/components/ui/input'
-import React, { useActionState, useEffect, useState } from 'react'
+import React, { startTransition, useActionState, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 import { Controller, useForm } from 'react-hook-form'
 import RequiredLabel from '@/components/ui/required-label'
 import { Loader, PlusIcon } from 'lucide-react'
-import { saveDesignation } from './action'
+import { saveDesignation, updateDesignation } from './action'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { DesignationFormValues, designationSchema } from '@/lib/types'
 import { toast } from 'sonner'
+import { Designation } from '@/generated/prisma'
 
-const Form = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [state, action, isLoading] = useActionState(saveDesignation, undefined)
+type FormProps = {
+  designation?: Designation | null
+  showForm: boolean
+  toggleForm: () => void
+}
+
+const Form = ({ designation, showForm, toggleForm }: FormProps) => {
+  const [saveState, saveAction, isSavePending] = useActionState(saveDesignation, undefined)
+  const [updateState, updateAction, isUpdatePending] = useActionState(updateDesignation, undefined)
+
+  const state = saveState || updateState
+  const isPending = isSavePending || isUpdatePending
 
   const defaultValues = {
-    name: ''
+    id: designation?.id || '',
+    name: designation?.name || ''
   }
 
   const {
     control,
     reset,
-    formState: { isValid }
+    formState: { isValid },
+    handleSubmit
   } = useForm<DesignationFormValues>({
     defaultValues,
     resolver: zodResolver(designationSchema),
     mode: 'onChange'
   })
 
+  const onClose = () => {
+    toggleForm()
+    reset()
+  }
+
   useEffect(() => {
     if (state?.status) {
-      reset()
-      setIsOpen(false)
+      onClose()
+    }
+
+    if (state?.message) {
       toast.success(state.message)
     }
-  }, [state, reset])
-console.log(state,'this is staae')
+  }, [updateState, saveState])
+
+  useEffect(() => {
+    if (showForm) reset(defaultValues)
+  }, [showForm])
+
+  const onSubmit = (data: DesignationFormValues) => {
+    const formData = new FormData()
+
+    Object.keys(data).forEach(key => {
+      formData.append(key, data[key as keyof typeof data].toString())
+    })
+
+    formData.append('id', designation?.id ?? '')
+    if (designation?.id) {
+      startTransition(() => updateAction(formData))
+    } else {
+      startTransition(() => saveAction(formData))
+    }
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={showForm} onOpenChange={onClose}>
       <DialogTrigger asChild>
-        <Button className='max-w-fit' onClick={() => setIsOpen(true)}>
+        <Button className='max-w-fit' onClick={onClose}>
           <PlusIcon />
           Create Designation
         </Button>
@@ -50,22 +88,20 @@ console.log(state,'this is staae')
         <DialogHeader>
           <DialogTitle>Create Designation</DialogTitle>
         </DialogHeader>
-        <form action={action} className='space-y-4'>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
           <div className='flex gap-4'>
             <div className='grid w-full items-center gap-1.5'>
-              <RequiredLabel htmlFor="name">Designation Name</RequiredLabel>
+              <RequiredLabel htmlFor='name'>Designation Name</RequiredLabel>
               <Controller
-                name="name"
+                name='name'
                 control={control}
-                render={({ field }) => (
-                  <Input {...field} id="name" placeholder="Software Engineer" />
-                )}
+                render={({ field }) => <Input {...field} id='name' placeholder='Software Engineer' />}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button disabled={!isValid || isLoading} type='submit'>
-              {isLoading && <Loader className='animate-spin mr-2 h-4 w-4' />}
+            <Button disabled={!isValid || isPending} type='submit'>
+              {isPending && <Loader className='mr-2 h-4 w-4 animate-spin' />}
               Save
             </Button>
           </DialogFooter>
