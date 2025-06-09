@@ -4,6 +4,7 @@ import React from 'react'
 import Form from './form'
 import { Department} from '@/generated/prisma'
 import { getDepartment } from '@/services/department'
+import { deleteDepartment } from './action'
 
 type DepartmentTabProps = {
   departments: Department[]
@@ -59,7 +60,7 @@ const DepartmentTab =  ({ departments }: DepartmentTabProps) => {
         showForm={showForm}
         toggleForm={toggleForm}
       />
-      <SharedTable tableData={tableData} onEdit={onEdit} />
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDepartment}/>
     </div>
   )
 }

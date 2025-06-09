@@ -20,10 +20,16 @@ import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { Input } from './ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { MoreHorizontalIcon, Pencil } from 'lucide-react'
+import { MoreHorizontalIcon, Pencil, Trash } from 'lucide-react'
+import { toast } from 'sonner'
 
 type Props<T extends object> = {
   onEdit?: (id: string) => void
+  onDelete: (id: string) => Promise<{
+    status: boolean;
+    message: string;
+    error: unknown;
+}>,
   tableData: {
     editMode: 'toggle' | 'redirect'
     data: T[]
@@ -43,7 +49,7 @@ type Props<T extends object> = {
   renderSubComponent?: (props: { row: Row<T> }) => React.ReactElement
 }
 
-export function SharedTable<T extends object>({ tableData: { columnData, data , editMode }, onEdit }: Props<T>) {
+export function SharedTable<T extends object>({ tableData: { columnData, data , editMode }, onEdit, onDelete }: Props<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -91,8 +97,9 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
     id: "actions",
     enableHiding: false,
     cell: ({ row }:any) => {
+      const deleteWithId = onDelete.bind(null, row.original.id)
       return (
-        <div className='flex justify-end'>
+        <div className='flex justify-end gap-2'>
           <Button variant={'outline'} size={'icon'}
             onClick={() => {
                 if (onEdit && editMode === 'toggle') {
@@ -101,6 +108,17 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
               }}
           >
             <Pencil/>
+          </Button>
+          <Button variant={'outline'} size={'icon'}
+            onClick={async () => {
+              const { message, status } = await deleteWithId()
+              if (!status) {
+                return toast.error(message)
+              }
+              toast.success(message)
+            }}
+          >
+            <Trash/>
           </Button>
         </div>
       )

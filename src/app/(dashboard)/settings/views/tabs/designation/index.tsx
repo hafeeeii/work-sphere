@@ -4,6 +4,7 @@ import React from 'react'
 import Form from './form'
 import { getDesignation } from '@/services/designation'
 import { Designation } from '@/generated/prisma'
+import { deleteDesignation } from './action'
 
 type DesignationTabProps = {
   designations: Designation[]
@@ -50,7 +51,7 @@ const DesignationTab = ({ designations }: DesignationTabProps) => {
   return (
     <div className='flex flex-col items-end gap-6'>
       <Form designation={designation} showForm={showForm} toggleForm={toggleForm} />
-      <SharedTable tableData={tableData} onEdit={onEdit} />
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDesignation}/>
     </div>
   )
 }

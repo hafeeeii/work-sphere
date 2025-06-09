@@ -5,6 +5,7 @@ import Form from './form'
 import { getEmployee, getEmployees } from '@/services/employee'
 import { Department, Designation, Employee, WorkLocation } from '@/generated/prisma'
 import { EmployeeWithRelations } from '@/lib/types'
+import { deleteEmployee } from './action'
 
 type EmployeeListProps = {
   employees?: EmployeeWithRelations[]
@@ -76,7 +77,7 @@ const EmployeeList =  ({ employees, departments, designations, workLocations }: 
         employee={employee}
         toggleForm={toggleForm}
       />
-      <SharedTable tableData={tableData} onEdit={onEdit} />
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteEmployee}/>
     </div>
   )
 }

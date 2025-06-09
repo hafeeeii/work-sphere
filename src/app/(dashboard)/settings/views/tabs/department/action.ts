@@ -70,3 +70,32 @@ export async function updateDepartment(prevState: any, formData: FormData) {
         error: null
     }
 }
+
+export async function deleteDepartment(id:string) {
+    if (!id) return {
+        status: false,
+        message: 'Department not found',
+        error: null
+    }
+
+    try {
+        await prisma.department.delete({
+            where: {
+                id: id
+            },
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+            error: err
+        }
+    }
+     revalidatePath('/settings')
+
+    return {
+        status: true,
+        message: 'Department deleted successfully',
+        error: null
+    }
+}

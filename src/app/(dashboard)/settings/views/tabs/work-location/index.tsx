@@ -4,6 +4,7 @@ import React from 'react'
 import Form from './form'
 import { WorkLocation } from '@/generated/prisma'
 import { getWorkLocation } from '@/services/work-location'
+import { deleteWorkLocation } from './action'
 
 type WorkLocationTabProps = {
   workLocations: WorkLocation[]
@@ -53,7 +54,7 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
   return (
     <div className='flex flex-col items-end gap-6'>
       <Form workLocation={workLocation} showForm={showForm} toggleForm={toggleForm} />
-      <SharedTable tableData={tableData} onEdit={onEdit} />
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteWorkLocation} />
     </div>
   )
 }

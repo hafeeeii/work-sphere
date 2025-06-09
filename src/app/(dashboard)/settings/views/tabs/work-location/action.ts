@@ -68,3 +68,32 @@ export async function updateWorkLocation(prevState: any, formData: FormData) {
         error: null
     }
 }
+
+export async function deleteWorkLocation(id:string) {
+    if (!id) return {
+        status: false,
+        message: 'Work location not found',
+        error: null
+    }
+
+    try {
+        await prisma.workLocation.delete({
+            where: {
+                id: id
+            },
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+            error: err
+        }
+    }
+     revalidatePath('/settings')
+
+    return {
+        status: true,
+        message: 'Work location deleted successfully',
+        error: null
+    }
+}

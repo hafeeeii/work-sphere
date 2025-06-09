@@ -65,3 +65,33 @@ export async function updateEmployee(prevState: any, formData: FormData) {
         error: null
     }
 }
+
+export async function deleteEmployee(id:string) {
+    if (!id) return {
+        status: false,
+        message: 'Employee not found',
+        error: null
+    }
+
+    try {
+        await prisma.employee.delete({
+            where: {
+                id: id
+            },
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+            error: err
+        }
+    }
+    revalidatePath('/employee/list')
+
+    return {
+        status: true,
+        message: 'Employee deleted successfully',
+        error: null
+    }
+}
+

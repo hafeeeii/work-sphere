@@ -66,3 +66,32 @@ export async function updateDesignation(prevState: any, formData: FormData) {
         error: null
     }
 }
+
+export async function deleteDesignation(id:string) {
+    if (!id) return {
+        status: false,
+        message: 'Designation not found',
+        error: null
+    }
+
+    try {
+        await prisma.designation.delete({
+            where: {
+                id: id
+            },
+        })
+    } catch (err) {
+        return {
+            status: false,
+            message: 'Data base error occurred',
+            error: err
+        }
+    }
+     revalidatePath('/settings')
+
+    return {
+        status: true,
+        message: 'Designation deleted successfully',
+        error: null
+    }
+}
