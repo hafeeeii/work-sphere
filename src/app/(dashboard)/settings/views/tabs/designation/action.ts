@@ -1,5 +1,6 @@
 'use server'
 
+import { PrismaClientKnownRequestError } from "@/generated/prisma/runtime/library"
 import prisma from "@/lib/prisma"
 import { designationSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
@@ -10,20 +11,22 @@ export async function saveDesignation(prevState: any,
 ) {
     
     const parsed = designationSchema.safeParse(Object.fromEntries(formData))
+
     if (!parsed.success) {
         return {
             status:false,
             message: 'Invalid designation'
         }
     }
+    const {id, ...rest} = parsed.data
     try {
         await prisma.designation.create({
-            data: parsed.data
+            data: rest
         })
-    } catch (err) {
+    } catch (err:any) {
         return {
             status: false,
-            message: 'Data base error occurred',
+            message: 'Data base error occurred: ' + err?.message,
         }
     }
 
@@ -51,10 +54,10 @@ export async function updateDesignation(prevState: any, formData: FormData) {
             },
             data: parsed.data
         })
-    } catch (err) {
+    } catch (err:any) {
         return {
             status: false,
-            message: 'Data base error occurred',
+            message: 'Data base error occurred: ' + err?.message,
             error: err
         }
     }
@@ -80,10 +83,10 @@ export async function deleteDesignation(id:string) {
                 id: id
             },
         })
-    } catch (err) {
+    } catch (err:any) {
         return {
             status: false,
-            message: 'Data base error occurred',
+            message: 'Data base error occurred: ' + err?.message,
             error: err
         }
     }

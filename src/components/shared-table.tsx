@@ -19,7 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { Input } from './ui/input'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { MoreHorizontalIcon, Pencil, Trash } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -54,7 +54,7 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-
+  const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const router = useRouter()
 
   const loadData = () => {
@@ -85,12 +85,18 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
       }
     })
 
+    // pagination
+    if (pagination) {
+      param.set('page', pagination.pageIndex.toString())
+      param.set('pageSize', pagination.pageSize.toString())
+    }
+
     router?.push(`?${param.toString()}`)
   }
 
   React.useEffect(() => {
     loadData()
-  }, [sorting, columnFilters])
+  }, [sorting, columnFilters, pagination])
 
 
   const actions =  {
@@ -146,14 +152,16 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     manualSorting: true,
     manualFiltering: true,
+    manualPagination:true,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
+      pagination,
       columnFilters,
       columnVisibility,
       rowSelection
@@ -212,19 +220,33 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
       </div>
       <div className='flex items-center justify-end space-x-2 py-4'>
         <div className='flex-1 text-sm text-muted-foreground'>
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-          selected.
+              <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">{pagination.pageSize}</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent >
+        {[5,10, 20, 30, 40, 50].map(pageSize => (
+          <DropdownMenuCheckboxItem
+            key={pageSize}
+            checked={pageSize === pagination.pageSize}
+            onCheckedChange={() => setPagination((prev) => ({ ...prev, pageSize }))}
+       
+          >
+            {pageSize}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
         </div>
         <div className='space-x-2'>
           <Button
             variant='outline'
             size='sm'
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
           >
             Previous
           </Button>
-          <Button variant='outline' size='sm' onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button variant='outline' size='sm' onClick={() => table.nextPage()} >
             Next
           </Button>
         </div>

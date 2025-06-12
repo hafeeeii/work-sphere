@@ -4,18 +4,19 @@ import { toast } from "sonner"
 const BASE_URL = 'http://localhost:3000/api/employees'
 
 export const getEmployees = async (queryParams: { [key: string]: string }): Promise<EmployeeWithRelations[]> => {
-  const { sortBy, sortOrder, name, email } = queryParams
+  const { sortBy, sortOrder, name, email, page, pageSize } = queryParams
 
   let params = new URLSearchParams()
   if (sortBy) params.append('sortBy', sortBy)
   if (sortOrder) params.append('sortOrder', sortOrder)
   if (name) params.append('name', name)
   if (email) params.append('email', email)
+  if (page) params.append('page', page)
+  if (pageSize) params.append('pageSize', pageSize)
 
   try {
     const res = await fetch(`${BASE_URL}?${params.toString()}`)
     const data = await res.json()
-    console.log(data, 'am data')
     return data
   } catch (error) {
     toast.error('Error fetching employees')

@@ -8,11 +8,13 @@ export const getDepartments = async (queryParams?: { [key: string]: string }): P
 
   let params = new URLSearchParams()
   if (queryParams) {
-    const { sortBy, sortOrder, name,code } = queryParams
+    const { sortBy, sortOrder, name,code, page, pageSize } = queryParams
     if (sortBy) params.append('sortBy', sortBy)
     if (sortOrder) params.append('sortOrder', sortOrder)
     if (name) params.append('name', name)
     if (code) params.append('code', code)
+    if (page) params.append('page', page)
+    if (pageSize) params.append('pageSize', pageSize)
   }
 
   try {

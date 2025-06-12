@@ -68,8 +68,8 @@ const Form = ({ designation, showForm, toggleForm }: FormProps) => {
       formData.append(key, data[key as keyof typeof data].toString())
     })
 
-    formData.append('id', designation?.id ?? '')
     if (designation?.id) {
+      formData.append('id', designation?.id ?? '')
       startTransition(() => updateAction(formData))
     } else {
       startTransition(() => saveAction(formData))

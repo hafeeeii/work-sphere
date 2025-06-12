@@ -11,12 +11,16 @@ export async function GET(request: NextRequest) {
     const sortOrderParam = searchParams.get('sortOrder') || 'asc'
     const name = searchParams.get('name')
     const email = searchParams.get('email')
+    const page = searchParams.get('page') || '0'
+    const pageSize = searchParams.get('pageSize') || '10'
 
     const sortBy = validSortFields.includes(sortByParam) ? sortByParam : 'name'
     const sortOrder = validSortOrders.includes(sortOrderParam.toLowerCase()) ? sortOrderParam : 'asc'
 
 
     const employees = await prisma.employee.findMany({
+      skip: parseInt(page) * parseInt(pageSize),
+      take: parseInt(pageSize),
       where: {
         ...(name && { name: { contains: name } }),
         ...(email && { email: { contains: email } }),

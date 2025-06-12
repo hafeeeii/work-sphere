@@ -7,10 +7,12 @@ export const getWorkLocations = async (queryParams?: { [key: string]: string }):
 
   let params = new URLSearchParams()
   if (queryParams) {
-    const { sortBy, sortOrder, name } = queryParams
+    const { sortBy, sortOrder, name, page, pageSize } = queryParams
     if (sortBy) params.append('sortBy', sortBy)
     if (sortOrder) params.append('sortOrder', sortOrder)
     if (name) params.append('name', name)
+    if (page) params.append('page', page)
+    if (pageSize) params.append('pageSize', pageSize)
   }
 
   try {
