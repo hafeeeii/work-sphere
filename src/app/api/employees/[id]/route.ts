@@ -1,4 +1,5 @@
 
+import { getBusinessId } from '@/lib/business';
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -10,9 +11,21 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     try {
+
+        const business = await getBusinessId()
+
+        if (!business.status) {
+            return NextResponse.json(business, { status: 401 });
+        }
+
+        const businessId = business.data as string
+
         const employee = await prisma.employee.findUnique({
             where: {
-                id: id
+                tenantId_id: {
+                    tenantId: businessId,
+                    id
+                }
             }
         })
         if (!employee) {
