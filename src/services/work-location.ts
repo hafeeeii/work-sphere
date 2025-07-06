@@ -1,11 +1,13 @@
 import { WorkLocation } from '@prisma/client'
-import { baseUrl } from "@/lib/utils"
-import { toast } from "sonner"
+import { getCookieValue, isDev, protocol, rootDomain } from "@/lib/utils"
 
-const BASE_URL = baseUrl +'/api/work-locations'
 
-export const getWorkLocations = async (queryParams?: { [key: string]: string }): Promise<WorkLocation[]> => {
+const endPoint = '/api/work-locations';
 
+
+export const getWorkLocations = async (cookie: string, queryParams?: { [key: string]: string }): Promise<WorkLocation[]> => {
+  const subdomain = getCookieValue(cookie, 'subdomain')
+  const mainUrl = isDev ? `${protocol}://localhost:3000${endPoint}` : `${protocol}://${subdomain}.${rootDomain}${endPoint}`
   let params = new URLSearchParams()
   if (queryParams) {
     const { sortBy, sortOrder, name, page, pageSize } = queryParams
@@ -17,11 +19,15 @@ export const getWorkLocations = async (queryParams?: { [key: string]: string }):
   }
 
   try {
-    const res = await fetch(`${BASE_URL}?${params.toString()}`)
+    const res = await fetch(`${mainUrl}?${params.toString()}`, {
+      headers: {
+        Cookie: cookie
+      }
+    })
     const data = await res.json()
     return data
   } catch (error) {
-    toast.error('Error fetching work location')
+    console.error('Error fetching work location:', error)
     return []
   }
 }
@@ -29,11 +35,11 @@ export const getWorkLocations = async (queryParams?: { [key: string]: string }):
 
 export const getWorkLocation = async (id: string): Promise<WorkLocation | null> => {
   try {
-    const res = await fetch(`${BASE_URL}/${id}`)
+    const res = await fetch(`${endPoint}/${id}`)
     const data = await res.json()
     return data
   } catch (error) {
-    toast.error('Error fetching work location')
+    console.error('Error fetching work location:', error)
     return null
   }
 }

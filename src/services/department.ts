@@ -1,12 +1,12 @@
 
+import { getCookieValue, isDev, protocol, rootDomain } from '@/lib/utils';
 import { Department } from '@prisma/client'
-import { baseUrl } from "@/lib/utils"
-import { toast } from "sonner"
 
-const BASE_URL = baseUrl + '/api/departments'
-
-export const getDepartments = async (queryParams?: { [key: string]: string }): Promise<Department[]> => {
-
+const endPoint = '/api/departments';
+export const getDepartments = async ( cookie:string,queryParams?: { [key: string]: string }): Promise<Department[]> => {
+  const subdomain = getCookieValue(cookie, 'subdomain')
+  const mainUrl = isDev ? `${protocol}://localhost:3000${endPoint}` : `${protocol}://${subdomain}.${rootDomain}${endPoint}`
+  console.log(mainUrl,'mainUrl')
   let params = new URLSearchParams()
   if (queryParams) {
     const { sortBy, sortOrder, name,code, page, pageSize } = queryParams
@@ -19,11 +19,16 @@ export const getDepartments = async (queryParams?: { [key: string]: string }): P
   }
 
   try {
-    const res = await fetch(`${BASE_URL}?${params.toString()}`)
+    const res = await fetch(`${mainUrl}?${params.toString()}`, {
+      headers: {
+        Cookie: cookie
+      }
+    })
     const data = await res.json()
+    console.log(data,'data')
     return data
   } catch (error) {
-    toast.error('Error fetching department')
+    console.error('Error fetching department: ',error)
     return []
   }
 }
@@ -31,11 +36,11 @@ export const getDepartments = async (queryParams?: { [key: string]: string }): P
 
 export const getDepartment = async (id: string): Promise<Department | null> => {
   try {
-    const res = await fetch(`${BASE_URL}/${id}`)
+    const res = await fetch(`${endPoint}/${id}`)
     const data = await res.json()
     return data
   } catch (error) {
-    toast.error('Error fetching department')
+    console.error('Error fetching department:', error)
     return null
   }
 }

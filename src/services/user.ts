@@ -1,6 +1,5 @@
 import { UserWithRelations } from "@/lib/types"
 import { baseUrl } from "@/lib/utils"
-import { toast } from "sonner"
 
 
 
@@ -12,7 +11,7 @@ export const getUser = async (id:string):Promise<UserWithRelations | null> => {
     const data = await res.json()
     return data
   } catch (error) {
-    toast.error('Error fetching user')
+    console.error('Error fetching user:', error)
     return null
   }
 }
