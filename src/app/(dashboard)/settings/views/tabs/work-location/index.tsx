@@ -44,7 +44,6 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
     data: workLocations ?? []
   }
 
-  console.log(workLocations,'workLocations')
 
   const onEdit = async (id: string) => {
     if (!id) return null

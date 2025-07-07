@@ -76,7 +76,6 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
 
     // remove filters that are not in the table
     columnData?.forEach(column => {
-      console.log(param.get(column.accessorKey as string), 'checking')
       if (column.filterable) {
         const found = columnFilters.find(filter => filter.id === column.accessorKey)
         if (!found) {
@@ -169,8 +168,8 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
   })
 
   return (
-    <div className='w-full space-y-2'>
-      <div className='flex items-center gap-2'>
+    <div className='w-full space-y-2 '>
+      <div className='flex items-center gap-2 '>
         {columnData.map(
           (item, idx) =>
             item.filterable && (
@@ -230,7 +229,6 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
             key={pageSize}
             checked={pageSize === pagination.pageSize}
             onCheckedChange={() => setPagination((prev) => ({ ...prev, pageSize }))}
-       
           >
             {pageSize}
           </DropdownMenuCheckboxItem>

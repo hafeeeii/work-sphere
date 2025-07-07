@@ -50,7 +50,7 @@ export async function decrypt(session: string | undefined = "") {
     });
     return payload;
   } catch (error) {
-    console.log("Failed to verify session");
+    console.error("Failed to verify session");
   }
 }
 
@@ -59,7 +59,6 @@ export async function getValidSession() {
   const cookie = cookieStore.get('session')?.value
 
   let session = null
-  console.log(cookie,'this i scookie')
   if (!cookie) {
     return {
       status: false,

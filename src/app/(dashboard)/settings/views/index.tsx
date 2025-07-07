@@ -48,7 +48,7 @@ import { cookies } from "next/headers"
       {tabs.map((tab) => (
         <TabsContent key={tab.tab} value={tab.tab}>
           <Card>
-            <CardContent className="py-2 min-h-[85vh]">
+            <CardContent className="py-2 ">
           {tab.content}
             </CardContent>
           </Card>

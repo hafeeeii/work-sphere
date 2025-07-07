@@ -6,7 +6,6 @@ const endPoint = '/api/departments';
 export const getDepartments = async ( cookie:string,queryParams?: { [key: string]: string }): Promise<Department[]> => {
   const subdomain = getCookieValue(cookie, 'subdomain')
   const mainUrl = isDev ? `${protocol}://localhost:3000${endPoint}` : `${protocol}://${subdomain}.${rootDomain}${endPoint}`
-  console.log(mainUrl,'mainUrl')
   let params = new URLSearchParams()
   if (queryParams) {
     const { sortBy, sortOrder, name,code, page, pageSize } = queryParams
@@ -25,7 +24,6 @@ export const getDepartments = async ( cookie:string,queryParams?: { [key: string
       }
     })
     const data = await res.json()
-    console.log(data,'data')
     return data
   } catch (error) {
     console.error('Error fetching department: ',error)

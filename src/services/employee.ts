@@ -23,7 +23,6 @@ export const getEmployees = async (cookie: string, queryParams: { [key: string]:
       }
     })
     const data = await res.json()
-     console.log(data,'data')
     return data
   } catch (error) {
     console.error('Error fetching employees')

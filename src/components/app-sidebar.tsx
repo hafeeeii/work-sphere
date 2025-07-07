@@ -38,7 +38,7 @@ const items = [
   },
   {
     title: "Employees",
-    url: `/employee/list?${getDefaultSortById('name')}`,
+    url: `/employee?${getDefaultSortById('name')}`,
     icon: Briefcase,
   },
   {

@@ -111,7 +111,6 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
         <form onSubmit={handleSubmit(onSubmit)} className='w-full space-y-6'>
           <div className='space-y-4'>
             {/* Personal Info */}
-            <Label className='text-lg'>Personal Info</Label>
             <div className='flex flex-col gap-4'>
               <div className='flex gap-4'>
                 <div className='grid w-full gap-1.5'>
@@ -196,7 +195,6 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
             </div>
 
             {/* Job Details */}
-            <Label className='text-lg'>Job Details</Label>
             <div className='flex flex-col gap-4'>
               <div className='flex gap-4'>
                 <div className='grid w-1/2 gap-1.5'>

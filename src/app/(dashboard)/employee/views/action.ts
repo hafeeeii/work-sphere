@@ -39,7 +39,7 @@ export async function saveEmployee(prevState: any, formData: FormData) {
             error: err
         }
     }
-    revalidatePath('/employee/list')
+    revalidatePath('/employee')
 
     return {
         status: true,
@@ -84,7 +84,7 @@ export async function updateEmployee(prevState: any, formData: FormData) {
             error: err
         }
     }
-    revalidatePath('/employee/list')
+    revalidatePath('/employee')
 
     return {
         status: true,
@@ -123,7 +123,7 @@ export async function deleteEmployee(id: string) {
             error: err
         }
     }
-    revalidatePath('/employee/list')
+    revalidatePath('/employee')
 
     return {
         status: true,
