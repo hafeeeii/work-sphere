@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { decrypt, User } from '@/lib/session'
 import { getUser } from '@/services/user'
 import { BusinessList } from './business-list'
-import { getBusinessId } from '@/lib/business'
+import { getBusinessInfo } from '@/lib/business'
 import SetBusinessCookie from './set-business-cookie'
 
 const Business = async () => {
@@ -34,14 +34,14 @@ const Business = async () => {
   }
 
   const user = await getUser((session as User).userId)
-  const business = await getBusinessId()
+  const business = await getBusinessInfo()
   
 
   return (
     <div className='p-4'>
       <BusinessList businesses={user?.tenantUser} />
       {business.data && (
-      <SetBusinessCookie businessId={business.data}/>
+      <SetBusinessCookie businessId={business.data?.businessId}/>
       )}
     </div>
   )

@@ -1,5 +1,5 @@
 
-import { getBusinessId } from '@/lib/business';
+import { getBusinessInfo } from '@/lib/business';
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -12,13 +12,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     try {
 
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return NextResponse.json(business, { status: 401 });
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         const employee = await prisma.employee.findUnique({
             where: {

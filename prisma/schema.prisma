@@ -13,34 +13,69 @@ enum Role {
   MANAGER
 }
 
+enum NotificationType {
+  Message
+  Ticket
+  Team
+  Announcement
+}
+
 model Tenant {
-  id         String       @id @default(uuid())
-  name       String
-  subdomain  String       @unique
-  createAt   DateTime     @default(now())
-  updateAt   DateTime     @updatedAt
-  tenantUser TenantUser[]
+  id           String         @id @default(uuid())
+  name         String
+  subdomain    String         @unique
+  createAt     DateTime       @default(now())
+  updateAt     DateTime       @updatedAt
+  tenantUser   TenantUser[]
+  notification Notification[]
 }
 
 model User {
-  id           String       @id @default(uuid())
-  email        String       @unique
-  passwordHash String
-  name         String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  tenantUser   TenantUser[]
+  id               String             @id @default(uuid())
+  email            String             @unique
+  passwordHash     String
+  name             String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  tenantUser       TenantUser[]
+  notification     Notification[]
+  notificationRead NotificationRead[]
 }
 
 // join table for many-to-many relationship between User and Tenant
 model TenantUser {
   userId   String
-  tenantId String 
-  role    Role
+  tenantId String
+  role     Role
   user     User   @relation(fields: [userId], references: [id])
   tenant   Tenant @relation(fields: [tenantId], references: [id])
 
   @@id([userId, tenantId])
+}
+
+model Notification {
+  id               String             @id @default(uuid())
+  title            String
+  message          String
+  type             NotificationType
+  read             Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  userId           String?
+  tenantId         String
+  user             User?              @relation(fields: [userId], references: [id])
+  tenant           Tenant             @relation(fields: [tenantId], references: [id])
+  notificationRead NotificationRead[]
+}
+
+model NotificationRead {
+  userId         String
+  notificationId String
+  readAt         DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id])
+  notification   Notification @relation(fields: [notificationId], references: [id])
+
+  @@id([userId, notificationId])
 }
 
 model Employee {

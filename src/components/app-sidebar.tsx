@@ -105,7 +105,7 @@ export function AppSidebar() {
   }
   return (
     <Sidebar>
-      <SidebarContent className="bg-background" >
+      <SidebarContent className="bg-card" >
         <SidebarGroup>
           <SidebarGroupLabel>MENU</SidebarGroupLabel>
           <SidebarGroupContent>

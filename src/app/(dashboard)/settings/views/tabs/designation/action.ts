@@ -3,7 +3,8 @@
 import prisma from "@/lib/prisma";
 import { designationSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
-import { getBusinessId } from "@/lib/business";
+import { getBusinessInfo } from "@/lib/business";
+import { NotificationType } from "@prisma/client";
 
 export async function saveDesignation(prevState: any, formData: FormData) {
     const parsed = designationSchema.safeParse(Object.fromEntries(formData));
@@ -19,21 +20,33 @@ export async function saveDesignation(prevState: any, formData: FormData) {
     const { id, ...rest } = parsed.data;
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
-        await prisma.designation.create({
-            data: {
-                ...rest,
-                tenantId: businessId,
-            },
-        });
 
+        await prisma.$transaction(async (tx) => {
+            await tx.designation.create({
+                data: {
+                    ...rest,
+                    tenantId: businessId,
+                },
+            });
+
+            await tx.notification.create({
+                data: {
+                    tenantId: businessId,
+                    title: "New department created",
+                    message: "A new department has been created",
+                    type: NotificationType.Announcement,
+                }
+            })
+
+        })
         revalidatePath("/settings");
 
         return {
@@ -61,13 +74,13 @@ export async function updateDesignation(prevState: any, formData: FormData) {
     }
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         await prisma.designation.update({
             where: {
@@ -104,14 +117,14 @@ export async function deleteDesignation(id: string) {
         };
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         await prisma.designation.delete({
             where: {

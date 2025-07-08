@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { departmentSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
-import { getBusinessId } from "@/lib/business";
+import { getBusinessInfo } from "@/lib/business";
 
 // CREATE
 export async function saveDepartment(prevState: any, formData: FormData) {
@@ -18,13 +18,13 @@ export async function saveDepartment(prevState: any, formData: FormData) {
 
     const { id, ...rest } = parsed.data;
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
 
         await prisma.department.create({
@@ -59,13 +59,13 @@ export async function updateDepartment(prevState: any, formData: FormData) {
     }
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
 
         await prisma.department.update({
@@ -104,13 +104,13 @@ export async function deleteDepartment(id: string) {
         };
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         await prisma.department.delete({
             where: {

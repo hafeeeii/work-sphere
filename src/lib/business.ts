@@ -32,11 +32,14 @@ export async function fetchBusinessIdFromSubdomain(subdomain: string, userId: st
         status: true,
         message: '',
         error: null,
-        data: business?.id
+        data: {
+            businessId: business.id,
+            userId
+        }
     }
 }
 
-export async function getBusinessId() {
+export async function getBusinessInfo() {
     const cookieStore = await cookies()
     const subdomain = cookieStore.get('subdomain')?.value
     const session = await getValidSession()

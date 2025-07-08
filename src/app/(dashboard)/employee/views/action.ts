@@ -1,5 +1,5 @@
 'use server'
-import { getBusinessId } from "@/lib/business"
+import { getBusinessInfo } from "@/lib/business"
 import prisma from "@/lib/prisma"
 import { EmployeeSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
@@ -18,13 +18,13 @@ export async function saveEmployee(prevState: any, formData: FormData) {
     const { id, ...rest } = parsed.data
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         await prisma.employee.create({
             data: {
@@ -32,19 +32,20 @@ export async function saveEmployee(prevState: any, formData: FormData) {
                 tenantId: businessId
             }
         })
+
+        revalidatePath('/employee')
+
+        return {
+            status: true,
+            message: 'Employee created successfully',
+            error: null
+        }
     } catch (err: any) {
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,
             error: err
         }
-    }
-    revalidatePath('/employee')
-
-    return {
-        status: true,
-        message: 'Employee created successfully',
-        error: null
     }
 
 }
@@ -60,13 +61,13 @@ export async function updateEmployee(prevState: any, formData: FormData) {
     }
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         await prisma.employee.update({
             where: {
@@ -77,19 +78,20 @@ export async function updateEmployee(prevState: any, formData: FormData) {
             },
             data: parsed.data
         })
+
+        revalidatePath('/employee')
+
+        return {
+            status: true,
+            message: 'Employee updated successfully',
+            error: null
+        }
     } catch (err: any) {
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,
             error: err
         }
-    }
-    revalidatePath('/employee')
-
-    return {
-        status: true,
-        message: 'Employee updated successfully',
-        error: null
     }
 }
 
@@ -101,13 +103,13 @@ export async function deleteEmployee(id: string) {
     }
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
         await prisma.employee.delete({
             where: {
                 tenantId_id: {
@@ -116,6 +118,13 @@ export async function deleteEmployee(id: string) {
                 }
             },
         })
+        revalidatePath('/employee')
+
+        return {
+            status: true,
+            message: 'Employee deleted successfully',
+            error: null
+        }
     } catch (err: any) {
         return {
             status: false,
@@ -123,12 +132,6 @@ export async function deleteEmployee(id: string) {
             error: err
         }
     }
-    revalidatePath('/employee')
 
-    return {
-        status: true,
-        message: 'Employee deleted successfully',
-        error: null
-    }
 }
 

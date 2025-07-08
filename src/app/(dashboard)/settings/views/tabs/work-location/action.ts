@@ -1,6 +1,6 @@
 'use server'
 
-import { getBusinessId } from "@/lib/business"
+import { getBusinessInfo } from "@/lib/business"
 import prisma from "@/lib/prisma"
 import { workLocationSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
@@ -23,13 +23,13 @@ export async function saveWorkLocation(prevState: any,
     const { id, ...rest } = parsed.data
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         await prisma.workLocation.create({
             data: {
@@ -62,13 +62,13 @@ export async function updateWorkLocation(prevState: any, formData: FormData) {
     }
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         await prisma.workLocation.update({
             where: {
@@ -103,13 +103,13 @@ export async function deleteWorkLocation(id: string) {
     }
 
     try {
-        const business = await getBusinessId()
+        const business = await getBusinessInfo()
 
         if (!business.status) {
             return business
         }
 
-        const businessId = business.data as string
+        const businessId = business.data?.businessId as string
 
         await prisma.workLocation.delete({
             where: {

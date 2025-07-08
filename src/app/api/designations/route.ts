@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getBusinessId } from "@/lib/business";
+import { getBusinessInfo } from "@/lib/business";
 
 const validSortFields = ['name'];
 const validSortOrders = ['asc', 'desc'];
@@ -18,13 +18,13 @@ export async function GET(request: NextRequest) {
     const sortBy = validSortFields.includes(sortByParam) ? sortByParam : 'name'
     const sortOrder = validSortOrders.includes(sortOrderParam.toLowerCase()) ? sortOrderParam : 'asc'
 
-    const business = await getBusinessId()
+    const business = await getBusinessInfo()
 
     if (!business.status) {
       return NextResponse.json(business, { status: 401 });
     }
 
-    const businessId = business.data as string
+    const businessId = business.data?.businessId as string
 
     const designations = await prisma.designation.findMany({
       skip: parseInt(page) * parseInt(pageSize),
