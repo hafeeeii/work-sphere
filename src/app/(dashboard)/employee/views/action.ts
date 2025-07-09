@@ -5,7 +5,7 @@ import { EmployeeSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
 
 
-export async function saveEmployee(prevState: any, formData: FormData) {
+export async function saveEmployee(prevState: unknown, formData: FormData) {
     const parsed = EmployeeSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
         return {
@@ -16,6 +16,7 @@ export async function saveEmployee(prevState: any, formData: FormData) {
     }
 
     const { id, ...rest } = parsed.data
+    void id
 
     try {
         const business = await getBusinessInfo()
@@ -40,7 +41,8 @@ export async function saveEmployee(prevState: any, formData: FormData) {
             message: 'Employee created successfully',
             error: null
         }
-    } catch (err: any) {
+    } catch (error) {
+          const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,
@@ -50,7 +52,7 @@ export async function saveEmployee(prevState: any, formData: FormData) {
 
 }
 
-export async function updateEmployee(prevState: any, formData: FormData) {
+export async function updateEmployee(prevState: unknown, formData: FormData) {
     const parsed = EmployeeSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
         return {
@@ -86,7 +88,8 @@ export async function updateEmployee(prevState: any, formData: FormData) {
             message: 'Employee updated successfully',
             error: null
         }
-    } catch (err: any) {
+    } catch (error) {
+          const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,
@@ -125,7 +128,8 @@ export async function deleteEmployee(id: string) {
             message: 'Employee deleted successfully',
             error: null
         }
-    } catch (err: any) {
+    } catch (error) {
+          const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,

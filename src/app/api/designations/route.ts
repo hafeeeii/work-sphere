@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(udpatedDesignations);
   } catch (error) {
+       console.error(error, "Error");
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

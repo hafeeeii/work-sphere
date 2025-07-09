@@ -33,6 +33,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         }
         return NextResponse.json(department);
     } catch (error) {
+           console.error(error, "Error");
         return NextResponse.json({ error: "Error fetching department" });
     }
 }

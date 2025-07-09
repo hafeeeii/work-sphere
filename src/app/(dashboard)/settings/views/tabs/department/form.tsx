@@ -1,20 +1,20 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
-import React, { startTransition, useActionState, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { startTransition, useActionState, useEffect } from 'react'
 
-import { Controller, useForm } from 'react-hook-form'
-import RequiredLabel from '@/components/ui/required-label'
-import { Loader, PlusIcon } from 'lucide-react'
-import { saveDepartment, updateDepartment } from './action'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { DepartmentFormValues, departmentSchema } from '@/lib/types'
 import { Label } from '@/components/ui/label'
+import RequiredLabel from '@/components/ui/required-label'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from 'sonner'
+import { DepartmentFormValues, departmentSchema } from '@/lib/types'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Department } from '@prisma/client'
+import { Loader, PlusIcon } from 'lucide-react'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { saveDepartment, updateDepartment } from './action'
 
 type FormProps = {
   department?: Department | null

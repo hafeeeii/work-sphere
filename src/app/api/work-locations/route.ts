@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(udpatedWorkLocations);
   } catch (error) {
-    console.error(error, "Error fetching work locations");
+    console.error(error, "Error");
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

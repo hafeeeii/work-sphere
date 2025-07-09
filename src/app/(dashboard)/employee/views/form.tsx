@@ -1,25 +1,24 @@
 'use client'
-import { Input } from '@/components/ui/input'
-import React, { startTransition, useActionState, useEffect, useState } from 'react'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { PlusIcon, CalendarIcon } from 'lucide-react'
-import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Autocomplete } from '@/components/ui/autocomplete'
-import { Controller, useForm } from 'react-hook-form'
-import RequiredLabel from '@/components/ui/required-label'
-import { Department, Designation, Employee, WorkLocation } from '@prisma/client'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { DrawerClose, DrawerFooter } from '@/components/ui/drawer'
-import { saveEmployee, updateEmployee } from './action'
-import { toast } from 'sonner'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import RequiredLabel from '@/components/ui/required-label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import SubmitButton from '@/components/ui/submit-button'
-import { EmployeeFormValues, EmployeeSchema, EmployeeWithRelations } from '@/lib/types'
+import { EmployeeFormValues, EmployeeSchema } from '@/lib/types'
+import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Department, Designation, Employee, WorkLocation } from '@prisma/client'
+import { format } from 'date-fns'
+import { CalendarIcon, PlusIcon } from 'lucide-react'
+import { startTransition, useActionState, useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { saveEmployee, updateEmployee } from './action'
 
 type Props = {
   departments?: Department[]
@@ -54,7 +53,6 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
     control,
     reset,
     handleSubmit,
-    watch,
     formState: { isValid }
   } = useForm<EmployeeFormValues>({
     mode: 'onChange',

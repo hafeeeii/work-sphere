@@ -33,6 +33,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         }
         return NextResponse.json(employee);
     } catch (error) {
-        return NextResponse.json({ error: "Error fetching employee" });
+           console.error(error, "Error");
+        return NextResponse.json({ error: "Error fetching employee:" });
     }
 }

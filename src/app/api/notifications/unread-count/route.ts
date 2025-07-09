@@ -35,10 +35,9 @@ export const GET = async () => {
         })
 
         const unreadCount = count.filter((notif) => notif.notificationRead.length === 0).length
-
         return NextResponse.json({ unreadCount })
     } catch (err) {
-        console.error(err, "Error fetching notifications count");
+        console.error(err, "Error");
         return NextResponse.json({ error: "Error fetching notifications count", status: 500 });
     }
 }

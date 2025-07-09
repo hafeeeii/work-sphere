@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 export default function SetBusinessCookie({ businessId }: { businessId: string }) {
   const router = useRouter()
@@ -18,6 +18,6 @@ export default function SetBusinessCookie({ businessId }: { businessId: string }
       }
     }
     handleBusinessCookie()
-  }, [businessId])
+  }, [businessId, router])
   return null
 }

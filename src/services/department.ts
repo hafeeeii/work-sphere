@@ -6,7 +6,7 @@ const endPoint = '/api/departments';
 export const getDepartments = async ( cookie:string,queryParams?: { [key: string]: string }): Promise<Department[]> => {
   const subdomain = getCookieValue(cookie, 'subdomain')
   const mainUrl = isDev ? `${protocol}://localhost:3000${endPoint}` : `${protocol}://${subdomain}.${rootDomain}${endPoint}`
-  let params = new URLSearchParams()
+  const params = new URLSearchParams()
   if (queryParams) {
     const { sortBy, sortOrder, name,code, page, pageSize } = queryParams
     if (sortBy) params.append('sortBy', sortBy)

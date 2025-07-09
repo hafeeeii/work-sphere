@@ -24,7 +24,6 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
   const {
     control,
-    handleSubmit,
     formState: { isValid, errors }
   } = useForm<LoginFormValues>({
     mode: 'onChange',

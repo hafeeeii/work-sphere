@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getBusinessInfo } from "@/lib/business";
 import { NotificationType } from "@prisma/client";
 
-export async function saveDesignation(prevState: any, formData: FormData) {
+export async function saveDesignation(prevState: unknown, formData: FormData) {
     const parsed = designationSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
@@ -18,6 +18,7 @@ export async function saveDesignation(prevState: any, formData: FormData) {
     }
 
     const { id, ...rest } = parsed.data;
+    void id
 
     try {
         const business = await getBusinessInfo()
@@ -53,7 +54,8 @@ export async function saveDesignation(prevState: any, formData: FormData) {
             status: true,
             message: "Designation created successfully",
         };
-    } catch (err: any) {
+    } catch (error) {
+          const err = error as Error
         return {
             status: false,
             message: "Database error occurred: " + err?.message,
@@ -62,7 +64,7 @@ export async function saveDesignation(prevState: any, formData: FormData) {
     }
 }
 
-export async function updateDesignation(prevState: any, formData: FormData) {
+export async function updateDesignation(prevState: unknown, formData: FormData) {
     const parsed = designationSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
@@ -99,7 +101,8 @@ export async function updateDesignation(prevState: any, formData: FormData) {
             message: "Designation updated successfully",
             error: null,
         };
-    } catch (err: any) {
+    } catch (error) {
+          const err = error as Error
         return {
             status: false,
             message: "Database error occurred: " + err?.message,
@@ -142,7 +145,8 @@ export async function deleteDesignation(id: string) {
             message: "Designation deleted successfully",
             error: null,
         };
-    } catch (err: any) {
+    } catch (error  ) {
+          const err = error as Error
         return {
             status: false,
             message: "Database error occurred: " + err?.message,

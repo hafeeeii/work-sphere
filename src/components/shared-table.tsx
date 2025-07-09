@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from 'react'
+import { Button } from '@/components/ui/button'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -10,18 +10,17 @@ import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { Button } from '@/components/ui/button'
+import * as React from 'react'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
-import { Input } from './ui/input'
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { MoreHorizontalIcon, Pencil, Trash } from 'lucide-react'
+import { Pencil, Trash } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { Input } from './ui/input'
 
 type Props<T extends object> = {
   onEdit?: (id: string) => void
@@ -36,7 +35,7 @@ type Props<T extends object> = {
     columnData: {
       header: string
       accessorKey: keyof T
-      accessorFn?: (row: T) => any
+      accessorFn?: (row: T) => unknown
       sortable?: boolean
       filterable?: boolean
     }[]
@@ -95,13 +94,13 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
 
   React.useEffect(() => {
     loadData()
-  }, [sorting, columnFilters, pagination])
+  }, [sorting, columnFilters, pagination, loadData])
 
 
   const actions =  {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }:any) => {
+    cell: ({ row }:{row:Row<{id: string }>}) => {
       const deleteWithId = onDelete.bind(null, row.original.id)
       return (
         <div className='flex justify-end gap-2'>
@@ -130,7 +129,7 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
     },
   }
 
-  let columns: ColumnDef<T>[] = columnData.map(val => ({
+  const columns: ColumnDef<T>[] = columnData.map(val => ({
     accessorKey: val.accessorKey,
     header: ({ column }) => (
       <div
@@ -144,7 +143,7 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
     
   }))
 
-  columns.push(actions)
+  columns.push(actions as ColumnDef<T>)
 
   const table = useReactTable({
     data,

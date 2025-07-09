@@ -2,6 +2,7 @@
 
 import { getBusinessInfo } from "@/lib/business"
 import prisma from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
 
 export async function markAllAsRead() {
     try {
@@ -49,6 +50,8 @@ export async function markAllAsRead() {
             skipDuplicates: true
         })
 
+        revalidatePath('/notifications')
+
         return {
             status: true,
             message: 'All notifications marked as read',
@@ -56,7 +59,10 @@ export async function markAllAsRead() {
             data: null
         }
 
-    } catch (err: any) {
+
+
+    } catch (error) {
+        const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,

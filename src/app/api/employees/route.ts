@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(employees);
   } catch (error) {
-    console.error(error, "Error fetching employees");
+    console.error(error, "Error");
     return NextResponse.json({ error: "Error fetching employees", status: 500 });
   }
 }

@@ -53,7 +53,7 @@ export default async function middleware(request: NextRequest) {
   const cookieStore = await cookies()
   const cookie = cookieStore.get('session')?.value
   let session = null;
-  let businessId = cookieStore.get('businessId')?.value
+  const businessId = cookieStore.get('businessId')?.value
 
   const response = NextResponse.next();
 

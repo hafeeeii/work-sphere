@@ -8,7 +8,7 @@ const endPoint = '/api/work-locations';
 export const getWorkLocations = async (cookie: string, queryParams?: { [key: string]: string }): Promise<WorkLocation[]> => {
   const subdomain = getCookieValue(cookie, 'subdomain')
   const mainUrl = isDev ? `${protocol}://localhost:3000${endPoint}` : `${protocol}://${subdomain}.${rootDomain}${endPoint}`
-  let params = new URLSearchParams()
+  const params = new URLSearchParams()
   if (queryParams) {
     const { sortBy, sortOrder, name, page, pageSize } = queryParams
     if (sortBy) params.append('sortBy', sortBy)

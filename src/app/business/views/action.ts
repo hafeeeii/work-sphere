@@ -4,10 +4,9 @@ import prisma from "@/lib/prisma"
 import { getValidSession } from "@/lib/session"
 import { BusinessSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
-import { cookies } from "next/headers"
 
 
-export async function saveBusiness(prevState: any,
+export async function saveBusiness(prevState: unknown,
     formData: FormData
 ) {
 
@@ -72,10 +71,11 @@ export async function saveBusiness(prevState: any,
             return tenant;
         })
 
-    } catch (err: any) {
+    } catch (error) {
+         const err = error as Error  
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
+            message: 'Data base error occurred: ' + err?.message    ,
         }
     }
 

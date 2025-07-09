@@ -6,7 +6,7 @@ import { workLocationSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
 
 
-export async function saveWorkLocation(prevState: any,
+export async function saveWorkLocation(prevState: unknown,
     formData: FormData
 ) {
 
@@ -21,6 +21,7 @@ export async function saveWorkLocation(prevState: any,
     }
 
     const { id, ...rest } = parsed.data
+    void id
 
     try {
         const business = await getBusinessInfo()
@@ -37,7 +38,8 @@ export async function saveWorkLocation(prevState: any,
                 tenantId: businessId
             }
         })
-    } catch (err: any) {
+    } catch (error) {
+          const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,
@@ -51,7 +53,7 @@ export async function saveWorkLocation(prevState: any,
     }
 }
 
-export async function updateWorkLocation(prevState: any, formData: FormData) {
+export async function updateWorkLocation(prevState: unknown, formData: FormData) {
     const parsed = workLocationSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
         return {
@@ -79,7 +81,8 @@ export async function updateWorkLocation(prevState: any, formData: FormData) {
             },
             data: parsed.data
         })
-    } catch (err: any) {
+    } catch (error) {
+          const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,
@@ -117,7 +120,8 @@ export async function deleteWorkLocation(id: string) {
                 id
             },
         })
-    } catch (err: any) {
+    } catch (error) {
+         const err = error as Error  
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,

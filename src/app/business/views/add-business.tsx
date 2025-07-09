@@ -8,10 +8,9 @@ import { Controller, useForm } from 'react-hook-form'
 import RequiredLabel from '@/components/ui/required-label'
 import { Loader, PlusIcon } from 'lucide-react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { BusinessFormValues, BusinessSchema, DesignationFormValues, designationSchema,  } from '@/lib/types'
+import { BusinessFormValues, BusinessSchema } from '@/lib/types'
 import { toast } from 'sonner'
 import { saveBusiness } from './action'
-import { updateDesignation } from '@/app/(dashboard)/settings/views/tabs/designation/action'
 import { useUser } from '@/components/user-provider'
 
 
@@ -57,11 +56,11 @@ const AddBusiness = () => {
     if (state?.message) {
       toast.success(state.message)
     }
-  }, [ saveState])
+  }, [ saveState, onClose])
 
   useEffect(() => {
     if (showForm) reset(defaultValues)
-  }, [showForm])
+  }, [showForm, reset, defaultValues])
 
   const onSubmit = (data: BusinessFormValues) => {
     const formData = new FormData()

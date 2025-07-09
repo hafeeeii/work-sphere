@@ -7,54 +7,55 @@ import { redirect } from "next/navigation"
 import bcrypt from "bcrypt"
 
 
-export async function signUp(prevState: any, formData: FormData) {
-    const parsed = SignUpSchema.safeParse(Object.fromEntries(formData))
+    export async function signUp(prevState: unknown, formData: FormData) {
+        const parsed = SignUpSchema.safeParse(Object.fromEntries(formData))
 
-    if (!parsed.success) {
-        return {
-            status: false,
-            message: 'Invalid credentials'
-        }
-    }
-
-    const { email } = parsed.data
-
-    try {
-        const user = await prisma.user.findUnique({
-            where: {
-                email: email
-            }
-        })
-
-        if (user?.id) {
+        if (!parsed.success) {
             return {
                 status: false,
-                message: 'Email already exists'
+                message: 'Invalid credentials'
             }
         }
 
-        const newUser = await prisma.user.create({
-            data: {
-                email: parsed.data.email,
-                name: parsed.data.name,
-                passwordHash: await bcrypt.hash(parsed.data.password, 10),
-            }
-        })
+        const { email } = parsed.data
 
-        await createSession(newUser.id)
-    } catch (err:any) {
-        return {
-            status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: null
+        try {
+            const user = await prisma.user.findUnique({
+                where: {
+                    email: email
+                }
+            })
+
+            if (user?.id) {
+                return {
+                    status: false,
+                    message: 'Email already exists'
+                }
+            }
+
+            const newUser = await prisma.user.create({
+                data: {
+                    email: parsed.data.email,
+                    name: parsed.data.name,
+                    passwordHash: await bcrypt.hash(parsed.data.password, 10),
+                }
+            })
+
+            await createSession(newUser.id)
+        } catch (error) {
+            const err = error as Error  
+            return {
+                status: false,
+                message: 'Data base error occurred: ' + err?.message,
+                error: null
+            }
         }
-    }
 
     redirect('/dashboard')
 
 }
 
-export async function login(prevState: any, formData: FormData) {
+export async function login(prevState: unknown, formData: FormData) {
     const result = LoginSchema.safeParse(Object.fromEntries(formData))
     if (!result.success) {
         return {

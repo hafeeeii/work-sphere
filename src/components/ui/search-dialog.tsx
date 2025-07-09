@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 
-import { ChartPie, Grid2X2, ChartLine, ShoppingBag, BookA, Forklift, Search } from "lucide-react";
+import { ChartPie, Grid2X2, Search } from "lucide-react";
 
 import {
   CommandDialog,

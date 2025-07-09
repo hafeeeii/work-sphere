@@ -1,15 +1,8 @@
-import { Bell, Mail, Users, Ticket } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import Link from 'next/link'
 import { getBusinessInfo } from '@/lib/business'
-import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import List from './list'
+import { redirect } from 'next/navigation'
 import Header from './header'
+import List from './list'
 
 // const notifications = [
 //   {

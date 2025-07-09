@@ -1,4 +1,4 @@
-import { Department, Designation, Employee, Prisma, Tenant, TenantUser, User, WorkLocation } from '@prisma/client';
+import { Department, Designation, Employee, Tenant, TenantUser, User, WorkLocation } from '@prisma/client';
 import { z } from "zod";
 
 const required = (name:string) => z.string().min(1, {message:`${name} is required`}).trim()

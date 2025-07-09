@@ -8,7 +8,7 @@ export const getEmployees = async (cookie: string, queryParams: { [key: string]:
   const { sortBy, sortOrder, name, email, page, pageSize } = queryParams
   const subdomain = getCookieValue(cookie, 'subdomain')
   const mainUrl = isDev ? `${protocol}://localhost:3000${endPoint}` : `${protocol}://${subdomain}.${rootDomain}${endPoint}`
-  let params = new URLSearchParams()
+  const params = new URLSearchParams()
   if (sortBy) params.append('sortBy', sortBy)
   if (sortOrder) params.append('sortOrder', sortOrder)
   if (name) params.append('name', name)
@@ -25,7 +25,7 @@ export const getEmployees = async (cookie: string, queryParams: { [key: string]:
     const data = await res.json()
     return data
   } catch (error) {
-    console.error('Error fetching employees')
+    console.error('Error fetching employees: ', error)
     return []
   }
 }
@@ -37,7 +37,7 @@ export const getEmployee = async (id:string):Promise<EmployeeWithRelations | nul
     const data = await res.json()
     return data
   } catch (error) {
-    console.error('Error fetching employee')
+    console.error('Error fetching employee:', error)
     return null
   }
 }

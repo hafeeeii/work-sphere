@@ -34,9 +34,14 @@ export function AccountMenu({
   const router = useRouter()
 
   useEffect(() => {
-    getUnreadNotificationsCount().then(count => {
-      count && setNotificationsCount(count)
+   const interval = setInterval(() => {
+     getUnreadNotificationsCount().then(count => {
+      console.count('thisis count')
+      setNotificationsCount(count ?? 0);
     })
+   }, 10000);
+
+   return () => clearInterval(interval)
   }, [])
 
   return (

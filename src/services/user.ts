@@ -17,9 +17,9 @@ export const getUser = async (id: string): Promise<UserWithRelations | null> => 
 
 export const getUnreadNotificationsCount = async (): Promise<number | null> => {
   try {
-    const res = await fetch(`${baseUrl}/api/notifications/unread-count`)
+    const res = await fetch(`/api/notifications/unread-count`)
     const data = await res.json()
-    return data
+    return data?.unreadCount
 
   } catch (err) {
     console.error('Error fetching notifications count', err)

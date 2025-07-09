@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getBusinessInfo } from "@/lib/business";
 
 // CREATE
-export async function saveDepartment(prevState: any, formData: FormData) {
+export async function saveDepartment(prevState: unknown, formData: FormData) {
     const parsed = departmentSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
@@ -17,6 +17,7 @@ export async function saveDepartment(prevState: any, formData: FormData) {
     }
 
     const { id, ...rest } = parsed.data;
+    void id
     try {
         const business = await getBusinessInfo()
 
@@ -39,7 +40,8 @@ export async function saveDepartment(prevState: any, formData: FormData) {
             status: true,
             message: "Department created successfully",
         };
-    } catch (err: any) {
+    } catch (error) {
+          const err = error as Error
         return {
             status: false,
             message: "Database error occurred:" + err?.message,
@@ -48,7 +50,7 @@ export async function saveDepartment(prevState: any, formData: FormData) {
 }
 
 // UPDATE
-export async function updateDepartment(prevState: any, formData: FormData) {
+export async function updateDepartment(prevState: unknown, formData: FormData) {
     const parsed = departmentSchema.safeParse(Object.fromEntries(formData));
     if (!parsed.success) {
         return {
