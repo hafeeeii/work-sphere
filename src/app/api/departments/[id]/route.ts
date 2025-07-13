@@ -22,18 +22,16 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
         const department = await prisma.department.findUnique({
             where: {
-                tenantId_id: {
-                    tenantId: businessId,
-                    id
-                }
+                id: id,
+                tenantId: businessId
             }
         })
-        if (!department) {
+        if (!department || department.tenantId !== businessId) {
             return NextResponse.json({ error: "department not found" });
         }
         return NextResponse.json(department);
     } catch (error) {
-           console.error(error, "Error");
+        console.error(error, "Error");
         return NextResponse.json({ error: "Error fetching department" });
     }
 }

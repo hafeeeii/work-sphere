@@ -20,14 +20,21 @@ enum NotificationType {
   Announcement
 }
 
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
 model Tenant {
   id           String         @id @default(uuid())
   name         String
   subdomain    String         @unique
-  createAt     DateTime       @default(now())
-  updateAt     DateTime       @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   tenantUser   TenantUser[]
   notification Notification[]
+  Invite       Invite[]
 }
 
 model User {
@@ -40,6 +47,7 @@ model User {
   tenantUser       TenantUser[]
   notification     Notification[]
   notificationRead NotificationRead[]
+  Invite           Invite[]
 }
 
 // join table for many-to-many relationship between User and Tenant
@@ -78,6 +86,23 @@ model NotificationRead {
   @@id([userId, notificationId])
 }
 
+model Invite {
+  name      String
+  id        String       @id @default(uuid())
+  email     String
+  token     String       @unique
+  tenantId  String
+  invitedBy String
+  role      Role
+  status    InviteStatus @default(PENDING)
+  expiresAt DateTime
+  tenant    Tenant       @relation(fields: [tenantId], references: [id])
+  inviter   User         @relation(fields: [invitedBy], references: [id])
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  emailSent Boolean      @default(false)
+}
+
 model Employee {
   id               String       @id @default(uuid())
   tenantId         String
@@ -90,13 +115,13 @@ model Employee {
   employmentType   String
   dateOfJoining    String
   workLocation     String
-  createAt         DateTime     @default(now())
-  updateAt         DateTime     @updatedAt
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
   workLocationMeta WorkLocation @relation(fields: [workLocation], references: [id])
   departmentMeta   Department   @relation(fields: [department], references: [id])
   designationMeta  Designation  @relation(fields: [designation], references: [id])
 
-  @@unique([tenantId, id])
+  @@unique([tenantId, email])
 }
 
 model Designation {
@@ -104,11 +129,9 @@ model Designation {
   tenantId       String
   name           String
   totalEmployees Int        @default(0)
-  createAt       DateTime   @default(now())
-  updateAt       DateTime   @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
   employees      Employee[]
-
-  @@unique([tenantId, id])
 }
 
 model Department {
@@ -118,11 +141,9 @@ model Department {
   totalEmployees Int        @default(0)
   code           String
   description    String
-  createAt       DateTime   @default(now())
-  updateAt       DateTime   @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
   employees      Employee[]
-
-  @@unique([tenantId, id])
 }
 
 model WorkLocation {
@@ -135,9 +156,7 @@ model WorkLocation {
   addressLine1   String
   addressLine2   String
   totalEmployees Int        @default(0)
-  createAt       DateTime   @default(now())
-  updateAt       DateTime   @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
   employees      Employee[]
-
-  @@unique([tenantId, id])
 }

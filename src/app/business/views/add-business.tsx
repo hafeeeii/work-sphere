@@ -56,11 +56,11 @@ const AddBusiness = () => {
     if (state?.message) {
       toast.success(state.message)
     }
-  }, [ saveState, onClose])
+  }, [ saveState])
 
   useEffect(() => {
     if (showForm) reset(defaultValues)
-  }, [showForm, reset, defaultValues])
+  }, [showForm])
 
   const onSubmit = (data: BusinessFormValues) => {
     const formData = new FormData()
@@ -76,7 +76,7 @@ const AddBusiness = () => {
   return (
     <Dialog open={showForm} onOpenChange={onClose}>
       <DialogTrigger asChild>
-        <Button className='max-w-fit' onClick={onClose}>
+        <Button className='max-w-fit' onClick={toggleForm}>
            <PlusIcon className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-200" />
           Create Business
         </Button>
@@ -86,8 +86,8 @@ const AddBusiness = () => {
           <DialogTitle>Create Business</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-          <div className='flex gap-4'>
-            <div className='grid w-1/2 items-center gap-1.5'>
+          <div className='flex flex-col gap-4'>
+            <div className='grid  items-center gap-1.5'>
               <RequiredLabel htmlFor='name'>Business Name</RequiredLabel>
               <Controller
                 name='name'
@@ -95,7 +95,7 @@ const AddBusiness = () => {
                 render={({ field }) => <Input {...field} id='name' placeholder='Horizontal Pvt Ltd' />}
               />
             </div>
-            <div className='grid w-1/2 items-center gap-1.5'>
+            <div className='grid  items-center gap-1.5'>
               <RequiredLabel htmlFor='subdomain'>Subdomain</RequiredLabel>
               <Controller
                 name='subdomain'

@@ -94,7 +94,7 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
 
   React.useEffect(() => {
     loadData()
-  }, [sorting, columnFilters, pagination, loadData])
+  }, [sorting, columnFilters, pagination])
 
 
   const actions =  {

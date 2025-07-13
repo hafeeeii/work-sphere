@@ -1,4 +1,4 @@
-import { Department, Designation, Employee, Tenant, TenantUser, User, WorkLocation } from '@prisma/client';
+import { Department, Designation, Employee, Role, Tenant, TenantUser, User, WorkLocation } from '@prisma/client';
 import { z } from "zod";
 
 const required = (name:string) => z.string().min(1, {message:`${name} is required`}).trim()
@@ -88,6 +88,15 @@ export const BusinessSchema = z.object({
 })
 
 export type BusinessFormValues = z.infer<typeof BusinessSchema>
+
+export const InviteSchema = z.object({
+    id:z.string(),
+    name: required('Name'),
+    email: required('Email').email('Invalid email'),
+    role: z.nativeEnum(Role),
+})
+
+export type InviteFormValues = z.infer<typeof InviteSchema>
 
 
 

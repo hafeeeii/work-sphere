@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   User2,
+  User2Icon,
 } from "lucide-react";
 
 import {
@@ -50,6 +51,11 @@ const items = [
     title: "Training Programs",
     url: "/training-programs",
     icon: GraduationCap, 
+  },
+  {
+    title: "Invite Member",
+    url: "/invite-member",
+    icon: User2Icon, 
   },
   {
     title: "Performance Reviews",

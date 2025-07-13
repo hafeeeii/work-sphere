@@ -7,7 +7,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const id = (await params).id
 
     if (!id) {
-        return NextResponse.json({ error: "Employee ID missing" });
+        return NextResponse.json({ error: "Invite ID missing" });
     }
 
     try {
@@ -20,18 +20,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
         const businessId = business.data?.businessId as string
 
-        const employee = await prisma.employee.findUnique({
+        const invite = await prisma.invite.findUnique({
             where: {
                 id: id,
                 tenantId: businessId
             }
         })
-        if (!employee || employee.tenantId !== businessId) {
-            return NextResponse.json({ error: "Employee not found" });
+        if (!invite || invite.tenantId !== businessId) {
+            return NextResponse.json({ error: "Invite not found" });
         }
-        return NextResponse.json(employee);
+        return NextResponse.json(invite);
     } catch (error) {
         console.error(error, "Error");
-        return NextResponse.json({ error: "Error fetching employee:" });
+        return NextResponse.json({ error: "Error fetching invite:" });
     }
 }

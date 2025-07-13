@@ -41,7 +41,7 @@ export async function saveDepartment(prevState: unknown, formData: FormData) {
             message: "Department created successfully",
         };
     } catch (error) {
-          const err = error as Error
+        const err = error as Error
         return {
             status: false,
             message: "Database error occurred:" + err?.message,
@@ -69,13 +69,22 @@ export async function updateDepartment(prevState: unknown, formData: FormData) {
 
         const businessId = business.data?.businessId as string
 
+        const department = await prisma.department.findUnique({
+            where: {
+                id: parsed.data.id,
+            },
+        });
+        if (!department || department.tenantId !== businessId) {
+            return {
+                status: false,
+                message: "Department not found",
+                error: null,
+            };
+        }
 
         await prisma.department.update({
             where: {
-                tenantId_id: {
-                    tenantId: businessId,
-                    id: parsed.data.id,
-                },
+                id: parsed.data.id,
             },
             data: parsed.data,
         });
@@ -114,12 +123,22 @@ export async function deleteDepartment(id: string) {
 
         const businessId = business.data?.businessId as string
 
+        const department = await prisma.department.findUnique({
+            where: {
+                id: id,
+            },
+        });
+        if (!department || department.tenantId !== businessId) {
+            return {
+                status: false,
+                message: "Department not found",
+                error: null,
+            };
+        }
+
         await prisma.department.delete({
             where: {
-                tenantId_id: {
-                    tenantId: businessId,
-                    id,
-                },
+                id: id,
             },
         });
 

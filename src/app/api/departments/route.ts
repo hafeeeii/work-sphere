@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const sortByParam = searchParams.get('sortBy') || 'name'
-    const sortOrderParam = searchParams.get('sortOrder') || 'asc'
+    const sortOrderParam = searchParams.get('sortOrder') || 'desc'
     const name = searchParams.get('name')
     const code = searchParams.get('code')
     const page = searchParams.get('page') || '0'
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
 
     const sortBy = validSortFields.includes(sortByParam) ? sortByParam : 'name'
-    const sortOrder = validSortOrders.includes(sortOrderParam.toLowerCase()) ? sortOrderParam : 'asc'
+    const sortOrder = validSortOrders.includes(sortOrderParam.toLowerCase()) ? sortOrderParam : 'desc'
 
 
     const business = await getBusinessInfo()

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const sortByParam = searchParams.get('sortBy') || 'name'
-    const sortOrderParam = searchParams.get('sortOrder') || 'asc'
+    const sortOrderParam = searchParams.get('sortOrder') || 'desc'
     const name = searchParams.get('name')
     const page = searchParams.get('page') || '0'
     const pageSize = searchParams.get('pageSize') || '10'

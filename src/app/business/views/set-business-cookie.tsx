@@ -18,6 +18,6 @@ export default function SetBusinessCookie({ businessId }: { businessId: string }
       }
     }
     handleBusinessCookie()
-  }, [businessId, router])
+  }, [businessId])
   return null
 }

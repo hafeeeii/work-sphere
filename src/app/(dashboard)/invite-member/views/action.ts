@@ -1,12 +1,17 @@
 'use server'
+
+import { EmailTemplate } from "@/components/email-template"
 import { getBusinessInfo } from "@/lib/business"
 import prisma from "@/lib/prisma"
-import { EmployeeSchema } from "@/lib/types"
+import { InviteSchema } from "@/lib/types"
+import crypto from 'crypto'
 import { revalidatePath } from "next/cache"
+import { Resend } from 'resend'
 
 
-export async function saveEmployee(prevState: unknown, formData: FormData) {
-    const parsed = EmployeeSchema.safeParse(Object.fromEntries(formData))
+
+export async function createInvite(prevState: unknown, formData: FormData) {
+    const parsed = InviteSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
         return {
             status: false,
@@ -21,24 +26,53 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+        const { businessId, userId, businessName } = business.data
 
-        await prisma.employee.create({
+        const invite = await prisma.invite.create({
             data: {
                 ...rest,
-                tenantId: businessId
+                tenantId: businessId,
+                token: crypto.randomBytes(32).toString('hex'),
+                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+                invitedBy: userId,
             }
         })
 
-        revalidatePath('/employee')
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        const result = await resend.emails.send({
+            from: `${businessName} <noreply@invite.worksphere.icu>`,
+            to: parsed.data.email,
+            subject: `Invitation from ${businessName}`,
+            react: EmailTemplate({ name: parsed.data.name, businessName, inviteLink: `https://invite.worksphere.icu/invite/${invite.token}`, invitedBy: userId }),
+
+        })
+
+        if (result.error) {
+            return {
+                status: false,
+                message: 'Email sending failed: ' + result.error?.message,
+                error: result.error
+            }
+        }
+
+        await prisma.invite.update({
+            where: {
+                id: invite.id
+            },
+            data: {
+                emailSent: true
+            }
+        })
+
+        revalidatePath('/invite-member')
 
         return {
             status: true,
-            message: 'Employee created successfully',
+            message: 'Email sent successfully',
             error: null
         }
     } catch (error) {
@@ -52,8 +86,8 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
 
 }
 
-export async function updateEmployee(prevState: unknown, formData: FormData) {
-    const parsed = EmployeeSchema.safeParse(Object.fromEntries(formData))
+export async function updateInvite(prevState: unknown, formData: FormData) {
+    const parsed = InviteSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
         return {
             status: false,
@@ -61,6 +95,7 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
             error: parsed.error.message
         }
     }
+
 
     try {
         const business = await getBusinessInfo()
@@ -71,31 +106,31 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
 
         const businessId = business.data?.businessId as string
 
-        const employee = await prisma.employee.findUnique({
+        const invite = await prisma.invite.findUnique({
             where: {
                 id: parsed.data.id
             }
         })
-        if (!employee || employee.tenantId !== businessId) {
+        if (!invite || invite.tenantId !== businessId) {
             return {
                 status: false,
-                message: 'Employee not found',
+                message: 'Invitation not found',
                 error: null
             }
         }
 
-        await prisma.employee.update({
+        await prisma.invite.update({
             where: {
                 id: parsed.data.id
             },
             data: parsed.data
         })
 
-        revalidatePath('/employee')
+        revalidatePath('/invite-member')
 
         return {
             status: true,
-            message: 'Employee updated successfully',
+            message: 'Invite updated successfully',
             error: null
         }
     } catch (error) {
@@ -108,10 +143,10 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
     }
 }
 
-export async function deleteEmployee(id: string) {
+export async function deleteInvite(id: string) {
     if (!id) return {
         status: false,
-        message: 'Employee ID not found',
+        message: 'Invite ID missing',
         error: null
     }
 
@@ -124,29 +159,29 @@ export async function deleteEmployee(id: string) {
 
         const businessId = business.data?.businessId as string
 
-        const employee = await prisma.employee.findUnique({
+        const invite = await prisma.invite.findUnique({
             where: {
                 id: id
             }
         })
 
-        if (!employee || employee.tenantId !== businessId) {
+        if (!invite || invite.tenantId !== businessId) {
             return {
                 status: false,
-                message: 'Employee not found',
+                message: 'Invitation not found',
                 error: null
             }
         }
-        await prisma.employee.delete({
+        await prisma.invite.delete({
             where: {
                 id
             },
         })
-        revalidatePath('/employee')
+        revalidatePath('/invite-member')
 
         return {
             status: true,
-            message: 'Employee deleted successfully',
+            message: 'Invitation deleted successfully',
             error: null
         }
     } catch (error) {
@@ -159,4 +194,3 @@ export async function deleteEmployee(id: string) {
     }
 
 }
-

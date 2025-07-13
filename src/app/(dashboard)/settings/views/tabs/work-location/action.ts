@@ -39,7 +39,7 @@ export async function saveWorkLocation(prevState: unknown,
             }
         })
     } catch (error) {
-          const err = error as Error
+        const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,
@@ -72,17 +72,26 @@ export async function updateWorkLocation(prevState: unknown, formData: FormData)
 
         const businessId = business.data?.businessId as string
 
+        const workLocation = await prisma.workLocation.findUnique({
+            where: {
+                id: parsed.data.id
+            }
+        })
+        if (!workLocation || workLocation.tenantId !== businessId) {
+            return {
+                status: false,
+                message: 'Work location not found',
+                error: null
+            }
+        }
         await prisma.workLocation.update({
             where: {
-                tenantId_id: {
-                    tenantId: businessId,
-                    id: parsed.data.id
-                }
+                id: parsed.data.id
             },
             data: parsed.data
         })
     } catch (error) {
-          const err = error as Error
+        const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,
@@ -113,15 +122,25 @@ export async function deleteWorkLocation(id: string) {
         }
 
         const businessId = business.data?.businessId as string
-
+        const workLocation = await prisma.workLocation.findUnique({
+            where: {
+                id: id
+            }
+        })
+        if (!workLocation || workLocation.tenantId !== businessId) {
+            return {
+                status: false,
+                message: 'Work location not found',
+                error: null
+            }
+        }
         await prisma.workLocation.delete({
             where: {
-                tenantId: businessId,
                 id
             },
         })
     } catch (error) {
-         const err = error as Error  
+        const err = error as Error
         return {
             status: false,
             message: 'Data base error occurred: ' + err?.message,

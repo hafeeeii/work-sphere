@@ -55,7 +55,7 @@ export async function saveDesignation(prevState: unknown, formData: FormData) {
             message: "Designation created successfully",
         };
     } catch (error) {
-          const err = error as Error
+        const err = error as Error
         return {
             status: false,
             message: "Database error occurred: " + err?.message,
@@ -84,12 +84,22 @@ export async function updateDesignation(prevState: unknown, formData: FormData) 
 
         const businessId = business.data?.businessId as string
 
+        const designation = await prisma.designation.findUnique({
+            where: {
+                id: parsed.data.id,
+            },
+        });
+        if (!designation || designation.tenantId !== businessId) {
+            return {
+                status: false,
+                message: "Designation not found",
+                error: null,
+            };
+        }
+
         await prisma.designation.update({
             where: {
-                tenantId_id: {
-                    tenantId: businessId,
-                    id: parsed.data.id,
-                },
+                id: parsed.data.id,
             },
             data: parsed.data,
         });
@@ -102,7 +112,7 @@ export async function updateDesignation(prevState: unknown, formData: FormData) 
             error: null,
         };
     } catch (error) {
-          const err = error as Error
+        const err = error as Error
         return {
             status: false,
             message: "Database error occurred: " + err?.message,
@@ -129,12 +139,22 @@ export async function deleteDesignation(id: string) {
 
         const businessId = business.data?.businessId as string
 
+        const designation = await prisma.designation.findUnique({
+            where: {
+                id: id,
+            },
+        });
+        if (!designation || designation.tenantId !== businessId) {
+            return {
+                status: false,
+                message: "Designation not found",
+                error: null,
+            };
+        }
+
         await prisma.designation.delete({
             where: {
-                tenantId_id: {
-                    tenantId: businessId,
-                    id,
-                },
+                id: id
             },
         });
 
@@ -145,8 +165,8 @@ export async function deleteDesignation(id: string) {
             message: "Designation deleted successfully",
             error: null,
         };
-    } catch (error  ) {
-          const err = error as Error
+    } catch (error) {
+        const err = error as Error
         return {
             status: false,
             message: "Database error occurred: " + err?.message,

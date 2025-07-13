@@ -14,6 +14,7 @@ const EmployeeListPage = async ({ searchParams }: { searchParams: Promise<{ [key
   const workLocations = await getWorkLocations((await cookies()).toString(),)
 
 
+
   return <EmployeeList employees={employees} departments={departments} designations={designations} workLocations={workLocations} />
 }
 

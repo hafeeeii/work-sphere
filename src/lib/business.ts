@@ -6,7 +6,7 @@ import {  getValidSession } from './session'
 export async function fetchBusinessIdFromSubdomain(subdomain: string, userId: string) {
     const business = await prisma.tenant.findUnique({
         where: { subdomain },
-        select: { id: true }
+        select: { id: true, name: true }
     })
 
     if (!business) return {
@@ -34,6 +34,7 @@ export async function fetchBusinessIdFromSubdomain(subdomain: string, userId: st
         error: null,
         data: {
             businessId: business.id,
+            businessName: business.name,
             userId
         }
     }
