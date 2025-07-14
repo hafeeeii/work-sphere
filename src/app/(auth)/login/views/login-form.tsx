@@ -9,7 +9,7 @@ import { LoginFormValues, LoginSchema } from '@/lib/types'
 import { Controller, useForm } from 'react-hook-form'
 import { useActionState, useEffect } from 'react'
 import { login } from '../../actions'
-import SubmitButton from '@/components/ui/submit-button'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import InputErrorMessage from '@/components/ui/input-error-message'
 import RequiredLabel from '@/components/ui/required-label'
 import { toast } from 'sonner'
@@ -102,9 +102,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                     )}
                   />
                 </div>
-                <SubmitButton className='w-full' isLoading={isPending} isValid={isValid}>
+                <LoadingButton className='w-full' isLoading={isPending} isValid={isValid}>
                   Login
-                </SubmitButton>
+                </LoadingButton>
               </form>
               <div className='text-center text-sm'>
                 Don&apos;t have an account?{' '}

@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Controller, useForm } from 'react-hook-form'
 import { useActionState, useEffect } from 'react'
 import RequiredLabel from '@/components/ui/required-label'
-import SubmitButton from '@/components/ui/submit-button'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import { SignUpFormValues, SignUpSchema } from '@/lib/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signUp } from '../../actions'
@@ -114,9 +114,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                     )}
                   />
                 </div>
-                <SubmitButton isLoading={isLoading} isValid={isValid}>
+                <LoadingButton isLoading={isLoading} isValid={isValid}>
                   Create Account
-                </SubmitButton>
+                </LoadingButton>
               </form>
 
               <div className='text-center text-sm'>

@@ -4,7 +4,7 @@ import { Mail, Megaphone, Ticket, Users } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
-type ListProps = {
+type NotifCardProps = {
   notif: Notification & {
     notificationRead: {
       readAt: Date
@@ -13,7 +13,7 @@ type ListProps = {
   index: number
 }
 
-export default function List({ notif, index }: ListProps) {
+export default function NotifCard({ notif, index }: NotifCardProps) {
   const iconMap = {
     Ticket: <Ticket className='h-5 w-5 text-blue-500' />,
     Message: <Mail className='h-5 w-5 text-green-500' />,

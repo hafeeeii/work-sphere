@@ -5,7 +5,7 @@ import { DrawerClose, DrawerFooter } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import RequiredLabel from '@/components/ui/required-label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import SubmitButton from '@/components/ui/submit-button'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import { InviteFormValues, InviteSchema } from '@/lib/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Invite, Role } from '@prisma/client'
@@ -54,10 +54,14 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
   useEffect(() => {
     if (state?.status) {
       onClose()
-    }
+    }    
 
     if (state?.message) {
-      toast.success(state.message)
+      if (state.status) {
+        toast.success(state.message)
+      } else {
+        toast.error(state.message)
+      }
     }
   }, [updateState, createState])
 
@@ -84,7 +88,7 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
     <Dialog open={showForm} onOpenChange={onClose}>
       <DialogTrigger asChild>
         <Button className='max-w-fit' onClick={onClose}>
-          <PlusIcon className='mr-2' />
+          <PlusIcon  />
           Invite Member
         </Button>
       </DialogTrigger>
@@ -145,9 +149,9 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
                   Cancel
                 </Button>
               </DrawerClose>
-              <SubmitButton isLoading={isPending} isValid={isValid} type='submit'>
+              <LoadingButton isLoading={isPending} isValid={isValid} type='submit'>
                 {invite?.id ? 'Update' : 'Invite' }
-              </SubmitButton>
+              </LoadingButton>
             </div>
           </DrawerFooter>
         </form>

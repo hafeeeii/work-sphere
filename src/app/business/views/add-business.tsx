@@ -53,8 +53,13 @@ const AddBusiness = () => {
       onClose()
     }
 
+  
     if (state?.message) {
-      toast.success(state.message)
+      if (state.status) {
+        toast.success(state.message)
+      } else {
+        toast.error(state.message)
+      }
     }
   }, [ saveState])
 
@@ -77,7 +82,7 @@ const AddBusiness = () => {
     <Dialog open={showForm} onOpenChange={onClose}>
       <DialogTrigger asChild>
         <Button className='max-w-fit' onClick={toggleForm}>
-           <PlusIcon className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-200" />
+           <PlusIcon />
           Create Business
         </Button>
       </DialogTrigger>

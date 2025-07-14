@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import RequiredLabel from '@/components/ui/required-label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import SubmitButton from '@/components/ui/submit-button'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import { EmployeeFormValues, EmployeeSchema } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -71,7 +71,11 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
     }
 
     if (state?.message) {
-      toast.success(state.message)
+      if (state.status) {
+        toast.success(state.message)
+      } else {
+        toast.error(state.message)
+      }
     }
   }, [updateState, saveState])
 
@@ -98,7 +102,7 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
     <Dialog open={showForm} onOpenChange={onClose}>
       <DialogTrigger asChild>
         <Button className='max-w-fit' onClick={onClose}>
-          <PlusIcon className='mr-2' />
+          <PlusIcon />
           Create Employee
         </Button>
       </DialogTrigger>
@@ -297,9 +301,9 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
                   Cancel
                 </Button>
               </DrawerClose>
-              <SubmitButton isLoading={isPending} isValid={isValid} type='submit'>
+              <LoadingButton isLoading={isPending} isValid={isValid} type='submit'>
                 Save
-              </SubmitButton>
+              </LoadingButton>
             </div>
           </DrawerFooter>
         </form>

@@ -24,6 +24,7 @@ enum InviteStatus {
   PENDING
   ACCEPTED
   EXPIRED
+  DECLINED
 }
 
 model Tenant {
@@ -90,17 +91,17 @@ model Invite {
   name      String
   id        String       @id @default(uuid())
   email     String
-  token     String       @unique
   tenantId  String
   invitedBy String
   role      Role
   status    InviteStatus @default(PENDING)
-  expiresAt DateTime
   tenant    Tenant       @relation(fields: [tenantId], references: [id])
   inviter   User         @relation(fields: [invitedBy], references: [id])
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   emailSent Boolean      @default(false)
+  acceptedAt DateTime?
+  declinedAt DateTime?
 }
 
 model Employee {

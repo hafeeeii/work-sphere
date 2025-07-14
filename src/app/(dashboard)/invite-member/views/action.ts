@@ -4,7 +4,7 @@ import { EmailTemplate } from "@/components/email-template"
 import { getBusinessInfo } from "@/lib/business"
 import prisma from "@/lib/prisma"
 import { InviteSchema } from "@/lib/types"
-import crypto from 'crypto'
+import { rootDomain } from "@/lib/utils"
 import { revalidatePath } from "next/cache"
 import { Resend } from 'resend'
 
@@ -32,13 +32,39 @@ export async function createInvite(prevState: unknown, formData: FormData) {
 
         const { businessId, userId, businessName } = business.data
 
+        const userAlreadyExists = await prisma.user.findUnique({
+            where: {
+                email: parsed.data.email
+            }
+        })
+
+        if (userAlreadyExists) {
+            const userAlreadyPartOfBusiness = await prisma.tenantUser.findUnique({
+                where: {
+                    userId_tenantId: {
+                        userId: userAlreadyExists.id,
+                        tenantId: businessId
+                    }
+                }
+            })
+
+            if (userAlreadyPartOfBusiness) {
+                return {
+                    status: false,
+                    message: 'User already part of business',
+                    error: null
+                }
+            }
+        }
+
         const invite = await prisma.invite.create({
             data: {
                 ...rest,
                 tenantId: businessId,
-                token: crypto.randomBytes(32).toString('hex'),
-                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
                 invitedBy: userId,
+            },
+            include: {
+                inviter: true
             }
         })
 
@@ -47,7 +73,7 @@ export async function createInvite(prevState: unknown, formData: FormData) {
             from: `${businessName} <noreply@invite.worksphere.icu>`,
             to: parsed.data.email,
             subject: `Invitation from ${businessName}`,
-            react: EmailTemplate({ name: parsed.data.name, businessName, inviteLink: `https://invite.worksphere.icu/invite/${invite.token}`, invitedBy: userId }),
+            react: EmailTemplate({ name: parsed.data.name, businessName, inviteLink: `${rootDomain}/business/invites`, invitedBy: invite.inviter?.name ?? 'Admin' , inviteEmail: parsed.data.email }),
 
         })
 

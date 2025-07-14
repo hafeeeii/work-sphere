@@ -11,7 +11,11 @@ function Header({status}:{status:boolean}) {
 
   useEffect(() => {
     if (state?.message) {
-      toast.success(state.message)
+      if (state.status) {
+        toast.success(state.message)
+      } else {
+        toast.error(state.message)
+      }
     }
   }, [state])
 

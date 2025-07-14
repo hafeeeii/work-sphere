@@ -2,7 +2,7 @@ import { getBusinessInfo } from '@/lib/business'
 import prisma from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import Header from './header'
-import List from './list'
+import NotifCard from './NotifCard'
 
 // const notifications = [
 //   {
@@ -134,7 +134,7 @@ export default async function Notifications() {
       {hasItems ? (
         <div className='divide-y rounded-lg border'>
           {notifications.map((notifications, idx) => (
-            <List notif={notifications} key={idx} index={idx} />
+            <NotifCard notif={notifications} key={idx} index={idx} />
           ))}
         </div>
       ) : (

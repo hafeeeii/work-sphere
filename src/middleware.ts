@@ -6,6 +6,7 @@ import { rootDomain } from "./lib/utils";
 
 
 const publicRoutes = ["/login", "/sign-up",];
+const allowedRoutesWithoutBusinessId = ['/business', '/business/invites']
 function extractSubdomain(request: NextRequest): string | null {
   const url = request.url;
   const host = request.headers.get('host') || '';
@@ -86,7 +87,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   //  Logged in + protected route but no business found
-  if (isLoggedIn && !businessId) {
+  if (isLoggedIn && !businessId && !allowedRoutesWithoutBusinessId.includes(path)) {
     if (path !== '/business') {
       return NextResponse.redirect(new URL("/business", request.url));
     }

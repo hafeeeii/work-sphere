@@ -53,7 +53,11 @@ const Form = ({ designation, showForm, toggleForm }: FormProps) => {
     }
 
     if (state?.message) {
-      toast.success(state.message)
+      if (state.status) {
+        toast.success(state.message)
+      } else {
+        toast.error(state.message)
+      }
     }
   }, [updateState, saveState])
 

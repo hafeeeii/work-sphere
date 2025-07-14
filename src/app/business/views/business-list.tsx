@@ -1,10 +1,12 @@
 'use client'
-import { Building2, Users } from 'lucide-react'
-import { BusinessCard } from './business-card'
-import AddBusiness from './add-business'
+import { Button } from '@/components/ui/button'
 import Typography from '@/components/ui/typography'
-import { protocol, rootDomain } from '@/lib/utils'
 import { TenantUserWithRelations } from '@/lib/types'
+import { protocol, rootDomain } from '@/lib/utils'
+import { Building2, Mailbox, Users } from 'lucide-react'
+import AddBusiness from './add-business'
+import { BusinessCard } from './business-card'
+import { useRouter } from 'next/navigation'
 
 export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) {
   const businesses = props.businesses?.map(item => ({
@@ -15,15 +17,16 @@ export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) 
     }
   }))
 
-
   const handleRedirectToBusiness = async (domain: string) => {
     if (!domain) return
-      const achorElem = document.createElement('a')
-      achorElem.href = domain 
-      achorElem.target = '_blank'
-      achorElem.rel = 'noopener noreferrer'
-      achorElem.click()
+    const achorElem = document.createElement('a')
+    achorElem.href = domain
+    achorElem.target = '_blank'
+    achorElem.rel = 'noopener noreferrer'
+    achorElem.click()
   }
+
+  const router = useRouter()
 
   return (
     <div className='min-h-screen'>
@@ -34,7 +37,13 @@ export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) 
             <div className='flex items-center space-x-3'>
               <Typography variant='h5'>Business Dashboard</Typography>
             </div>
-            <AddBusiness />
+            <div className='flex items-center gap-2'>
+              <Button variant={'outline'} onClick={() => router.push('/business/invites') }>
+                <Mailbox size={10} />
+                Pending Invites
+              </Button>
+              <AddBusiness />
+            </div>
           </div>
         </div>
       </div>
@@ -62,7 +71,7 @@ export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) 
         ) : (
           <div className='py-12 text-center'>
             <Building2 className='mx-auto mb-4 h-12 w-12 text-gray-400' />
-            <h3 className='mb-2 text-lg font-medium text-gray-900'>No businesses yet</h3>
+            <h3 className='mb-2 text-lg font-medium text-gray-600'>No businesses yet</h3>
             <p className='mb-6 text-gray-500'>Get started by adding your first business</p>
           </div>
         )}
