@@ -10,12 +10,12 @@ import { Loader, PlusIcon } from 'lucide-react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { BusinessFormValues, BusinessSchema } from '@/lib/types'
 import { toast } from 'sonner'
-import { saveBusiness } from './action'
+import { createBusiness } from './action'
 import { useUser } from '@/components/user-provider'
 
 
 const AddBusiness = () => {
-  const [saveState, saveAction, isSavePending] = useActionState(saveBusiness, undefined)
+  const [saveState, saveAction, isSavePending] = useActionState(createBusiness, undefined)
   const [showForm, setShowForm] = useState(false)
 
   const toggleForm = () => {

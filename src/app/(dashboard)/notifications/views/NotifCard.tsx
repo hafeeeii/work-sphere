@@ -15,10 +15,10 @@ type NotifCardProps = {
 
 export default function NotifCard({ notif, index }: NotifCardProps) {
   const iconMap = {
-    Ticket: <Ticket className='h-5 w-5 text-blue-500' />,
-    Message: <Mail className='h-5 w-5 text-green-500' />,
-    Team: <Users className='h-5 w-5 text-purple-500' />,
-    Announcement: <Megaphone className='h-5 w-5 text-red-500' />
+    TICKET: <Ticket className='h-5 w-5 text-blue-500' />,
+    MESSAGE: <Mail className='h-5 w-5 text-green-500' />,
+    TEAM: <Users className='h-5 w-5 text-purple-500' />,
+    ANNOUNCEMENT: <Megaphone className='h-5 w-5 text-red-500' />
   }
 
   const status = notif.notificationRead.length > 0 ? 'read' : 'unread'

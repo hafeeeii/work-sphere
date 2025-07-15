@@ -43,7 +43,7 @@ export async function saveDesignation(prevState: unknown, formData: FormData) {
                     tenantId: businessId,
                     title: "New department created",
                     message: "A new department has been created",
-                    type: NotificationType.Announcement,
+                    type: NotificationType.ANNOUNCEMENT,
                 }
             })
 

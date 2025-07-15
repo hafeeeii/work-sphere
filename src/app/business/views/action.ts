@@ -1,12 +1,13 @@
 'use server'
 
+import { createDefaultBusinessLeaveBalanceForUser, defaultLeaveTypes } from "@/lib/business"
 import prisma from "@/lib/prisma"
 import { getValidSession } from "@/lib/session"
 import { BusinessSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
 
 
-export async function saveBusiness(prevState: unknown,
+export async function createBusiness(prevState: unknown,
     formData: FormData
 ) {
 
@@ -67,6 +68,17 @@ export async function saveBusiness(prevState: unknown,
                     role: 'OWNER'
                 }
             })
+
+            await tx.leaveType.createMany({
+                data: defaultLeaveTypes.map((name) => (
+                    {
+                        name,
+                        tenantId: tenant.id,
+                    }
+                ))
+            })
+
+          await createDefaultBusinessLeaveBalanceForUser(tenant.id, ownerId, tx)
 
             return tenant;
         })

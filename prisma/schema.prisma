@@ -9,18 +9,26 @@ datasource db {
 
 enum Role {
   OWNER
-  MEMBER
+  ADMIN
   MANAGER
+  EMPLOYEE
 }
 
 enum NotificationType {
-  Message
-  Ticket
-  Team
-  Announcement
+  MESSAGE
+  TICKET
+  TEAM
+  ANNOUNCEMENT
 }
 
 enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  DECLINED
+}
+
+enum LeaveStatus {
   PENDING
   ACCEPTED
   EXPIRED
@@ -36,6 +44,9 @@ model Tenant {
   tenantUser   TenantUser[]
   notification Notification[]
   Invite       Invite[]
+  leaves       Leave[]
+  leaveBalances leaveBalance[]
+  leaveTypes    LeaveType[]
 }
 
 model User {
@@ -49,6 +60,8 @@ model User {
   notification     Notification[]
   notificationRead NotificationRead[]
   Invite           Invite[]
+  leaves           Leave[]
+  leaveBalance     leaveBalance[]
 }
 
 // join table for many-to-many relationship between User and Tenant
@@ -88,18 +101,18 @@ model NotificationRead {
 }
 
 model Invite {
-  name      String
-  id        String       @id @default(uuid())
-  email     String
-  tenantId  String
-  invitedBy String
-  role      Role
-  status    InviteStatus @default(PENDING)
-  tenant    Tenant       @relation(fields: [tenantId], references: [id])
-  inviter   User         @relation(fields: [invitedBy], references: [id])
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  emailSent Boolean      @default(false)
+  name       String
+  id         String       @id @default(uuid())
+  email      String
+  tenantId   String
+  invitedBy  String
+  role       Role
+  status     InviteStatus @default(PENDING)
+  tenant     Tenant       @relation(fields: [tenantId], references: [id])
+  inviter    User         @relation(fields: [invitedBy], references: [id])
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  emailSent  Boolean      @default(false)
   acceptedAt DateTime?
   declinedAt DateTime?
 }
@@ -160,4 +173,44 @@ model WorkLocation {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   employees      Employee[]
+}
+
+// leave
+
+model Leave {
+  id          String      @id @default(uuid())
+  tenantId    String
+  userId      String
+  leaveTypeId String
+  from        DateTime
+  to          DateTime
+  reason      String?
+  status      LeaveStatus
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+  leaveType LeaveType @relation(fields: [leaveTypeId], references: [id])
+}
+
+model LeaveType {
+  id           String         @id @default(uuid())
+  tenantId     String
+  name         String         @unique
+  leaves       Leave[]
+  leaveBalance leaveBalance[]
+  tenant       Tenant         @relation(fields: [tenantId], references: [id])
+}
+
+model leaveBalance {
+  id          String    @id @default(uuid())
+  userId      String
+  tenantId    String
+  leaveTypeId String
+  available   Int? // nullable = supports unlimited or undefined (eg: unpaid leaves)
+  booked      Int       @default(0)
+  user        User      @relation(fields: [userId], references: [id])
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
 }

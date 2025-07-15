@@ -1,20 +1,14 @@
 'use client'
 import {
-  Home,
   Briefcase,
-  Building2,
-  GraduationCap,
-  Star,
-  ListChecks,
-  Timer,
-  CalendarDays,
-  Newspaper,
-  Settings,
+  Home,
   LogOut,
-  User2,
-  User2Icon,
+  Settings,
+  Umbrella,
+  User2Icon
 } from "lucide-react";
 
+import { logout } from "@/app/(auth)/actions";
 import {
   Sidebar,
   SidebarContent,
@@ -24,11 +18,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { getDefaultSortById } from "@/lib/sort-utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { logout } from "@/app/(auth)/actions";
-import { getDefaultSortById } from "@/lib/sort-utils";
 
 // Menu items.
 const items = [
@@ -42,55 +35,60 @@ const items = [
     url: `/employee?${getDefaultSortById('name')}`,
     icon: Briefcase,
   },
-  {
-    title: "Teams",
-    url: "/teams",
-    icon: Building2, 
-  },
-  {
-    title: "Training Programs",
-    url: "/training-programs",
-    icon: GraduationCap, 
-  },
+  // {
+  //   title: "Teams",
+  //   url: "/teams",
+  //   icon: Building2, 
+  // },
+  // {
+  //   title: "Training Programs",
+  //   url: "/training-programs",
+  //   icon: GraduationCap, 
+  // },
   {
     title: "Invite Member",
     url: "/invite-member",
     icon: User2Icon, 
   },
   {
-    title: "Performance Reviews",
-    url: "/performance-reviews",
-    icon: Star, 
+    title: "Leave Tracker",
+    url: "/leaves",
+    icon: Umbrella, 
   },
-  {
-    title: "Tasks",
-    url: "/tasks",
-    icon: ListChecks, 
-  },
-  {
-    title: "Time Tracking",
-    url: "/time-tracking",
-    icon: Timer,
-  },
-  {
-    title: "Meetings/Company Events",
-    url: "/meetings-events",
-    icon: CalendarDays, 
-  },
-  {
-    title: "News/Updates",
-    url: "/news-updates",
-    icon: Newspaper, 
-  },
+  // {
+  //   title: "Performance Reviews",
+  //   url: "/performance-reviews",
+  //   icon: Star, 
+  // },
+  // {
+  //   title: "Tasks",
+  //   url: "/tasks",
+  //   icon: ListChecks, 
+  // },
+  // {
+  //   title: "Time Tracking",
+  //   url: "/time-tracking",
+  //   icon: Timer,
+  // },
+  // {
+  //   title: "Meetings/Company Events",
+  //   url: "/meetings-events",
+  //   icon: CalendarDays, 
+  // },
+  // {
+  //   title: "News/Updates",
+  //   url: "/news-updates",
+  //   icon: Newspaper, 
+  // },
 
 ];
 
 const others = [
-  {
-    title: "Profile",
-    url: "/profile",
-    icon: User2, 
-  },
+  // {
+  //   title: "Profile",
+  //   url: "/profile",
+  //   icon: User2, 
+  // },
   {
     title: "Settings",
     url: "/settings",

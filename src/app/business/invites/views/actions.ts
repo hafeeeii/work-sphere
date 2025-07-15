@@ -1,11 +1,12 @@
 'use server'
+import { createDefaultBusinessLeaveBalanceForUser } from "@/lib/business"
 import prisma from "@/lib/prisma"
 import { getValidSession } from "@/lib/session"
 import { InviteStatus } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 
-export const acceptInvite = async (prev:unknown, inviteId: string) => {
+export const acceptInvite = async (prev: unknown, inviteId: string) => {
     try {
         const session = await getValidSession()
 
@@ -50,27 +51,37 @@ export const acceptInvite = async (prev:unknown, inviteId: string) => {
             }
         }
 
-        //  add user to tenant
+        await prisma.$transaction(async (tx) => {
 
-        await prisma.tenantUser.create({
-            data: {
-                tenantId: invite.tenantId,
-                userId,
-                role: invite.role
-            },
+            //  add user to tenant
+
+            await tx.tenantUser.create({
+                data: {
+                    tenantId: invite.tenantId,
+                    userId,
+                    role: invite.role
+                },
+            })
+
+            // create default leave balance
+
+            await createDefaultBusinessLeaveBalanceForUser(invite.tenantId, userId, tx)
+
+            // mark as accepted
+            await tx.invite.update({
+                where: {
+                    id: inviteId,
+                },
+                data: {
+                    acceptedAt: new Date(),
+                    status: InviteStatus.ACCEPTED
+                }
+            })
         })
 
 
-        // mark as accepted
-        await prisma.invite.update({
-            where: {
-                id: inviteId,
-            },
-            data: {
-                acceptedAt: new Date(),
-                status: InviteStatus.ACCEPTED
-            }
-        })
+
+
         revalidatePath('/business/invites')
 
         return {
@@ -89,7 +100,7 @@ export const acceptInvite = async (prev:unknown, inviteId: string) => {
 
 }
 
-export const declineInvite = async (prev:unknown,inviteId: string) => {
+export const declineInvite = async (prev: unknown, inviteId: string) => {
     try {
         const session = await getValidSession()
 

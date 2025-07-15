@@ -32,7 +32,7 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
     name: invite?.name ?? '',
     id: invite?.id ?? '',
     email: invite?.email ?? '',
-    role: invite?.role ?? Role.MEMBER
+    role: invite?.role ?? Role.EMPLOYEE
   } as const
 
   const {
@@ -131,9 +131,10 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
                           <SelectValue placeholder='Select gender' />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={Role.MEMBER}>Member</SelectItem>
-                          <SelectItem value={Role.MANAGER}>Manager</SelectItem>
                           <SelectItem value={Role.OWNER}>Owner</SelectItem>
+                          <SelectItem value={Role.OWNER}>Admin</SelectItem>
+                          <SelectItem value={Role.MANAGER}>Manager</SelectItem>
+                          <SelectItem value={Role.EMPLOYEE}>Employee</SelectItem>
 
                         </SelectContent>
                       </Select>
