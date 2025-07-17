@@ -1,8 +1,7 @@
+import { cookies } from 'next/headers'
 import 'server-only'
 import prisma from './prisma'
-import { cookies } from 'next/headers'
 import { getValidSession } from './session'
-import { Prisma } from '@prisma/client'
 
 export async function fetchBusinessIdFromSubdomain(subdomain: string, userId: string) {
     const business = await prisma.tenant.findUnique({
@@ -75,35 +74,3 @@ export async function getBusinessInfo() {
     return business
 }
 
-
-export const defaultLeaveTypes = ['Sick Leave', 'Vacation Leave', 'Casual Leave', 'Earned Leave', 'Leave Without Pay', 'Sabbatical Leave']
-
-export const createDefaultBusinessLeaveBalanceForUser = async (businessId: string, userId: string,tx:Prisma.TransactionClient) => {
-    const defaultPolicy: Record<string, number> = {
-        'Sick Leave': 14,
-        'Vacation Leave': 14,
-        'Casual Leave': 14,
-        'Earned Leave': 14,
-        'Leave Without Pay': 14,
-        'Sabbatical Leave': 14
-    }
-
-    const leaveTypes = await tx.leaveType.findMany({
-        where: {
-            tenantId: businessId
-        }
-    })
-
-    const balance = leaveTypes.map(type => ({
-        leaveTypeId: type.id,
-        userId,
-        tenantId: businessId,
-        available: defaultPolicy[type.name],
-        booked: 0
-    }))
-
-    await tx.leaveBalance.createMany({
-        data: balance,
-        skipDuplicates: true
-    })
-}

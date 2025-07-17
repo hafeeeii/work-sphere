@@ -98,5 +98,12 @@ export const InviteSchema = z.object({
 
 export type InviteFormValues = z.infer<typeof InviteSchema>
 
+export const LeaveSchema = z.object({
+    id:z.string(),
+    leaveTypeId: required('Type'),
+    from: required('Start date'),
+    to: required('End date'),
+    reason: z.string()
+})
 
-
+export type LeaveFormValues = z.infer<typeof LeaveSchema>

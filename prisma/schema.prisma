@@ -204,13 +204,15 @@ model LeaveType {
 }
 
 model leaveBalance {
-  id          String    @id @default(uuid())
   userId      String
   tenantId    String
   leaveTypeId String
   available   Int? // nullable = supports unlimited or undefined (eg: unpaid leaves)
   booked      Int       @default(0)
+  year        Int
   user        User      @relation(fields: [userId], references: [id])
   tenant      Tenant    @relation(fields: [tenantId], references: [id])
   leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
+
+  @@unique([tenantId, userId, leaveTypeId,year])
 }

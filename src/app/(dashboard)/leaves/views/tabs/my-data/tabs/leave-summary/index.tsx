@@ -1,127 +1,175 @@
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { ArrowRight, CalendarIcon } from 'lucide-react'
-import FilterSection from './filter-section'
-import prisma from '@/lib/prisma'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import YearPicker from '@/components/ui/year-picker'
 import { getBusinessInfo } from '@/lib/business'
+import { getOrCreateLeaveBalanceForUser } from '@/lib/leave'
+import prisma from '@/lib/prisma'
+import { LeaveType } from '@prisma/client'
+import { format } from 'date-fns'
+import { ArrowRight, CalendarIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
+import LeaveApplyForm from './leave-apply-form'
 
+export default async function LeaveSummaryTab({ searchParams }: { searchParams: { [key: string]: string } }) {
+  const currentYear = new Date().getFullYear()
+  const from = searchParams.from || `${currentYear}-01-01`
+  const to = searchParams.to || `${currentYear}-12-31`
+  const year = new Date(from).getFullYear()
 
+  console.log(from, to, 'checkchange ')
 
-const upcomingLeaves = [
-  {
-    from: '14-Jul-2025, Mon',
-    to: '15-Jul-2025, Tue',
-    type: 'Casual Leave',
-    days: 2,
-    color: 'bg-blue-500'
+  const business = await getBusinessInfo()
+
+  if (!business.status || !business.data) {
+    redirect('/login')
   }
-]
 
-const pastLeaves = [
-  {
-    date: '08-Jul-2025, Tue',
-    type: 'Leave Without Pay',
-    days: 1,
-    color: 'bg-red-500'
-  },
-  {
-    date: '01-Jul-2025, Tue',
-    type: 'Leave Without Pay',
-    days: 1,
-    color: 'bg-red-500'
-  }
-]
-
-export default async function LeaveSummaryTab({searchParams}:{searchParams:{[key:string]:string}}) {
-    // const currentYear = new Date().getFullYear()
-    // const from = searchParams.from || `${currentYear}-01-01`
-    // const to =  searchParams.to ||`${currentYear}-12-31`
-    console.log(searchParams)
-
-    const business = await getBusinessInfo()
-
-    if (!business.status || !business.data ) {
-      redirect('/login')
+  // leave balances
+  const leaveBalances = await getOrCreateLeaveBalanceForUser(business.data.businessId, business.data.userId, year)
+  // leave types
+  const leaveTypes = await prisma.leaveType.findMany({
+    where: {
+      tenantId: business.data.businessId
     }
+  })
 
-    const leaveBalances = await prisma.leaveBalance.findMany({
-      where: {
-        tenantId: business.data.businessId
+  const pastLeaves = await prisma.leave.findMany({
+    where: {
+      tenantId: business.data.businessId,
+      userId: business.data.userId,
+      to: {
+        lt: new Date(),
+        gte: new Date(from)
       },
-      include:{
-        leaveType:{
-          select: {
-            name: true
-          }
+      from: {
+        lte: new Date(to)
+      }
+    },
+    include: {
+      leaveType: {
+        select: {
+          name: true
         }
       }
-    })
+    }
+  })
 
-    const limitedLeaves = leaveBalances.slice(0,6)
+  const upcomingLeaves = await prisma.leave.findMany({
+    where: {
+      tenantId: business.data.businessId,
+      userId: business.data.userId,
+      from: {
+        gte: new Date(),
+        lte: new Date(to)
+      },
+      to: {
+        gte: new Date(from),
+        lte: new Date(to)
+      }
+    },
+    include: {
+      leaveType: {
+        select: {
+          name: true
+        }
+      }
+    }
+  })
+
+  const limitedLeaves = leaveBalances.slice(0, 6)
+
+  const updatedLeaveTypes = leaveTypes.reduce((acc, type) => {
+    const balance = leaveBalances.find(b => b.leaveTypeId === type.id)
+    if (!(balance?.available === 0 && balance.available !== null)) {
+      acc.push(type)
+    }
+    return acc
+  }, [] as Array<LeaveType>)
+
+  const getDaysCount = (from: Date, to: Date) => {
+    const diffTime = to.getTime() - from.getTime()
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1
+    return diffDays
+  }
 
   return (
-    <div className='space-y-6 '>
-      <div className='flex justify-end items-center gap-2'>
-        <div className='grid w-1/3 '>
-        <FilterSection/>
+    <div className='space-y-6'>
+      <div className='flex items-center justify-end gap-2'>
+        <div>
+          <YearPicker />
         </div>
 
-        <Button>Apply Leave</Button>
+        <LeaveApplyForm leaveTypes={updatedLeaveTypes} />
       </div>
       {/* Leave Types */}
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6'>
-        {limitedLeaves.map(type => (
-          <Card key={type.id}>
+        {limitedLeaves.map((type, idx) => (
+          <Card key={idx}>
             <CardContent className='space-y-2 p-4'>
               {/* <div className={cn('text-3xl', type.color)}>{type.icon}</div> */}
-              <div className='text-sm font-medium text-gray-500'>{type.leaveType?.name}</div>
+              <div className='text-sm font-semibold'>{type.leaveType?.name}</div>
               {type.available !== null && (
                 <div className='text-sm'>
-                  Available <span className='font-semibold text-green-600'>{type.available}</span>
+                  Available <span className='font-semibold text-green-400'>{type.available}</span>
                 </div>
               )}
               <div className='text-sm'>
-                Booked <span className='font-semibold text-red-600'>{type.booked}</span>
+                Booked <span className='font-semibold text-red-400'>{type.booked}</span>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-
       {/* Upcoming Leave */}
       <Card>
-        <CardContent>
+        <CardHeader>
           <h3 className='text-lg font-semibold'>Upcoming Leaves & Holidays</h3>
-          {upcomingLeaves.map((leave, i) => (
-            <div key={i} className='flex items-center gap-4 bg-muted pt-3'>
-              <div className='flex items-center gap-1 text-sm text-gray-600'>
-                <CalendarIcon size={16} className='text-gray-500' />
-                {leave.from} <ArrowRight size={16} /> {leave.to}
+        </CardHeader>
+        <CardContent>
+          {upcomingLeaves.length > 0 ? (
+            upcomingLeaves.map((leave, i) => (
+              <div key={i} className='mb-2 flex items-center gap-4'>
+                <div className='flex min-w-[280px] items-center gap-1 text-sm'>
+                  <CalendarIcon size={16} />
+                  {format(new Date(leave.from), 'dd-MMM-yyyy, EEE')} <ArrowRight size={16} className='mx-4' />{' '}
+                  {format(new Date(leave.to), 'dd-MMM-yyyy, EEE')}
+                </div>
+                <Badge>{leave.leaveType?.name}</Badge>
+                <span className='text-xs'>
+                  {' '}
+                  {getDaysCount(leave.from, leave.to)} {getDaysCount(leave.from, leave.to) == 1 ? 'day' : 'days'}
+                </span>
               </div>
-              <Badge className={cn(leave.color, 'text-white')}>{leave.type}</Badge>
-              <span className='text-xs text-muted-foreground'>{leave.days} days</span>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className='my-4 text-center text-sm text-gray-400'>No Upcoming Leaves</div>
+          )}
         </CardContent>
       </Card>
 
       {/* Past Leaves */}
       <Card>
-        <CardContent>
+        <CardHeader>
           <h3 className='text-lg font-semibold'>Past Leaves & Holidays</h3>
-          {pastLeaves.map((leave, i) => (
-            <div key={i} className='flex items-center gap-4 bg-muted pt-3'>
-              <div className='flex items-center gap-1 text-sm text-gray-600'>
-                <CalendarIcon size={16} className='text-gray-500' />
-                {leave.date}
+        </CardHeader>
+        <CardContent>
+          {pastLeaves.length > 0 ? (
+            pastLeaves.map((leave, i) => (
+              <div key={i} className='mb-2 flex items-center gap-4'>
+                <div className='flex min-w-[280px] items-center gap-1 text-sm'>
+                  <CalendarIcon size={16} />
+                  {format(new Date(leave.from), 'dd-MMM-yyyy, EEE')} <ArrowRight size={16} className='mx-4' />{' '}
+                  {format(new Date(leave.to), 'dd-MMM-yyyy, EEE')}
+                </div>
+                <Badge>{leave.leaveType?.name}</Badge>
+                <span className='text-xs'>
+                  {getDaysCount(leave.from, leave.to)} {getDaysCount(leave.from, leave.to) == 1 ? 'day' : 'days'}
+                </span>
               </div>
-              <Badge className={cn(leave.color, 'text-white')}>{leave.type}</Badge>
-              <span className='text-xs text-muted-foreground'>{leave.days} day</span>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className='my-4 text-center text-sm text-gray-400'>No Past Leaves</div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -92,16 +92,20 @@ import NotifCard from './NotifCard'
 // ] as const
 
 export default async function Notifications() {
-  const businessId = (await getBusinessInfo()).data?.businessId
-  const userId = (await getBusinessInfo()).data?.userId
 
-  if (!businessId) {
+  const business = await getBusinessInfo()
+
+  if (!business.status || !business.data) {
     return null
   }
 
-  if (!userId) {
-    return redirect('/login')
+  const {businessId, userId} = business?.data
+
+  if (!businessId || !userId) {
+     return redirect('/login')
   }
+
+
 
   const notifications = await prisma.notification.findMany({
     where: {

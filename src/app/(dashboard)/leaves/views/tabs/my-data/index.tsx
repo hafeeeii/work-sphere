@@ -26,7 +26,7 @@ export default async function MyDataTab({searchParams}:{searchParams:{[key:strin
         {tabs.map(tab => (
           <TabsContent key={tab.tab} value={tab.tab}>
             <Card>
-              <CardContent className='py-2 h-screen'>{tab.content}</CardContent>
+              <CardContent className='py-2'>{tab.content}</CardContent>
             </Card>
           </TabsContent>
         ))}

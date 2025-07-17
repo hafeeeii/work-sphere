@@ -1,7 +1,6 @@
-import React from 'react'
-import MemberInvite from './views'
 import { getBusinessInfo } from '@/lib/business'
 import prisma from '@/lib/prisma'
+import MemberInvite from './views'
 
 export default async function MemberInvitePage({ searchParams }: { searchParams: Promise<{ [key: string]: string }> }) {
   const queryParams = await searchParams

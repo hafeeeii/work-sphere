@@ -80,8 +80,7 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
   }, [updateState, saveState])
 
   useEffect(() => {
-    if (showForm) 
-    reset(defaultValues)
+    if (showForm) reset(defaultValues)
   }, [showForm])
 
   const onSubmit = (data: EmployeeFormValues) => {
@@ -270,6 +269,7 @@ const Form = ({ departments, designations, workLocations, showForm, employee, to
                                 field.onChange(formatted)
                               }
                             }}
+                            className='rounded-lg'
                           />
                         </PopoverContent>
                       </Popover>

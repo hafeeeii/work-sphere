@@ -1,5 +1,5 @@
 'use server'
-import { createDefaultBusinessLeaveBalanceForUser } from "@/lib/business"
+import { createDefaultBusinessLeaveBalanceForUser } from "@/lib/leave"
 import prisma from "@/lib/prisma"
 import { getValidSession } from "@/lib/session"
 import { InviteStatus } from "@prisma/client"
