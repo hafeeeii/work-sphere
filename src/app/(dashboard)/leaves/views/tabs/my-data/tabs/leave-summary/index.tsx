@@ -9,6 +9,7 @@ import { format } from 'date-fns'
 import { ArrowRight, CalendarIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import LeaveApplyForm from './leave-apply-form'
+import { getDaysCount } from '@/lib/date'
 
 export default async function LeaveSummaryTab({ searchParams }: { searchParams: { [key: string]: string } }) {
   const currentYear = new Date().getFullYear()
@@ -16,7 +17,6 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
   const to = searchParams.to || `${currentYear}-12-31`
   const year = new Date(from).getFullYear()
 
-  console.log(from, to, 'checkchange ')
 
   const business = await getBusinessInfo()
 
@@ -86,11 +86,6 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
     return acc
   }, [] as Array<LeaveType>)
 
-  const getDaysCount = (from: Date, to: Date) => {
-    const diffTime = to.getTime() - from.getTime()
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1
-    return diffDays
-  }
 
   return (
     <div className='space-y-6'>
