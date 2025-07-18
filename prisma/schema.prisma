@@ -30,9 +30,9 @@ enum InviteStatus {
 
 enum LeaveStatus {
   PENDING
-  ACCEPTED
+  APPROVED
   EXPIRED
-  DECLINED
+  REJECTED
 }
 
 model Tenant {
@@ -188,6 +188,8 @@ model Leave {
   status      LeaveStatus
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  approvedAt  DateTime?
+  rejectedAt  DateTime?
 
   tenant    Tenant    @relation(fields: [tenantId], references: [id])
   user      User      @relation(fields: [userId], references: [id])

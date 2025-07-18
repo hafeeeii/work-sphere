@@ -60,8 +60,8 @@ export default async function LeaveRequestTab() {
   }
 
   const getLeaveStatusClass = {
-    [LeaveStatus.ACCEPTED]: 'bg-green-500',
-    [LeaveStatus.DECLINED]: 'bg-red-500',
+    [LeaveStatus.APPROVED]: 'bg-green-500',
+    [LeaveStatus.REJECTED]: 'bg-red-500',
     [LeaveStatus.PENDING]: 'bg-yellow-500',
     [LeaveStatus.EXPIRED]: 'bg-gray-500'
   }
