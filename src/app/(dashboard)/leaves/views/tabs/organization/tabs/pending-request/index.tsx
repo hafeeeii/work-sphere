@@ -59,8 +59,8 @@ export default async function PendingRequestTab() {
           </div>
         ))
       ) : (
-        <div className='flex items-center justify-center'>
-          <p className='py-10 text-sm text-muted-foreground'>No Pending Requests</p>
+        <div className='flex items-center justify-center h-full py-10'>
+          <p className='text-sm text-muted-foreground'>No Pending Requests</p>
         </div>
       )}
     </div>

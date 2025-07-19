@@ -59,7 +59,7 @@ export default async function LeaveBalanceTab() {
               </div>
             </div>
             </div>
-            <LeaveApplyForm leaveTypes={updatedLeaveTypes} />
+            <LeaveApplyForm leaveTypes={updatedLeaveTypes} leaveTypeId={value.leaveTypeId} />
           </CardContent>
         </Card>
       ))}

@@ -1,14 +1,11 @@
-import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import OnLeaveTab from './tabs/on-leave'
 import PendingRequestTab from './tabs/pending-request'
 
-
-
 export default async function OrganizationTab() {
   const tabs = [
     { tab: 'On Leave', content: <OnLeaveTab /> },
-    { tab: 'Pending Request', content: <PendingRequestTab /> },
+    { tab: 'Pending Request', content: <PendingRequestTab /> }
 
     // { tab: 'Holidays', content: '' }
   ]
@@ -25,9 +22,7 @@ export default async function OrganizationTab() {
         </TabsList>
         {tabs.map(tab => (
           <TabsContent key={tab.tab} value={tab.tab}>
-            <Card>
-              <CardContent className='py-2'>{tab.content}</CardContent>
-            </Card>
+            <div className='h-full'>{tab.content}</div>
           </TabsContent>
         ))}
       </Tabs>

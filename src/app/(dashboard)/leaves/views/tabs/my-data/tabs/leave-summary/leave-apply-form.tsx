@@ -21,10 +21,11 @@ import { toast } from 'sonner'
 import { applyLeave } from './actions'
 
 type FormProps = {
-  leaveTypes: LeaveType[]
+  leaveTypes: LeaveType[],
+  leaveTypeId?: string
 }
 
-const LeaveApplyForm = ({ leaveTypes }: FormProps) => {
+const LeaveApplyForm = ({ leaveTypes, leaveTypeId }: FormProps) => {
   const [applyState, applyAction, isApplyPending] = useActionState(applyLeave, undefined)
   const [showForm, setShowForm] = useState(false)
 
@@ -33,7 +34,7 @@ const LeaveApplyForm = ({ leaveTypes }: FormProps) => {
 
   const defaultValues = {
     id: '',
-    leaveTypeId: '',
+    leaveTypeId:leaveTypeId || '',
     from: '',
     to: '',
     reason: ''
