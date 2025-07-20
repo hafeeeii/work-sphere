@@ -38,7 +38,7 @@ import { cookies } from "next/headers"
         Settings
       </Typography>
         <Tabs defaultValue={tabs[0].tab} >
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList >
         {tabs.map((tab) => (
           <TabsTrigger key={tab.tab} value={tab.tab}>
             {tab.tab}

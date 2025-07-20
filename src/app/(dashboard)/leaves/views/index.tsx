@@ -13,7 +13,7 @@ const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string 
   return (
     <div className='h-full rounded-lg border p-4'>
       <Tabs defaultValue={tabs[0].tab} className='h-full'>
-        <TabsList className='grid w-full grid-cols-3'>
+        <TabsList >
           {tabs.map(tab => (
             <TabsTrigger key={tab.tab} value={tab.tab}>
               {tab.tab}
@@ -21,7 +21,7 @@ const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string 
           ))}
         </TabsList>
         {tabs.map(tab => (
-          <TabsContent key={tab.tab} value={tab.tab} className='h-full'>
+          <TabsContent key={tab.tab} value={tab.tab} className='h-full '>
             <div className='h-full '>{tab.content}</div>
           </TabsContent>
         ))}

@@ -13,7 +13,7 @@ export default async function OrganizationTab() {
   return (
     <div className='flex flex-col gap-4'>
       <Tabs defaultValue={tabs[0].tab}>
-        <TabsList className='grid w-full grid-cols-3'>
+        <TabsList  className='grid w-full grid-cols-2'>
           {tabs.map(tab => (
             <TabsTrigger key={tab.tab} value={tab.tab}>
               {tab.tab}

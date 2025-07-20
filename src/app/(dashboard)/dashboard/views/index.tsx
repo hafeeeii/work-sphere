@@ -1,10 +1,9 @@
-import React from "react";
-import TotalNumbersCard from "./TotalNumbersCard";
-import CountChart from "./CountChart";
-import { LeaveChart } from "./LeaveChart";
-import FinanceChart from "./FinanceChart";
-import { RightSideCalender } from "./RightSideCalender";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import React from "react";
+import CountChart from "./CountChart";
+import FinanceChart from "./FinanceChart";
+import { LeaveChart } from "./LeaveChart";
+import TotalNumbersCard from "./TotalNumbersCard";
 
 const topSectionData = [
   { date: "2024-12-01", total: 15, title: "Managers" },
@@ -47,9 +46,9 @@ const Dashboard = () => {
         </div>
       </div>
       {/* right side */}
-      <div className="space-y-4 w-full flex flex-col">
+      <div className="space-y-4 bgr">
         {/* right-top */}
-          <RightSideCalender />
+          {/* <RightSideCalender /> */}
         {/* right-middle */}
         <div className="space-y-2">
           <h4 className="font-semibold">Events</h4>
