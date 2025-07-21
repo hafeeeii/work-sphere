@@ -35,33 +35,59 @@ enum LeaveStatus {
   REJECTED
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+}
+
+enum BankAccountType {
+  SAVINGS
+  CURRENT
+}
+
 model Tenant {
-  id           String         @id @default(uuid())
-  name         String
-  subdomain    String         @unique
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  tenantUser   TenantUser[]
-  notification Notification[]
-  Invite       Invite[]
-  leaves       Leave[]
+  id            String         @id @default(uuid())
+  name          String
+  subdomain     String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  tenantUser    TenantUser[]
+  notification  Notification[]
+  Invite        Invite[]
+  leaves        Leave[]
   leaveBalances leaveBalance[]
   leaveTypes    LeaveType[]
 }
 
 model User {
-  id               String             @id @default(uuid())
-  email            String             @unique
-  passwordHash     String
-  name             String
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  tenantUser       TenantUser[]
-  notification     Notification[]
-  notificationRead NotificationRead[]
-  Invite           Invite[]
-  leaves           Leave[]
-  leaveBalance     leaveBalance[]
+  id                     String             @id @default(uuid())
+  email                  String             @unique
+  passwordHash           String
+  name                   String
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  tenantUser             TenantUser[]
+  notification           Notification[]
+  notificationRead       NotificationRead[]
+  Invite                 Invite[]
+  leaves                 Leave[]
+  leaveBalance           leaveBalance[]
+  employeesReportingToMe Employee[]
 }
 
 // join table for many-to-many relationship between User and Tenant
@@ -118,22 +144,54 @@ model Invite {
 }
 
 model Employee {
-  id               String       @id @default(uuid())
-  tenantId         String
-  name             String
-  dateOfBirth      String
-  gender           String
-  email            String
-  designation      String
-  department       String
-  employmentType   String
-  dateOfJoining    String
-  workLocation     String
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  id       String @id @default(uuid())
+  tenantId String
+
+  // Personal Information
+  name          String
+  gender        Gender
+  dateOfBirth   DateTime
+  maritalStatus MaritalStatus
+  language      String?
+  nationality   String?
+
+  // Contact Information
+  phoneNumber  String
+  email        String
+  workEmail    String?
+  addressLine1 String?
+  addressLine2 String?
+
+  // 🧾 Identification
+  aadhaarNumber       String?
+  panNumber           String?
+  driverLicenseNumber String?
+
+  //  Employment Details
+  designation       String
+  department        String
+  employmentType    EmploymentType
+  dateOfJoining     DateTime
+  workLocation      String
+  reportingManagerId String?
+
+  // Bank Details
+  bankName              String
+  bankAccountHolderName String
+  bankAccountNumber     String
+  bankAccountType       BankAccountType
+  bankIfscCode          String
+  bankBranch            String
+
+  // Relations
+  reportingManager User?        @relation(fields: [reportingManagerId], references: [id])
   workLocationMeta WorkLocation @relation(fields: [workLocation], references: [id])
   departmentMeta   Department   @relation(fields: [department], references: [id])
   designationMeta  Designation  @relation(fields: [designation], references: [id])
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([tenantId, email])
 }
@@ -216,5 +274,5 @@ model leaveBalance {
   tenant      Tenant    @relation(fields: [tenantId], references: [id])
   leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
 
-  @@unique([tenantId, userId, leaveTypeId,year])
+  @@unique([tenantId, userId, leaveTypeId, year])
 }

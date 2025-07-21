@@ -23,6 +23,7 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
 
   type TableData = {
     editMode: 'toggle' | 'redirect'
+    visibleActions:('details' | 'edit' | 'delete')[]
     columnData: {
       header: string
       accessorKey: keyof WorkLocation[][number]
@@ -34,6 +35,7 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
 
   const tableData: TableData = {
     editMode: 'toggle',
+    visibleActions: ['edit', 'delete'],
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true },
       { header: 'State', accessorKey: 'state', sortable: true },

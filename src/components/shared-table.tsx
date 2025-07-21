@@ -30,7 +30,9 @@ type Props<T extends object> = {
     error: unknown;
 }>,
   tableData: {
-    editMode: 'toggle' | 'redirect'
+    editMode: 'toggle' | 'redirect',
+    visibleActions: ('details' | 'edit' | 'delete')[]
+    editRedirectPath?: string,
     data: T[]
     columnData: {
       header: string
@@ -48,7 +50,7 @@ type Props<T extends object> = {
   renderSubComponent?: (props: { row: Row<T> }) => React.ReactElement
 }
 
-export function SharedTable<T extends object>({ tableData: { columnData, data , editMode }, onEdit, onDelete }: Props<T>) {
+export function SharedTable<T extends object>({ tableData: { columnData, data , editMode, editRedirectPath,visibleActions }, onEdit, onDelete }: Props<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -104,15 +106,20 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
       const deleteWithId = onDelete.bind(null, row.original.id)
       return (
         <div className='flex justify-end gap-2'>
+          {visibleActions.includes('edit') && (
           <Button variant={'outline'} size={'icon'}
             onClick={() => {
                 if (onEdit && editMode === 'toggle') {
                   onEdit(row.original.id)
+                } else if(editMode === 'redirect') {
+                  router.push(`${editRedirectPath}/${row.original.id}`)
                 }
               }}
           >
             <Pencil/>
           </Button>
+          )}
+          {visibleActions.includes('delete') && (    
           <Button variant={'outline'} size={'icon'}
             onClick={async () => {
               const { message, status } = await deleteWithId()
@@ -124,6 +131,21 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
           >
             <Trash/>
           </Button>
+          )}
+          {visibleActions.includes('details') && (    
+          <Button variant={'outline'} size={'icon'}
+            onClick={async () => {
+              const { message, status } = await deleteWithId()
+              if (!status) {
+                return toast.error(message)
+              }
+              toast.success(message)
+            }}
+          >
+            <Trash/>
+          </Button>
+          )}
+
         </div>
       )
     },

@@ -15,7 +15,8 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
         }
     }
 
-    const { id, ...rest } = parsed.data
+
+    const { id, dateOfBirth, dateOfJoining, reportingManagerId , ...rest } = parsed.data
     void id
 
     try {
@@ -30,11 +31,14 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
         await prisma.employee.create({
             data: {
                 ...rest,
-                tenantId: businessId
+                tenantId: businessId,
+                dateOfBirth: new Date(dateOfBirth),
+                dateOfJoining: new Date(dateOfJoining),
+                reportingManagerId: reportingManagerId || null
             }
         })
 
-        revalidatePath('/employee')
+        revalidatePath('/employees')
 
         return {
             status: true,
@@ -91,7 +95,7 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
             data: parsed.data
         })
 
-        revalidatePath('/employee')
+        revalidatePath('/employees')
 
         return {
             status: true,
@@ -142,7 +146,7 @@ export async function deleteEmployee(id: string) {
                 id
             },
         })
-        revalidatePath('/employee')
+        revalidatePath('/employees')
 
         return {
             status: true,

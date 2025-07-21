@@ -1,29 +1,16 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
-import React from 'react'
-import Form from './form'
-import { getEmployee } from '@/services/employee'
-import { Department, Designation, Employee, WorkLocation } from '@prisma/client'
+import { Button } from '@/components/ui/button'
 import { EmployeeWithRelations } from '@/lib/types'
+import { PlusIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { deleteEmployee } from './action'
 
 type EmployeeListProps = {
   employees?: EmployeeWithRelations[]
-  departments?: Department[]
-  designations?: Designation[]
-  workLocations?: WorkLocation[]
 }
 
-const EmployeeList =  ({ employees, departments, designations, workLocations }: EmployeeListProps) => {
-  const [showForm, setShowForm] = React.useState(false)
-  const [employee, setEmployee] = React.useState<Employee | null>(null)
-
-  const toggleForm = () => {
-    setShowForm(!showForm)
-    if (showForm) {
-      setEmployee(null)
-    }
-  }
+const EmployeeList =  ({ employees }: EmployeeListProps) => {
 
   const processedEmployees =
     employees?.map(employee => {
@@ -36,7 +23,8 @@ const EmployeeList =  ({ employees, departments, designations, workLocations }: 
     }) ?? []
 
   type TableData = {
-    editMode: 'toggle' | 'redirect'
+    editMode: 'toggle' | 'redirect',
+    visibleActions: ('details' | 'edit' | 'delete')[]
     columnData: {
       header: string
       accessorKey: keyof (typeof processedEmployees)[number]
@@ -48,6 +36,7 @@ const EmployeeList =  ({ employees, departments, designations, workLocations }: 
 
   const tableData: TableData = {
     editMode: 'toggle',
+    visibleActions:['details','details'],
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
       { header: 'Email', accessorKey: 'email', sortable: true, filterable: true },
@@ -59,25 +48,15 @@ const EmployeeList =  ({ employees, departments, designations, workLocations }: 
     data: processedEmployees
   }
 
-  const onEdit = async (id: string) => {
-    if (!id) return null
-    const employee = await getEmployee(id)
-    setEmployee(employee)
-    toggleForm()
-  }
-  
+  const router = useRouter()
 
   return (
     <div className='flex flex-col items-end gap-6'>
-      <Form
-        departments={departments}
-        designations={designations}
-        workLocations={workLocations}
-        showForm={showForm}
-        employee={employee}
-        toggleForm={toggleForm}
-      />
-      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteEmployee}/>
+    <Button onClick={() => router.push('/employees/form/personal-details')}>
+      <PlusIcon/>
+      Create Employee
+    </Button>
+      <SharedTable tableData={tableData}  onDelete={deleteEmployee}/>
     </div>
   )
 }

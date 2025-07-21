@@ -19,6 +19,7 @@ export default function MemberInvite({invites}:{invites:Invite[]}) {
 
     type TableData = {
     editMode: 'toggle' | 'redirect'
+    visibleActions: ('details' | 'edit' | 'delete')[]
     columnData: {
       header: string
       accessorKey: keyof Invite
@@ -30,6 +31,7 @@ export default function MemberInvite({invites}:{invites:Invite[]}) {
 
     const tableData: TableData = {
     editMode: 'toggle',
+    visibleActions: ['edit', 'delete'],
     columnData: [
       { header: 'Email', accessorKey: 'email', sortable: true, filterable: true },
       { header: 'Role', accessorKey: 'role' },

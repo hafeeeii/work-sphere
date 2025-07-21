@@ -32,7 +32,7 @@ const items = [
   },
   {
     title: "Employees",
-    url: `/employee?${getDefaultSortById('name')}`,
+    url: `/employees?${getDefaultSortById('name')}`,
     icon: Briefcase,
   },
   // {

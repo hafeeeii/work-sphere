@@ -2,7 +2,7 @@
 import { SharedTable } from '@/components/shared-table'
 import React from 'react'
 import Form from './form'
-import { Department} from '@prisma/client'
+import { Department } from '@prisma/client'
 import { getDepartment } from '@/services/department'
 import { deleteDepartment } from './action'
 
@@ -10,7 +10,7 @@ type DepartmentTabProps = {
   departments: Department[]
 }
 
-const DepartmentTab =  ({ departments }: DepartmentTabProps) => {
+const DepartmentTab = ({ departments }: DepartmentTabProps) => {
   const [showForm, setShowForm] = React.useState(false)
   const [department, setDepartment] = React.useState<Department | null>(null)
 
@@ -21,13 +21,12 @@ const DepartmentTab =  ({ departments }: DepartmentTabProps) => {
     }
   }
 
-
-
   type TableData = {
     editMode: 'toggle' | 'redirect'
+    visibleActions: ('details' | 'edit' | 'delete')[]
     columnData: {
       header: string
-      accessorKey: keyof (Department[])[number]
+      accessorKey: keyof Department[][number]
       sortable?: boolean
       filterable?: boolean
     }[]
@@ -36,11 +35,12 @@ const DepartmentTab =  ({ departments }: DepartmentTabProps) => {
 
   const tableData: TableData = {
     editMode: 'toggle',
+    visibleActions: ['edit', 'delete'],
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
       { header: 'Code', accessorKey: 'code', sortable: true, filterable: true },
       { header: 'Description', accessorKey: 'description' },
-      {header:'Total Employees', accessorKey:'totalEmployees'}
+      { header: 'Total Employees', accessorKey: 'totalEmployees' }
     ],
     data: departments ?? []
   }
@@ -51,16 +51,11 @@ const DepartmentTab =  ({ departments }: DepartmentTabProps) => {
     setDepartment(department)
     toggleForm()
   }
-  
 
   return (
     <div className='flex flex-col items-end gap-6'>
-      <Form
-        department={department}
-        showForm={showForm}
-        toggleForm={toggleForm}
-      />
-      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDepartment}/>
+      <Form department={department} showForm={showForm} toggleForm={toggleForm} />
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDepartment} />
     </div>
   )
 }

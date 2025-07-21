@@ -23,6 +23,7 @@ const DesignationTab = ({ designations }: DesignationTabProps) => {
 
   type TableData = {
     editMode: 'toggle' | 'redirect'
+    visibleActions: ('details' | 'edit' | 'delete')[]
     columnData: {
       header: string
       accessorKey: keyof Designation[][number]
@@ -34,6 +35,7 @@ const DesignationTab = ({ designations }: DesignationTabProps) => {
 
   const tableData: TableData = {
     editMode: 'toggle',
+    visibleActions: ['edit', 'delete'],
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
       { header: 'Total Employees', accessorKey: 'totalEmployees' }
@@ -51,7 +53,7 @@ const DesignationTab = ({ designations }: DesignationTabProps) => {
   return (
     <div className='flex flex-col items-end gap-6'>
       <Form designation={designation} showForm={showForm} toggleForm={toggleForm} />
-      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDesignation}/>
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDesignation} />
     </div>
   )
 }

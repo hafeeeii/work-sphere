@@ -140,7 +140,7 @@ export const applyLeave = async (prev: unknown, formData: FormData) => {
 //             data: parsed.data
 //         })
 
-//         revalidatePath('/employee')
+//         revalidatePath('s')
 
 //         return {
 //             status: true,
