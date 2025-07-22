@@ -16,7 +16,7 @@ import * as React from 'react'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import clsx from 'clsx'
-import { Pencil, Trash } from 'lucide-react'
+import { Eye, Pencil, Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu'
@@ -25,14 +25,15 @@ import { Input } from './ui/input'
 type Props<T extends object> = {
   onEdit?: (id: string) => void
   onDelete: (id: string) => Promise<{
-    status: boolean;
-    message: string;
-    error: unknown;
-}>,
+    status: boolean
+    message: string
+    error: unknown
+  }>
   tableData: {
-    editMode: 'toggle' | 'redirect',
+    editMode: 'toggle' | 'redirect'
     visibleActions: ('details' | 'edit' | 'delete')[]
-    editRedirectPath?: string,
+    editRedirectPath?: string
+    detailsRedirectPath?: string
     data: T[]
     columnData: {
       header: string
@@ -50,7 +51,11 @@ type Props<T extends object> = {
   renderSubComponent?: (props: { row: Row<T> }) => React.ReactElement
 }
 
-export function SharedTable<T extends object>({ tableData: { columnData, data , editMode, editRedirectPath,visibleActions }, onEdit, onDelete }: Props<T>) {
+export function SharedTable<T extends object>({
+  tableData: { columnData, data, editMode, editRedirectPath, visibleActions, detailsRedirectPath },
+  onEdit,
+  onDelete
+}: Props<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -98,57 +103,57 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
     loadData()
   }, [sorting, columnFilters, pagination])
 
-
-  const actions =  {
-    id: "actions",
+  const actions = {
+    id: 'actions',
     enableHiding: false,
-    cell: ({ row }:{row:Row<{id: string }>}) => {
+    cell: ({ row }: { row: Row<{ id: string }> }) => {
       const deleteWithId = onDelete.bind(null, row.original.id)
       return (
         <div className='flex justify-end gap-2'>
           {visibleActions.includes('edit') && (
-          <Button variant={'outline'} size={'icon'}
-            onClick={() => {
+            <Button
+              variant={'outline'}
+              size={'icon'}
+              onClick={() => {
                 if (onEdit && editMode === 'toggle') {
                   onEdit(row.original.id)
-                } else if(editMode === 'redirect') {
+                } else if (editMode === 'redirect') {
                   router.push(`${editRedirectPath}/${row.original.id}`)
                 }
               }}
-          >
-            <Pencil/>
-          </Button>
+            >
+              <Pencil />
+            </Button>
           )}
-          {visibleActions.includes('delete') && (    
-          <Button variant={'outline'} size={'icon'}
-            onClick={async () => {
-              const { message, status } = await deleteWithId()
-              if (!status) {
-                return toast.error(message)
-              }
-              toast.success(message)
-            }}
-          >
-            <Trash/>
-          </Button>
+          {visibleActions.includes('details') && (
+            <Button
+              variant={'outline'}
+              size={'icon'}
+              onClick={() => {
+                router.push(`${detailsRedirectPath}/${row.original.id}`)
+              }}
+            >
+              <Eye />
+            </Button>
           )}
-          {visibleActions.includes('details') && (    
-          <Button variant={'outline'} size={'icon'}
-            onClick={async () => {
-              const { message, status } = await deleteWithId()
-              if (!status) {
-                return toast.error(message)
-              }
-              toast.success(message)
-            }}
-          >
-            <Trash/>
-          </Button>
+          {visibleActions.includes('delete') && (
+            <Button
+              variant={'outline'}
+              size={'icon'}
+              onClick={async () => {
+                const { message, status } = await deleteWithId()
+                if (!status) {
+                  return toast.error(message)
+                }
+                toast.success(message)
+              }}
+            >
+              <Trash />
+            </Button>
           )}
-
         </div>
       )
-    },
+    }
   }
 
   const columns: ColumnDef<T>[] = columnData.map(val => ({
@@ -161,8 +166,7 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
         {val.header}
       </div>
     ),
-    cell: ({ row }) => <div>{row.getValue(val.accessorKey as string)}</div>,
-    
+    cell: ({ row }) => <div>{row.getValue(val.accessorKey as string)}</div>
   }))
 
   columns.push(actions as ColumnDef<T>)
@@ -176,7 +180,7 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
     getCoreRowModel: getCoreRowModel(),
     manualSorting: true,
     manualFiltering: true,
-    manualPagination:true,
+    manualPagination: true,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
@@ -189,8 +193,8 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
   })
 
   return (
-    <div className='w-full space-y-2 '>
-      <div className='flex items-center gap-2 '>
+    <div className='w-full space-y-2'>
+      <div className='flex items-center gap-2'>
         {columnData.map(
           (item, idx) =>
             item.filterable && (
@@ -240,32 +244,28 @@ export function SharedTable<T extends object>({ tableData: { columnData, data , 
       </div>
       <div className='flex items-center justify-end space-x-2 py-4'>
         <div className='flex-1 text-sm text-muted-foreground'>
-              <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">{pagination.pageSize}</Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent >
-        {[5,10, 20, 30, 40, 50].map(pageSize => (
-          <DropdownMenuCheckboxItem
-            key={pageSize}
-            checked={pageSize === pagination.pageSize}
-            onCheckedChange={() => setPagination((prev) => ({ ...prev, pageSize }))}
-          >
-            {pageSize}
-          </DropdownMenuCheckboxItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='outline'>{pagination.pageSize}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {[5, 10, 20, 30, 40, 50].map(pageSize => (
+                <DropdownMenuCheckboxItem
+                  key={pageSize}
+                  checked={pageSize === pagination.pageSize}
+                  onCheckedChange={() => setPagination(prev => ({ ...prev, pageSize }))}
+                >
+                  {pageSize}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className='space-x-2'>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.previousPage()}
-          >
+          <Button variant='outline' size='sm' onClick={() => table.previousPage()}>
             Previous
           </Button>
-          <Button variant='outline' size='sm' onClick={() => table.nextPage()} >
+          <Button variant='outline' size='sm' onClick={() => table.nextPage()}>
             Next
           </Button>
         </div>

@@ -10,28 +10,16 @@ import { Input } from '@/components/ui/input'
 import RequiredLabel from '@/components/ui/required-label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { EmployeeFormValues, EmployeeSchema } from '@/lib/types'
-import { BankAccountType } from '@prisma/client'
-import { ArrowLeft } from 'lucide-react'
+import { BankAccountType, Employee } from '@prisma/client'
+import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { useMultistepForm } from '../form/multistep-form-provider'
-import { saveEmployee } from './action'
+import { updateEmployee } from '../../../views/action'
 
-export default function IdentificationAndBankInfo() {
-  const { formData, clearFormData, updateFormData, updateStep } = useMultistepForm()
-  const [saveState, saveAction, isSavePending] = useActionState(saveEmployee, undefined)
-  const {
-    bankName,
-    bankAccountHolderName,
-    bankAccountNumber,
-    bankIfscCode,
-    bankBranch,
-    bankAccountType,
-    aadhaarNumber,
-    panNumber,
-    driverLicenseNumber
-  } = formData
+export default function IdentificationAndBankInfoEdit({ employee }: { employee: Employee }) {
+
+  const [updateState, updateAction, isUpdatePending] = useActionState(updateEmployee, undefined)
 
   const form = useForm({
     mode: 'onChange',
@@ -49,15 +37,15 @@ export default function IdentificationAndBankInfo() {
       })
     ),
     defaultValues: {
-      bankName,
-      bankAccountHolderName,
-      bankAccountNumber,
-      bankIfscCode,
-      bankBranch,
-      bankAccountType: bankAccountType || BankAccountType.SAVINGS,
-      aadhaarNumber,
-      panNumber,
-      driverLicenseNumber
+      bankName: employee.bankName,
+      bankAccountHolderName: employee.bankAccountHolderName,
+      bankAccountNumber: employee.bankAccountNumber,
+      bankIfscCode: employee.bankIfscCode,
+      bankBranch: employee.bankBranch,
+      bankAccountType: employee.bankAccountType || BankAccountType.SAVINGS,
+      aadhaarNumber: employee.aadhaarNumber || '',
+      panNumber: employee.panNumber || '',
+      driverLicenseNumber: employee.driverLicenseNumber || ''
     }
   })
 
@@ -68,33 +56,31 @@ export default function IdentificationAndBankInfo() {
   const router = useRouter()
 
   useEffect(() => {
-    if (saveState?.status) {
-      clearFormData()
-      updateStep(0)
-      router.push('/employees')
+    if (updateState?.status) {
+      router.push(`/employees/${employee.id}`)
     }
 
-    if (saveState?.message) {
-      if (saveState.status) {
-        toast.success(saveState.message)
+    if (updateState?.message) {
+      if (updateState.status) {
+        toast.success(updateState.message)
       } else {
-        toast.error(saveState.message)
+        toast.error(updateState.message)
       }
     }
-  }, [saveState])
+  }, [updateState])
 
   function onSubmit(values: Partial<EmployeeFormValues>) {
-    const data = { ...formData, ...values }
+    const data = { ...employee, ...values }
     const payload = new FormData()
     Object.keys(data).forEach(key => {
       const value = data[key as keyof typeof data]
-      if (value !== undefined) {
+      if (value !== undefined && value !== null) {
         payload.append(key, value.toString())
       }
     })
-    updateFormData(values)
-    startTransition(() => saveAction(payload))
+    startTransition(() => updateAction(payload))
   }
+
   return (
     <div className='w-full'>
       <Form {...form}>
@@ -258,19 +244,13 @@ export default function IdentificationAndBankInfo() {
             </div>
           </div>
 
-          {/* Navigation Buttons */}
           <div className='flex justify-end gap-4'>
-            <Button type='button' variant='outline' onClick={() => {
-              const values = form.getValues()
-              updateStep(1)
-              updateFormData(values)
-              router.back()
-            }}>
-              <ArrowLeft />
-              Back
+            <Button type='button' variant='outline' onClick={() => router.back()}>
+              <X />
+              Cancel
             </Button>
-            <LoadingButton type='submit' disabled={!isValid || isSavePending} isLoading={isSavePending}>
-              Save
+            <LoadingButton isLoading={isUpdatePending} type='submit' disabled={!isValid || isUpdatePending}>
+              Update
             </LoadingButton>
           </div>
         </form>

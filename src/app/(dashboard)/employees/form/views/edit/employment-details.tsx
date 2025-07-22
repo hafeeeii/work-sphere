@@ -5,36 +5,40 @@ import { useForm } from 'react-hook-form'
 
 import { Autocomplete } from '@/components/ui/autocomplete'
 import { Button } from '@/components/ui/button'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import { Calendar } from '@/components/ui/calendar'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import RequiredLabel from '@/components/ui/required-label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { getFormattedDate } from '@/lib/date'
 import { EmployeeFormValues, EmployeeSchema } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import { Department, Designation, EmploymentType, TenantUser, User, WorkLocation } from '@prisma/client'
+import { Department, Designation, Employee, EmploymentType, TenantUser, User, WorkLocation } from '@prisma/client'
 import { format } from 'date-fns'
-import { ArrowLeft, ArrowRight, CalendarIcon } from 'lucide-react'
+import { CalendarIcon, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useMultistepForm } from '../form/multistep-form-provider'
-import { Input } from '@/components/ui/input'
+import { startTransition, useActionState, useEffect } from 'react'
+import { toast } from 'sonner'
+import { updateEmployee } from '../../../views/action'
 
-type EmploymentDetailsProps = {
+type EmploymentDetailsEditProps = {
   departments: Department[]
   designations: Designation[]
   workLocations: WorkLocation[]
   managers: (TenantUser & { user: User })[]
+  employee: Employee 
 }
 
-export default function EmploymentDetails({
+export default function EmploymentDetailsEdit({
   departments,
   designations,
   workLocations,
-  managers
-}: EmploymentDetailsProps) {
-  const { formData, updateFormData, updateStep } = useMultistepForm()
-  const { employmentType, dateOfJoining, designation, department, workLocation, reportingManagerId, workEmail } =
-    formData
+  managers,
+  employee
+}: EmploymentDetailsEditProps) {
+  const [updateState, updateAction, isUpdatePending] = useActionState(updateEmployee, undefined)
 
   const form = useForm({
     mode: 'onChange',
@@ -50,13 +54,13 @@ export default function EmploymentDetails({
       })
     ),
     defaultValues: {
-      employmentType: employmentType || EmploymentType.FULL_TIME,
-      dateOfJoining,
-      designation,
-      department,
-      workLocation,
-      reportingManagerId,
-      workEmail
+      employmentType: employee.employmentType || EmploymentType.FULL_TIME,
+      dateOfJoining: getFormattedDate(employee.dateOfJoining),
+      designation: employee.designation,
+      department: employee.department,
+      workLocation: employee.workLocation,
+      reportingManagerId: employee?.reportingManagerId || '',
+      workEmail: employee?.workEmail || ''
     }
   })
 
@@ -65,10 +69,31 @@ export default function EmploymentDetails({
   } = form
 
   const router = useRouter()
+
+  useEffect(() => {
+    if (updateState?.status) {
+      router.push(`/employees/${employee.id}`)
+    }
+
+    if (updateState?.message) {
+      if (updateState.status) {
+        toast.success(updateState.message)
+      } else {
+        toast.error(updateState.message)
+      }
+    }
+  }, [updateState])
+
   function onSubmit(values: Partial<EmployeeFormValues>) {
-    updateFormData(values)
-    updateStep(2)
-    router.push('/employees/form/identification-and-bank-info')
+    const data = { ...employee, ...values }
+    const payload = new FormData()
+    Object.keys(data).forEach(key => {
+      const value = data[key as keyof typeof data]
+      if (value !== undefined && value !== null) {
+        payload.append(key, value.toString())
+      }
+    })
+    startTransition(() => updateAction(payload))
   }
 
   const managersList = managers.map(item => ({
@@ -245,21 +270,13 @@ export default function EmploymentDetails({
           </div>
 
           <div className='flex justify-end gap-4'>
-            <Button
-              type='button'
-              variant={'outline'}
-              onClick={() => {
-                updateStep(0)
-                router.back()
-              }}
-            >
-              <ArrowLeft />
-              Back
+            <Button type='button' variant='outline' onClick={() => router.back()}>
+              <X />
+              Cancel
             </Button>
-            <Button type='submit' disabled={!isValid}>
-              Next
-              <ArrowRight />
-            </Button>
+            <LoadingButton isLoading={isUpdatePending} type='submit' disabled={!isValid || isUpdatePending}>
+              Update
+            </LoadingButton>
           </div>
         </form>
       </Form>

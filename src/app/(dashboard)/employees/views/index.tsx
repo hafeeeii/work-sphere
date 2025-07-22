@@ -24,7 +24,8 @@ const EmployeeList =  ({ employees }: EmployeeListProps) => {
 
   type TableData = {
     editMode: 'toggle' | 'redirect',
-    visibleActions: ('details' | 'edit' | 'delete')[]
+    visibleActions: ('details' | 'edit' | 'delete')[],
+    detailsRedirectPath?: string
     columnData: {
       header: string
       accessorKey: keyof (typeof processedEmployees)[number]
@@ -36,7 +37,8 @@ const EmployeeList =  ({ employees }: EmployeeListProps) => {
 
   const tableData: TableData = {
     editMode: 'toggle',
-    visibleActions:['details','details'],
+    visibleActions:['details','delete'],
+    detailsRedirectPath:'/employees',
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
       { header: 'Email', accessorKey: 'email', sortable: true, filterable: true },

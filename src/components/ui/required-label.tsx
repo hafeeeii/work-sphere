@@ -1,10 +1,10 @@
 import React from 'react';
-import { FormLabel } from './form';
+import { Label } from './label';
 
 const RequiredLabel = ({ htmlFor, children }: { htmlFor?: string; children: React.ReactNode }) => (
-  <FormLabel htmlFor={htmlFor}>
+  <Label htmlFor={htmlFor}>
     {children} <span className='text-red-500'>*</span>
-  </FormLabel>
+  </Label>
 )
 
 export default RequiredLabel

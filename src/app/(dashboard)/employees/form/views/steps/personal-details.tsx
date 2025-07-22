@@ -16,7 +16,7 @@ import { Gender, MaritalStatus } from '@prisma/client'
 import { format } from 'date-fns'
 import { ArrowRight, CalendarIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useMultistepForm } from '../form/multistep-form-provider'
+import { useMultistepForm } from '../../multistep-form-provider'
 
 export default function PersonalDetails() {
   const { formData, updateFormData, updateStep } = useMultistepForm()

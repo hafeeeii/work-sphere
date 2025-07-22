@@ -1,6 +1,6 @@
 
-import StepperHeader from '../views/stepper-header'
 import MultistepFormProvider from './multistep-form-provider'
+import StepperHeader from './views/stepper-header'
 
 export default function Layout({
   children

@@ -2,13 +2,12 @@ import React from 'react'
 import prisma from '@/lib/prisma'
 import { getBusinessInfo } from '@/lib/business'
 import { redirect } from 'next/navigation'
-import EmploymentDetails from '../../views/employment-details'
 import { Role } from '@prisma/client'
-
+import EmploymentDetails from '@/app/(dashboard)/employees/form/views/steps/employment-details'
 export default async function EmploymentDetailsPage() {
   const business = await getBusinessInfo()
   if (!business || !business.data) {
-    redirect('/business')
+    redirect('/login')
   }
 
   const {

@@ -16,7 +16,7 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
     }
 
 
-    const { id, dateOfBirth, dateOfJoining, reportingManagerId , ...rest } = parsed.data
+    const { id, dateOfBirth, dateOfJoining, reportingManagerId, ...rest } = parsed.data
     void id
 
     try {
@@ -66,6 +66,8 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
         }
     }
 
+    const { dateOfBirth, dateOfJoining, reportingManagerId, ...rest } = parsed.data
+
     try {
         const business = await getBusinessInfo()
 
@@ -77,10 +79,13 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
 
         const employee = await prisma.employee.findUnique({
             where: {
-                id: parsed.data.id
+                tenantId_id: {
+                    id: parsed.data.id,
+                    tenantId: businessId
+                }
             }
         })
-        if (!employee || employee.tenantId !== businessId) {
+        if (!employee) {
             return {
                 status: false,
                 message: 'Employee not found',
@@ -90,9 +95,17 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
 
         await prisma.employee.update({
             where: {
-                id: parsed.data.id
+                tenantId_id: {
+                    id: parsed.data.id,
+                    tenantId: businessId
+                }
             },
-            data: parsed.data
+            data: {
+                ...rest,
+                dateOfBirth: new Date(dateOfBirth),
+                dateOfJoining: new Date(dateOfJoining),
+                reportingManagerId: reportingManagerId || null
+            }
         })
 
         revalidatePath('/employees')

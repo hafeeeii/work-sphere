@@ -194,6 +194,7 @@ model Employee {
   updatedAt DateTime @updatedAt
 
   @@unique([tenantId, email])
+  @@unique([tenantId, id])
 }
 
 model Designation {
