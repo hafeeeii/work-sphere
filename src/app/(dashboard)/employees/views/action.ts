@@ -1,32 +1,47 @@
 'use server'
+import { EmailTemplate } from "@/components/email-template"
 import { getBusinessInfo } from "@/lib/business"
 import prisma from "@/lib/prisma"
 import { EmployeeSchema } from "@/lib/types"
+import { rootDomain } from "@/lib/utils"
 import { revalidatePath } from "next/cache"
+import { Resend } from "resend"
 
 
 export async function saveEmployee(prevState: unknown, formData: FormData) {
-    const parsed = EmployeeSchema.safeParse(Object.fromEntries(formData))
+    const parsed = EmployeeSchema.safeParse({ ...Object.fromEntries(formData), inviteUser: formData.get('inviteUser') === 'true' })
     if (!parsed.success) {
         return {
             status: false,
-            message: 'Please fill all the required fields',
+            message: parsed.error.message,
             error: parsed.error.message
         }
     }
 
 
-    const { id, dateOfBirth, dateOfJoining, reportingManagerId, ...rest } = parsed.data
+    const { id, dateOfBirth, dateOfJoining, reportingManagerId, inviteUser, ...rest } = parsed.data
     void id
 
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+        const { businessId, userId, businessName } = business.data
+
+        // check if employee with same email already exists 
+
+        const employee = await prisma.employee.findUnique({
+            where: {
+                email: parsed.data.email
+            }
+        })
+
+        if (employee) {
+            throw new Error('Employee with same email already exists')
+        }
 
         await prisma.employee.create({
             data: {
@@ -34,11 +49,71 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
                 tenantId: businessId,
                 dateOfBirth: new Date(dateOfBirth),
                 dateOfJoining: new Date(dateOfJoining),
-                reportingManagerId: reportingManagerId || null
+                reportingManagerId: reportingManagerId || null,
+                inviteUser,
             }
         })
 
-        revalidatePath('/employees')
+
+        if (inviteUser) {
+            // checks if user already part of the business
+
+            const userAlreadyExists = await prisma.user.findUnique({
+                where: {
+                    email: parsed.data.email
+                }
+            })
+
+            if (userAlreadyExists) {
+                const userAlreadyPartOfBusiness = await prisma.tenantUser.findUnique({
+                    where: {
+                        userId_tenantId: {
+                            userId: userAlreadyExists.id,
+                            tenantId: businessId
+                        }
+                    }
+                })
+
+                if (userAlreadyPartOfBusiness) {
+                    return {
+                        status: true,
+                        message: 'Employee created successfully',
+                        error: null
+                    }
+                }
+
+            }
+
+            // if user not exist/not part of business, invite user
+
+            const invite = await prisma.invite.create({
+                data: {
+                    tenantId: businessId,
+                    invitedBy: userId,
+                    name: parsed.data.name,
+                    email: parsed.data.email,
+                    role: parsed.data.role
+                },
+                include: {
+                    inviter: true
+                }
+            })
+
+            const resend = new Resend(process.env.RESEND_API_KEY)
+            const result = await resend.emails.send({
+                from: `${businessName} <noreply@invite.worksphere.icu>`,
+                to: parsed.data.email,
+                subject: `Invitation from ${businessName}`,
+                react: EmailTemplate({ name: parsed.data.name, businessName, inviteLink: `${rootDomain}/business/invites`, invitedBy: invite.inviter?.name ?? 'Admin', inviteEmail: parsed.data.email }),
+
+            })
+
+            if (result.error) {
+                throw new Error(result.error?.message || 'Failed to send email')
+            }
+
+        }
+
 
         return {
             status: true,
@@ -49,7 +124,7 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
         const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
+            message: err?.message || 'Something went wrong',
             error: err
         }
     }
@@ -57,11 +132,11 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
 }
 
 export async function updateEmployee(prevState: unknown, formData: FormData) {
-    const parsed = EmployeeSchema.safeParse(Object.fromEntries(formData))
+    const parsed = EmployeeSchema.safeParse({ ...Object.fromEntries(formData), inviteUser: formData.get('inviteUser') === 'true' })
     if (!parsed.success) {
         return {
             status: false,
-            message: 'Please fill all the required fields',
+            message: parsed.error.message,
             error: parsed.error.message
         }
     }
@@ -104,7 +179,7 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
                 ...rest,
                 dateOfBirth: new Date(dateOfBirth),
                 dateOfJoining: new Date(dateOfJoining),
-                reportingManagerId: reportingManagerId || null
+                reportingManagerId: reportingManagerId || null,
             }
         })
 

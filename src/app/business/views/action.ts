@@ -4,6 +4,7 @@ import { createDefaultBusinessLeaveBalanceForUser, defaultLeaveTypes } from "@/l
 import prisma from "@/lib/prisma"
 import { getValidSession } from "@/lib/session"
 import { BusinessSchema } from "@/lib/types"
+import { Role } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 
@@ -65,7 +66,7 @@ export async function createBusiness(prevState: unknown,
                 data: {
                     userId: ownerId,
                     tenantId: tenant.id,
-                    role: 'OWNER'
+                    role: Role.OWNER
                 }
             })
 

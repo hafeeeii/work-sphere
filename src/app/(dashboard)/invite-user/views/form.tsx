@@ -32,7 +32,7 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
     name: invite?.name ?? '',
     id: invite?.id ?? '',
     email: invite?.email ?? '',
-    role: invite?.role ?? Role.EMPLOYEE
+    role: invite?.role ?? Role.VIEWER
   } as const
 
   const {
@@ -89,12 +89,12 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
       <DialogTrigger asChild>
         <Button className='max-w-fit' onClick={onClose}>
           <PlusIcon  />
-          Invite Member
+          Invite User
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Invite Member</DialogTitle>
+          <DialogTitle>Invite User</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className='w-full space-y-6'>
           <div className='space-y-4'>
@@ -121,7 +121,7 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
                 </div>
               </div>
                <div className='grid w-full gap-1.5'>
-                  <RequiredLabel htmlFor='gender'>Role</RequiredLabel>
+                  <RequiredLabel htmlFor='role'>Role</RequiredLabel>
                   <Controller
                     name='role'
                     control={control}
@@ -131,10 +131,9 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
                           <SelectValue placeholder='Select gender' />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={Role.OWNER}>Owner</SelectItem>
-                          <SelectItem value={Role.OWNER}>Admin</SelectItem>
-                          <SelectItem value={Role.MANAGER}>Manager</SelectItem>
-                          <SelectItem value={Role.EMPLOYEE}>Employee</SelectItem>
+                          <SelectItem value={Role.VIEWER}>Viewer</SelectItem>
+                          <SelectItem value={Role.AUDITOR}>Auditor</SelectItem>
+                          <SelectItem value={Role.STAKEHOLDER}>Stakeholder</SelectItem>
 
                         </SelectContent>
                       </Select>

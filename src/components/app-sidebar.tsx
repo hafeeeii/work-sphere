@@ -46,8 +46,8 @@ const items = [
   //   icon: GraduationCap, 
   // },
   {
-    title: "Invite Member",
-    url: "/invite-member",
+    title: "Invite Users",
+    url: "/invite-user",
     icon: User2Icon, 
   },
   {

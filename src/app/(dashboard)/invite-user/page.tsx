@@ -1,8 +1,8 @@
 import { getBusinessInfo } from '@/lib/business'
 import prisma from '@/lib/prisma'
-import MemberInvite from './views'
+import UserInvite from './views'
 
-export default async function MemberInvitePage({ searchParams }: { searchParams: Promise<{ [key: string]: string }> }) {
+export default async function UserInvitePage({ searchParams }: { searchParams: Promise<{ [key: string]: string }> }) {
   const queryParams = await searchParams
   const { sortBy = 'email', sortOrder = 'desc', email, page = '0', pageSize = '10' } = queryParams
 
@@ -29,5 +29,5 @@ export default async function MemberInvitePage({ searchParams }: { searchParams:
   })
 
 
-  return <MemberInvite invites={invites} />
+  return <UserInvite invites={invites} />
 }

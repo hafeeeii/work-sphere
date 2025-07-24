@@ -1,14 +1,12 @@
 'use client'
 import { EmployeeFormValues } from '@/lib/types'
-import { BankAccountType, EmploymentType, Gender, MaritalStatus } from '@prisma/client'
+import { BankAccountType, EmploymentType, Gender, MaritalStatus, Role } from '@prisma/client'
 import { createContext, useContext, useState } from 'react'
 
 interface MultistepFormContextType {
   formData: EmployeeFormValues
-  currentStep:number
   updateFormData: (data: Partial<EmployeeFormValues>) => void
   clearFormData: () => void
-  updateStep: (step: number) => void
 }
 
 const initialFormData: EmployeeFormValues = {
@@ -36,6 +34,7 @@ const initialFormData: EmployeeFormValues = {
   dateOfJoining: '',
   workLocation: '',
   reportingManagerId: '',
+  role: Role.EMPLOYEE,
 
   bankName: '',
   bankAccountHolderName: '',
@@ -43,22 +42,19 @@ const initialFormData: EmployeeFormValues = {
   bankAccountType: BankAccountType.SAVINGS,
   bankIfscCode: '',
   bankBranch: '',
+  inviteUser: true,
 }
 
 const MultistepFormContext = createContext<MultistepFormContextType | undefined>(undefined)
 
 const STORAGE_KEY = 'multistep-form-data'
-const CURRENT_STEP_KEY = 'current-step'
 
 export default function MultistepFormProvider({ children }: { children: React.ReactNode }) {
   const [formData, setFormData] = useState<EmployeeFormValues>(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     return saved ? JSON.parse(saved) : initialFormData
   })
-  const [currentStep, setCurrentStep] = useState(() => {
-    const saved = localStorage.getItem(CURRENT_STEP_KEY)
-    return saved ? parseInt(saved, 10) : 0
-  })
+
 
   const updateFormData = (data: Partial<EmployeeFormValues>) => {
     const updatedData = { ...formData, ...data }
@@ -71,13 +67,8 @@ export default function MultistepFormProvider({ children }: { children: React.Re
     localStorage.removeItem(STORAGE_KEY)
   }
 
-  const updateStep = (step: number) => {
-    setCurrentStep(step)
-    localStorage.setItem(CURRENT_STEP_KEY, step.toString())
-  }
-
   return (
-    <MultistepFormContext.Provider value={{ formData, updateFormData, clearFormData, currentStep, updateStep }}>
+    <MultistepFormContext.Provider value={{ formData, updateFormData, clearFormData }}>
       {children}
     </MultistepFormContext.Provider>
   )

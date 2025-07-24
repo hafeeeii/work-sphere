@@ -6,7 +6,7 @@ import React from 'react'
 import { deleteInvite } from './action'
 import Form from './form'
 
-export default function MemberInvite({invites}:{invites:Invite[]}) {
+export default function UserInvite({invites}:{invites:Invite[]}) {
    const [showForm, setShowForm] = React.useState(false)
     const [invite, setInvite] = React.useState<Invite | null>(null)
 

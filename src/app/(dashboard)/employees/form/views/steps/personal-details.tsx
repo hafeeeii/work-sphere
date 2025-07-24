@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
+import { Card, CardContent } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -19,7 +20,7 @@ import { useRouter } from 'next/navigation'
 import { useMultistepForm } from '../../multistep-form-provider'
 
 export default function PersonalDetails() {
-  const { formData, updateFormData, updateStep } = useMultistepForm()
+  const { formData, updateFormData } = useMultistepForm()
   const {
     id,
     name,
@@ -73,12 +74,12 @@ export default function PersonalDetails() {
   const router = useRouter()
   function onSubmit(values: Partial<EmployeeFormValues>) {
     updateFormData(values)
-    updateStep(1)
     router.push('/employees/form/employment-details')
   }
 
   return (
-    <div className='w-full'>
+    <Card className='w-full'>
+      <CardContent className='pt-2'>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
           {/* Row: Name & Email */}
@@ -310,6 +311,7 @@ export default function PersonalDetails() {
           </div>
         </form>
       </Form>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

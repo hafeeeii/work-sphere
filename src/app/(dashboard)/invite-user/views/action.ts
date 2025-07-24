@@ -94,7 +94,7 @@ export async function createInvite(prevState: unknown, formData: FormData) {
             }
         })
 
-        revalidatePath('/invite-member')
+        revalidatePath('/user-member')
 
         return {
             status: true,
@@ -152,7 +152,7 @@ export async function updateInvite(prevState: unknown, formData: FormData) {
             data: parsed.data
         })
 
-        revalidatePath('/invite-member')
+        revalidatePath('/user-member')
 
         return {
             status: true,
@@ -203,7 +203,7 @@ export async function deleteInvite(id: string) {
                 id
             },
         })
-        revalidatePath('/invite-member')
+        revalidatePath('/user-member')
 
         return {
             status: true,

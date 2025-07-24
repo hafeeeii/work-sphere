@@ -25,14 +25,11 @@ export default async function EmploymentDetailsEditPage({ params }: { params: Pr
     where: { tenantId }
   })
 
-  const managers = await prisma.tenantUser.findMany({
+  const managers = await prisma.employee.findMany({
     where: {
       tenantId,
       role: Role.MANAGER
     },
-    include: {
-      user: true
-    }
   })
 
   const employee = await prisma.employee.findUnique({

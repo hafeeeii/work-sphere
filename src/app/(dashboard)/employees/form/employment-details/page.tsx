@@ -23,14 +23,11 @@ export default async function EmploymentDetailsPage() {
     where: { tenantId }
   })
 
-  const managers = await prisma.tenantUser.findMany({
+  const managers = await prisma.employee.findMany({
     where:{
       tenantId,
       role:Role.MANAGER
     },
-    include:{
-      user:true
-    }
   })
 
   return <EmploymentDetails managers={managers} departments={departments} designations={designations} workLocations={workLocations} />

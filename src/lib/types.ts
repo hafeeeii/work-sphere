@@ -78,6 +78,7 @@ export const EmployeeSchema = z.object({
     dateOfJoining: required("Date of joining"),
     workLocation: required("Work Location"),
     reportingManagerId: z.string().optional(),
+    role: z.nativeEnum(Role),
 
     //  Bank Details
     bankName: required("Bank name"),
@@ -86,6 +87,7 @@ export const EmployeeSchema = z.object({
     bankAccountType:  z.nativeEnum(BankAccountType),
     bankIfscCode: required("Bank IFSC code"),
     bankBranch: required("Bank branch"),
+    inviteUser: z.boolean()
 })
 
 export type EmployeeFormValues = z.infer<typeof EmployeeSchema>

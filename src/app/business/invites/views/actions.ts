@@ -47,7 +47,7 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
         if (alreadyPartOfBusiness) {
             return {
                 status: false,
-                message: 'Already a member of this business',
+                message: 'Already part of this business',
             }
         }
 

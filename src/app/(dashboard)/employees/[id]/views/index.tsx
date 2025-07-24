@@ -4,6 +4,7 @@ import { getBusinessInfo } from '@/lib/business'
 import prisma from '@/lib/prisma'
 import { Mail, Phone } from 'lucide-react'
 import { redirect } from 'next/navigation'
+import InviteButton from './invite-button'
 import ProfileTab from './tabs/profile'
 
 export default async function EmployeeDetails({ id }: { id: string }) {
@@ -12,11 +13,13 @@ export default async function EmployeeDetails({ id }: { id: string }) {
     redirect('/login')
   }
 
+  const { businessId } = business?.data
+
   const employee = await prisma.employee.findUnique({
     where: {
       tenantId_id: {
         id,
-        tenantId: business.data.businessId
+        tenantId: businessId
       }
     },
     include: {
@@ -35,9 +38,18 @@ export default async function EmployeeDetails({ id }: { id: string }) {
         select: {
           name: true
         }
+      },
+      reportingManager:{
+        select: {
+          name: true
+        }
       }
     }
   })
+
+  if (!employee) {
+    return <div>Employee not found</div>
+  }
 
   const tabs = [
     { tab: 'Profile', content: <ProfileTab employee={employee} /> },
@@ -47,8 +59,13 @@ export default async function EmployeeDetails({ id }: { id: string }) {
 
     // { tab: 'Holidays', content: '' }
   ]
+
   return (
     <div className='space-y-6'>
+      {/* Shows invite button if employee is not invited */}
+
+       <InviteButton employee={employee} hasNotBeenInvited={!employee.inviteUser} />
+
       {/* Header Section */}
       <div className='overflow-hidden rounded-xl border'>
         <div className='flex items-center gap-8 p-4'>

@@ -12,6 +12,10 @@ enum Role {
   ADMIN
   MANAGER
   EMPLOYEE
+  HR
+  AUDITOR
+  STAKEHOLDER
+  VIEWER
 }
 
 enum NotificationType {
@@ -75,19 +79,18 @@ model Tenant {
 }
 
 model User {
-  id                     String             @id @default(uuid())
-  email                  String             @unique
-  passwordHash           String
-  name                   String
-  createdAt              DateTime           @default(now())
-  updatedAt              DateTime           @updatedAt
-  tenantUser             TenantUser[]
-  notification           Notification[]
-  notificationRead       NotificationRead[]
-  Invite                 Invite[]
-  leaves                 Leave[]
-  leaveBalance           leaveBalance[]
-  employeesReportingToMe Employee[]
+  id               String             @id @default(uuid())
+  email            String             @unique
+  passwordHash     String
+  name             String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  tenantUser       TenantUser[]
+  notification     Notification[]
+  notificationRead NotificationRead[]
+  Invite           Invite[]
+  leaves           Leave[]
+  leaveBalance     leaveBalance[]
 }
 
 // join table for many-to-many relationship between User and Tenant
@@ -129,7 +132,7 @@ model NotificationRead {
 model Invite {
   name       String
   id         String       @id @default(uuid())
-  email      String
+  email      String       @unique
   tenantId   String
   invitedBy  String
   role       Role
@@ -157,7 +160,7 @@ model Employee {
 
   // Contact Information
   phoneNumber  String
-  email        String
+  email        String  @unique
   workEmail    String?
   addressLine1 String?
   addressLine2 String?
@@ -168,12 +171,13 @@ model Employee {
   driverLicenseNumber String?
 
   //  Employment Details
-  designation       String
-  department        String
-  employmentType    EmploymentType
-  dateOfJoining     DateTime
-  workLocation      String
+  designation        String
+  department         String
+  employmentType     EmploymentType
+  dateOfJoining      DateTime
+  workLocation       String
   reportingManagerId String?
+  role               Role
 
   // Bank Details
   bankName              String
@@ -182,9 +186,11 @@ model Employee {
   bankAccountType       BankAccountType
   bankIfscCode          String
   bankBranch            String
+  inviteUser            Boolean         @default(true)
 
   // Relations
-  reportingManager User?        @relation(fields: [reportingManagerId], references: [id])
+  reportingManager Employee?        @relation("ManagerReportee",fields: [reportingManagerId], references: [id])
+  reportees     Employee[] @relation("ManagerReportee")
   workLocationMeta WorkLocation @relation(fields: [workLocation], references: [id])
   departmentMeta   Department   @relation(fields: [department], references: [id])
   designationMeta  Designation  @relation(fields: [designation], references: [id])

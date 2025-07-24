@@ -17,6 +17,9 @@ type ProfileTabProps = {
         departmentMeta: {
           name: string
         }
+        reportingManager: {
+          name: string
+        } | null
       })
     | null
 }
@@ -50,7 +53,8 @@ export default function ProfileTab({ employee }: ProfileTabProps) {
     { label: 'Work Email', value: employee?.workEmail || 'N/A' },
     { label: 'Employment Type', value: employee?.employmentType || 'N/A' },
     { label: 'Date of Joining', value: employee?.dateOfJoining ? getFormattedDate(employee.dateOfJoining) : 'N/A' },
-    { label: 'Reporting Manager', value: employee?.reportingManagerId || 'N/A' }
+    { label: 'Role', value: employee?.role },
+    { label: 'Reporting Manager', value: employee?.reportingManager?.name || 'N/A' }
   ]
 
   const bankInfo = [
