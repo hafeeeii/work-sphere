@@ -5,6 +5,8 @@ import Form from './form'
 import { Department } from '@prisma/client'
 import { getDepartment } from '@/services/department'
 import { deleteDepartment } from './action'
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
+import { checkPermission } from '@/lib/auth'
 
 type DepartmentTabProps = {
   departments: Department[]
@@ -52,10 +54,34 @@ const DepartmentTab = ({ departments }: DepartmentTabProps) => {
     toggleForm()
   }
 
+  const { businessUser } = useBusinessUser()
+
+  let isAllowedToCreate = false
+  let isAllowedToDelete = false
+  let isAllowedToEdit = false
+
+  if (businessUser) {
+    if (checkPermission(businessUser, 'create', 'department')) {
+      isAllowedToCreate = true
+    }
+    if (checkPermission(businessUser, 'delete', 'department')) {
+      isAllowedToDelete = true
+    }
+    if (checkPermission(businessUser, 'update', 'department')) {
+      isAllowedToEdit = true
+    }
+  }
+
   return (
     <div className='flex flex-col items-end gap-6'>
-      <Form department={department} showForm={showForm} toggleForm={toggleForm} />
-      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDepartment} />
+      {isAllowedToCreate && <Form department={department} showForm={showForm} toggleForm={toggleForm} />}
+      <SharedTable
+        tableData={tableData}
+        onEdit={onEdit}
+        onDelete={deleteDepartment}
+        isAllowedToDelete={isAllowedToDelete}
+        isAllowedToEdit={isAllowedToEdit}
+      />
     </div>
   )
 }

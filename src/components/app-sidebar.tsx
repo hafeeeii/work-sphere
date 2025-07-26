@@ -1,14 +1,7 @@
 'use client'
-import {
-  Briefcase,
-  Home,
-  LogOut,
-  Settings,
-  Umbrella,
-  User2Icon
-} from "lucide-react";
+import { Briefcase, Home, LogOut, Settings, Umbrella, User2Icon } from 'lucide-react'
 
-import { logout } from "@/app/(auth)/actions";
+import { logout } from '@/app/(auth)/actions'
 import {
   Sidebar,
   SidebarContent,
@@ -17,53 +10,69 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { getDefaultSortById } from "@/lib/sort-utils";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+  SidebarMenuItem
+} from '@/components/ui/sidebar'
+import { getDefaultSortById } from '@/lib/sort-utils'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
+import { checkPermission } from '@/lib/auth'
+export function AppSidebar() {
+  const path = usePathname()
+
+  
+const { businessUser } = useBusinessUser()
+
+let isAllowedToViewInviteUser = false
+if (businessUser && checkPermission(businessUser, 'view', 'invite-user')) {
+  isAllowedToViewInviteUser = true
+}
 
 // Menu items.
 const items = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home, 
+    title: 'Dashboard',
+    url: '/dashboard',
+    icon: Home
   },
   {
-    title: "Employees",
+    title: 'Employees',
     url: `/employees?${getDefaultSortById('name')}`,
-    icon: Briefcase,
+    icon: Briefcase
   },
   // {
   //   title: "Teams",
   //   url: "/teams",
-  //   icon: Building2, 
+  //   icon: Building2,
   // },
   // {
   //   title: "Training Programs",
   //   url: "/training-programs",
-  //   icon: GraduationCap, 
+  //   icon: GraduationCap,
   // },
+  ...(isAllowedToViewInviteUser
+    ? [
+        {
+          title: 'Invite Users',
+          url: '/invite-user',
+          icon: User2Icon
+        }
+      ]
+    : []),
   {
-    title: "Invite Users",
-    url: "/invite-user",
-    icon: User2Icon, 
-  },
-  {
-    title: "Leave Tracker",
-    url: "/leaves",
-    icon: Umbrella, 
-  },
+    title: 'Leave Tracker',
+    url: '/leaves',
+    icon: Umbrella
+  }
   // {
   //   title: "Performance Reviews",
   //   url: "/performance-reviews",
-  //   icon: Star, 
+  //   icon: Star,
   // },
   // {
   //   title: "Tasks",
   //   url: "/tasks",
-  //   icon: ListChecks, 
+  //   icon: ListChecks,
   // },
   // {
   //   title: "Time Tracking",
@@ -73,49 +82,46 @@ const items = [
   // {
   //   title: "Meetings/Company Events",
   //   url: "/meetings-events",
-  //   icon: CalendarDays, 
+  //   icon: CalendarDays,
   // },
   // {
   //   title: "News/Updates",
   //   url: "/news-updates",
-  //   icon: Newspaper, 
+  //   icon: Newspaper,
   // },
-
-];
+]
 
 const others = [
   // {
   //   title: "Profile",
   //   url: "/profile",
-  //   icon: User2, 
+  //   icon: User2,
   // },
   {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings, 
+    title: 'Settings',
+    url: '/settings',
+    icon: Settings
   },
   {
-    title: "Logout",
-    url: "/login",
-    icon: LogOut, 
-  },
+    title: 'Logout',
+    url: '/login',
+    icon: LogOut
+  }
 ]
 
-export function AppSidebar() {
-  const path = usePathname()
 
   const handleLogout = () => {
     logout()
   }
   return (
     <Sidebar>
-      <SidebarContent className="bg-card" >
+      <SidebarContent className='bg-card'>
         <SidebarGroup>
           <SidebarGroupLabel>MENU</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}  className="mt-3 pl-2 bg">
+              {items.map(item => (
+                <SidebarMenuItem key={item.title} className='bg mt-3 pl-2'>
                   <SidebarMenuButton asChild isActive={path === item.url}>
                     <Link href={item.url}>
                       <item.icon />
@@ -129,10 +135,14 @@ export function AppSidebar() {
           <SidebarGroupLabel>OTHERS</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {others.map((item) => (
-                <SidebarMenuItem key={item.title} className="mt-3 pl-2">
-                  <SidebarMenuButton asChild isActive={path === item.url} {...(item.url === '/login' ? {onClick: handleLogout} : {})}>
-                    <Link  href={item.url}>
+              {others.map(item => (
+                <SidebarMenuItem key={item.title} className='mt-3 pl-2'>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={path === item.url}
+                    {...(item.url === '/login' ? { onClick: handleLogout } : {})}
+                  >
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

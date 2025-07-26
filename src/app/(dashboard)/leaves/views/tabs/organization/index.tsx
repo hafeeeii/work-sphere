@@ -1,11 +1,37 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { checkPermission } from '@/lib/auth'
+import { getBusinessInfo } from '@/lib/business'
+import prisma from '@/lib/prisma'
+import { redirect } from 'next/navigation'
 import OnLeaveTab from './tabs/on-leave'
 import PendingRequestTab from './tabs/pending-request'
 
 export default async function OrganizationTab() {
+  const business = await getBusinessInfo()
+  if (!business || !business.data) {
+    redirect('/login')
+  }
+
+  const tenantUser = await prisma.tenantUser.findUnique({
+    where: {
+      userId_tenantId: {
+        tenantId: business.data.businessId,
+        userId: business.data.userId
+      }
+    }
+  })
+
+  let isAllowedToViewPendingRequest = false
+
+  if (tenantUser) {
+    if (checkPermission(tenantUser, 'view', 'leave-pending-request')) {
+      isAllowedToViewPendingRequest = true
+    }
+  }
+
   const tabs = [
     { tab: 'On Leave', content: <OnLeaveTab /> },
-    { tab: 'Pending Request', content: <PendingRequestTab /> }
+    ...(isAllowedToViewPendingRequest ? [{ tab: 'Pending Request', content: <PendingRequestTab /> }] : [])
 
     // { tab: 'Holidays', content: '' }
   ]
@@ -13,7 +39,7 @@ export default async function OrganizationTab() {
   return (
     <div className='flex flex-col gap-4'>
       <Tabs defaultValue={tabs[0].tab}>
-        <TabsList  className='grid w-full grid-cols-2'>
+        <TabsList className='grid w-full grid-cols-2'>
           {tabs.map(tab => (
             <TabsTrigger key={tab.tab} value={tab.tab}>
               {tab.tab}

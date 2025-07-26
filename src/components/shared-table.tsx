@@ -43,6 +43,8 @@ type Props<T extends object> = {
       filterable?: boolean
     }[]
   }
+  isAllowedToDelete?: boolean
+  isAllowedToEdit?: boolean
   pageIndex?: number
   pageSize?: number
   pageCount?: number
@@ -54,7 +56,9 @@ type Props<T extends object> = {
 export function SharedTable<T extends object>({
   tableData: { columnData, data, editMode, editRedirectPath, visibleActions, detailsRedirectPath },
   onEdit,
-  onDelete
+  onDelete,
+  isAllowedToDelete,
+  isAllowedToEdit,
 }: Props<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -110,7 +114,7 @@ export function SharedTable<T extends object>({
       const deleteWithId = onDelete.bind(null, row.original.id)
       return (
         <div className='flex justify-end gap-2'>
-          {visibleActions.includes('edit') && (
+          {(visibleActions.includes('edit') && isAllowedToEdit) && (
             <Button
               variant={'outline'}
               size={'icon'}
@@ -136,7 +140,7 @@ export function SharedTable<T extends object>({
               <Eye />
             </Button>
           )}
-          {visibleActions.includes('delete') && (
+          {(visibleActions.includes('delete') && isAllowedToDelete) && (
             <Button
               variant={'outline'}
               size={'icon'}

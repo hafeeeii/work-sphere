@@ -6,10 +6,12 @@ import { Send } from 'lucide-react'
 import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { inviteEmployee } from './actions'
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
+import { checkPermission } from '@/lib/auth'
 
 export default function InviteButton({
   employee,
-  hasNotBeenInvited,
+  hasNotBeenInvited
 }: {
   employee: Employee & {
     workLocationMeta: {
@@ -22,7 +24,7 @@ export default function InviteButton({
     designationMeta: {
       name: string
     }
-  },
+  }
   hasNotBeenInvited: boolean
 }) {
   const [inviteState, inviteAction, isInvitePending] = useActionState(inviteEmployee, undefined)
@@ -49,17 +51,30 @@ export default function InviteButton({
     startTransition(() => inviteAction(formData))
   }
 
-  return hasNotBeenInvited &&(
-    <Card>
-      <CardContent className='flex items-center justify-between py-4'>
-        <p className='text-sm'>
-          {' '}
-          An invitation has not been sent to this employee yet. Click the &quot;Invite&quot; button to send now
-        </p>
-        <LoadingButton onClick={handleInvite} isLoading={isInvitePending} icon={<Send />}>
-          Invite
-        </LoadingButton>
-      </CardContent>
-    </Card>
+  const { businessUser } = useBusinessUser()
+
+  let isAllowedToEdit = false
+
+  if (businessUser) {
+    if (checkPermission(businessUser, 'update', 'employee')) {
+      isAllowedToEdit = true
+    }
+  }
+
+  return (
+    hasNotBeenInvited &&
+    isAllowedToEdit && (
+      <Card>
+        <CardContent className='flex items-center justify-between py-4'>
+          <p className='text-sm'>
+            {' '}
+            An invitation has not been sent to this employee yet. Click the &quot;Invite&quot; button to send now
+          </p>
+          <LoadingButton onClick={handleInvite} isLoading={isInvitePending} icon={<Send />}>
+            Invite
+          </LoadingButton>
+        </CardContent>
+      </Card>
+    )
   )
 }

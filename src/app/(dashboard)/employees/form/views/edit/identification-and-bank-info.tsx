@@ -17,6 +17,8 @@ import { useRouter } from 'next/navigation'
 import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { updateEmployee } from '../../../views/action'
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
+import { checkPermission } from '@/lib/auth'
 
 export default function IdentificationAndBankInfoEdit({ employee }: { employee: Employee }) {
   const [updateState, updateAction, isUpdatePending] = useActionState(updateEmployee, undefined)
@@ -81,7 +83,14 @@ export default function IdentificationAndBankInfoEdit({ employee }: { employee: 
     startTransition(() => updateAction(payload))
   }
 
-  return (
+    const {businessUser} = useBusinessUser()
+  
+    let isAllowedToEdit = false
+    if (businessUser && checkPermission(businessUser, 'update', 'employee')) {
+      isAllowedToEdit = true
+    }
+
+  return isAllowedToEdit && (
     <Card className='w-full'>
         <CardContent className='pt-2'>
         <Form {...form}>

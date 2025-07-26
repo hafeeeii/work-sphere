@@ -19,9 +19,11 @@ import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { saveEmployee } from '../../../views/action'
 import { useMultistepForm } from '../../multistep-form-provider'
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
+import { checkPermission } from '@/lib/auth'
 
 export default function IdentificationAndBankInfo() {
-  const { formData, clearFormData, updateFormData, } = useMultistepForm()
+  const { formData, clearFormData, updateFormData } = useMultistepForm()
   const [saveState, saveAction, isSavePending] = useActionState(saveEmployee, undefined)
   const {
     bankName,
@@ -99,208 +101,221 @@ export default function IdentificationAndBankInfo() {
     updateFormData(values)
     startTransition(() => saveAction(payload))
   }
+
+  const { businessUser } = useBusinessUser()
+
+  let isAllowedToCreate = false
+  if (businessUser && checkPermission(businessUser, 'create', 'employee')) {
+    isAllowedToCreate = true
+  }
+
   return (
-    <Card className='w-full'>
-      <CardContent className='pt-2'>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-            {/* Row: Bank Name & Account Holder Name */}
-            <div className='flex gap-4'>
-              <div className='w-1/2'>
-                <FormField
-                  control={form.control}
-                  name='bankName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <RequiredLabel>Bank Name</RequiredLabel>
-                      <FormControl>
-                        <Input {...field} className='input' placeholder='e.g. HDFC Bank' />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+    isAllowedToCreate && (
+      <Card className='w-full'>
+        <CardContent className='pt-2'>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+              {/* Row: Bank Name & Account Holder Name */}
+              <div className='flex gap-4'>
+                <div className='w-1/2'>
+                  <FormField
+                    control={form.control}
+                    name='bankName'
+                    render={({ field }) => (
+                      <FormItem>
+                        <RequiredLabel>Bank Name</RequiredLabel>
+                        <FormControl>
+                          <Input {...field} className='input' placeholder='e.g. HDFC Bank' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='w-1/2'>
+                  <FormField
+                    control={form.control}
+                    name='bankAccountHolderName'
+                    render={({ field }) => (
+                      <FormItem>
+                        <RequiredLabel>Account Holder Name</RequiredLabel>
+                        <FormControl>
+                          <Input {...field} className='input' placeholder='e.g. John Doe' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
-              <div className='w-1/2'>
-                <FormField
-                  control={form.control}
-                  name='bankAccountHolderName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <RequiredLabel>Account Holder Name</RequiredLabel>
-                      <FormControl>
-                        <Input {...field} className='input' placeholder='e.g. John Doe' />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
 
-            {/* Row: Account Number & IFSC */}
-            <div className='flex gap-4'>
-              <div className='w-1/2'>
-                <FormField
-                  control={form.control}
-                  name='bankAccountNumber'
-                  render={({ field }) => (
-                    <FormItem>
-                      <RequiredLabel>Account Number</RequiredLabel>
-                      <FormControl>
-                        <Input {...field} className='input' placeholder='e.g. 1234567890' />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {/* Row: Account Number & IFSC */}
+              <div className='flex gap-4'>
+                <div className='w-1/2'>
+                  <FormField
+                    control={form.control}
+                    name='bankAccountNumber'
+                    render={({ field }) => (
+                      <FormItem>
+                        <RequiredLabel>Account Number</RequiredLabel>
+                        <FormControl>
+                          <Input {...field} className='input' placeholder='e.g. 1234567890' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='w-1/2'>
+                  <FormField
+                    control={form.control}
+                    name='bankIfscCode'
+                    render={({ field }) => (
+                      <FormItem>
+                        <RequiredLabel>IFSC Code</RequiredLabel>
+                        <FormControl>
+                          <Input {...field} className='input' placeholder='e.g. HDFC0001234' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
-              <div className='w-1/2'>
-                <FormField
-                  control={form.control}
-                  name='bankIfscCode'
-                  render={({ field }) => (
-                    <FormItem>
-                      <RequiredLabel>IFSC Code</RequiredLabel>
-                      <FormControl>
-                        <Input {...field} className='input' placeholder='e.g. HDFC0001234' />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
 
-            {/* Row: Bank Branch & Account Type */}
-            <div className='flex gap-4'>
-              <div className='w-1/2'>
-                <FormField
-                  control={form.control}
-                  name='bankBranch'
-                  render={({ field }) => (
-                    <FormItem>
-                      <RequiredLabel>Bank Branch</RequiredLabel>
-                      <FormControl>
-                        <Input {...field} className='input' placeholder='e.g. MG Road Branch' />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {/* Row: Bank Branch & Account Type */}
+              <div className='flex gap-4'>
+                <div className='w-1/2'>
+                  <FormField
+                    control={form.control}
+                    name='bankBranch'
+                    render={({ field }) => (
+                      <FormItem>
+                        <RequiredLabel>Bank Branch</RequiredLabel>
+                        <FormControl>
+                          <Input {...field} className='input' placeholder='e.g. MG Road Branch' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='w-1/2'>
+                  <FormField
+                    control={form.control}
+                    name='bankAccountType'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Account Type</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger className='h-10'>
+                              <SelectValue placeholder='e.g. Savings' />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value={BankAccountType.SAVINGS}>Savings</SelectItem>
+                              <SelectItem value={BankAccountType.CURRENT}>Current</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
-              <div className='w-1/2'>
-                <FormField
-                  control={form.control}
-                  name='bankAccountType'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Account Type</FormLabel>
-                      <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger className='h-10'>
-                            <SelectValue placeholder='e.g. Savings' />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={BankAccountType.SAVINGS}>Savings</SelectItem>
-                            <SelectItem value={BankAccountType.CURRENT}>Current</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
 
-            {/* Row: Aadhaar, PAN, Driver License */}
-            <div className='flex gap-4'>
-              <div className='w-1/3'>
+              {/* Row: Aadhaar, PAN, Driver License */}
+              <div className='flex gap-4'>
+                <div className='w-1/3'>
+                  <FormField
+                    control={form.control}
+                    name='aadhaarNumber'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Aadhaar Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} className='input' placeholder='e.g. 1234 5678 9012' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='w-1/3'>
+                  <FormField
+                    control={form.control}
+                    name='panNumber'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>PAN Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} className='input' placeholder='e.g. ABCDE1234F' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className='w-1/3'>
+                  <FormField
+                    control={form.control}
+                    name='driverLicenseNumber'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Driver License Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} className='input' placeholder='e.g. MH12 20200012345' />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className='pt-4'>
                 <FormField
                   control={form.control}
-                  name='aadhaarNumber'
+                  name='inviteUser'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Aadhaar Number</FormLabel>
-                      <FormControl>
-                        <Input {...field} className='input' placeholder='e.g. 1234 5678 9012' />
-                      </FormControl>
+                      <div className='flex items-center gap-3'>
+                        <FormControl>
+                          <Checkbox onCheckedChange={field.onChange} checked={field.value} />
+                        </FormControl>
+                        <FormLabel>
+                          {' '}
+                          Send an invitation email to the employee once all details are submitted successfully.
+                        </FormLabel>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-              <div className='w-1/3'>
-                <FormField
-                  control={form.control}
-                  name='panNumber'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>PAN Number</FormLabel>
-                      <FormControl>
-                        <Input {...field} className='input' placeholder='e.g. ABCDE1234F' />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className='w-1/3'>
-                <FormField
-                  control={form.control}
-                  name='driverLicenseNumber'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Driver License Number</FormLabel>
-                      <FormControl>
-                        <Input {...field} className='input' placeholder='e.g. MH12 20200012345' />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            <div className='pt-4'>
-              <FormField
-              control={form.control}
-              name='inviteUser'
-              render={({field}) => (
-                 <FormItem>
-                   <div className='flex gap-3 items-center'>
-                       <FormControl>
-                        <Checkbox  onCheckedChange={field.onChange} checked={field.value} />
-                      </FormControl>
-                      <FormLabel> Send an invitation email to the employee once all details are submitted successfully.</FormLabel>
-                   </div>
-                      <FormMessage />
-                    </FormItem>   
-            )}
-              />
-            </div>
 
-            {/* Navigation Buttons */}
-            <div className='flex justify-end gap-4'>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => {
-                  const values = form.getValues()
-                  updateFormData(values)
-                  router.back()
-                }}
-              >
-                <ArrowLeft />
-                Back
-              </Button>
-              <LoadingButton type='submit' disabled={!isValid || isSavePending} isLoading={isSavePending}>
-                Save
-              </LoadingButton>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+              {/* Navigation Buttons */}
+              <div className='flex justify-end gap-4'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={() => {
+                    const values = form.getValues()
+                    updateFormData(values)
+                    router.back()
+                  }}
+                >
+                  <ArrowLeft />
+                  Back
+                </Button>
+                <LoadingButton type='submit' disabled={!isValid || isSavePending} isLoading={isSavePending}>
+                  Save
+                </LoadingButton>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    )
   )
 }

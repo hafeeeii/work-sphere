@@ -5,6 +5,8 @@ import Form from './form'
 import { getDesignation } from '@/services/designation'
 import { Designation } from '@prisma/client'
 import { deleteDesignation } from './action'
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
+import { checkPermission } from '@/lib/auth'
 
 type DesignationTabProps = {
   designations: Designation[]
@@ -50,10 +52,34 @@ const DesignationTab = ({ designations }: DesignationTabProps) => {
     toggleForm()
   }
 
+  const { businessUser } = useBusinessUser()
+
+  let isAllowedToCreate = false
+  let isAllowedToDelete = false
+  let isAllowedToEdit = false
+
+  if (businessUser) {
+    if (checkPermission(businessUser, 'create', 'designation')) {
+      isAllowedToCreate = true
+    }
+    if (checkPermission(businessUser, 'delete', 'designation')) {
+      isAllowedToDelete = true
+    }
+    if (checkPermission(businessUser, 'update', 'designation')) {
+      isAllowedToEdit = true
+    }
+  }
+
   return (
     <div className='flex flex-col items-end gap-6'>
-      <Form designation={designation} showForm={showForm} toggleForm={toggleForm} />
-      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDesignation} />
+      {isAllowedToCreate && <Form designation={designation} showForm={showForm} toggleForm={toggleForm} />}
+      <SharedTable
+        tableData={tableData}
+        onEdit={onEdit}
+        onDelete={deleteDesignation}
+        isAllowedToDelete={isAllowedToDelete}
+        isAllowedToEdit={isAllowedToEdit}
+      />
     </div>
   )
 }

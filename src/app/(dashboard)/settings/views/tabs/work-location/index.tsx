@@ -5,6 +5,8 @@ import Form from './form'
 import { WorkLocation } from '@prisma/client'
 import { getWorkLocation } from '@/services/work-location'
 import { deleteWorkLocation } from './action'
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
+import { checkPermission } from '@/lib/auth'
 
 type WorkLocationTabProps = {
   workLocations: WorkLocation[]
@@ -23,7 +25,7 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
 
   type TableData = {
     editMode: 'toggle' | 'redirect'
-    visibleActions:('details' | 'edit' | 'delete')[]
+    visibleActions: ('details' | 'edit' | 'delete')[]
     columnData: {
       header: string
       accessorKey: keyof WorkLocation[][number]
@@ -46,18 +48,40 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
     data: workLocations ?? []
   }
 
-
   const onEdit = async (id: string) => {
     if (!id) return null
     const workLocations = await getWorkLocation(id)
     setWorkLocation(workLocations)
     toggleForm()
   }
+  const { businessUser } = useBusinessUser()
+
+  let isAllowedToCreate = false
+  let isAllowedToDelete = false
+  let isAllowedToEdit = false
+
+  if (businessUser) {
+    if (checkPermission(businessUser, 'create', 'work-location')) {
+      isAllowedToCreate = true
+    }
+    if (checkPermission(businessUser, 'delete', 'work-location')) {
+      isAllowedToDelete = true
+    }
+    if (checkPermission(businessUser, 'update', 'work-location')) {
+      isAllowedToEdit = true
+    }
+  }
 
   return (
     <div className='flex flex-col items-end gap-6'>
-      <Form workLocation={workLocation} showForm={showForm} toggleForm={toggleForm} />
-      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteWorkLocation} />
+      {isAllowedToCreate && <Form workLocation={workLocation} showForm={showForm} toggleForm={toggleForm} />}
+      <SharedTable
+        tableData={tableData}
+        onEdit={onEdit}
+        onDelete={deleteWorkLocation}
+        isAllowedToDelete={isAllowedToDelete}
+        isAllowedToEdit={isAllowedToEdit}
+      />
     </div>
   )
 }
