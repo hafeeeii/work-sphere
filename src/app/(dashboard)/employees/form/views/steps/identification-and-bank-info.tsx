@@ -235,7 +235,7 @@ export default function IdentificationAndBankInfo() {
                       <FormItem>
                         <FormLabel>Aadhaar Number</FormLabel>
                         <FormControl>
-                          <Input {...field} className='input' placeholder='e.g. 1234 5678 9012' />
+                          <Input {...field} className='input' type='number' placeholder='e.g. 1234 5678 9012' />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

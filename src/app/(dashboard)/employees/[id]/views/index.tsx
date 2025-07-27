@@ -6,6 +6,7 @@ import { Mail, Phone } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import InviteButton from './invite-button'
 import ProfileTab from './tabs/profile'
+import Reportees from './tabs/reportees'
 
 export default async function EmployeeDetails({ id }: { id: string }) {
   const business = await getBusinessInfo()
@@ -47,15 +48,35 @@ export default async function EmployeeDetails({ id }: { id: string }) {
     }
   })
 
+  const reportees =await prisma.employee.findUnique({
+    where: {
+      tenantId_id: {
+        id,
+        tenantId: businessId
+      }
+    },
+    select:{
+      reportees:{
+        select:{
+          id:true,
+          name:true,
+          designationMeta:{
+            select:{
+              name:true
+            }
+          }
+        }
+      },
+    }
+  })
+
   if (!employee) {
     return <div>Employee not found</div>
   }
 
   const tabs = [
     { tab: 'Profile', content: <ProfileTab employee={employee} /> },
-    { tab: 'Reportees', content: '' },
-    { tab: 'Department', content: '' },
-    { tab: 'Feedback', content: '' }
+    { tab: 'Reportees', content: <Reportees reportees={reportees?.reportees ?? []}/> },
 
     // { tab: 'Holidays', content: '' }
   ]

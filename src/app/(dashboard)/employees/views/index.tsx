@@ -42,7 +42,7 @@ const EmployeeList = ({ employees }: EmployeeListProps) => {
     detailsRedirectPath: '/employees',
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
-      { header: 'Email', accessorKey: 'email', sortable: true, filterable: true },
+      { header: 'Work Email', accessorKey: 'workEmail', sortable: true, filterable: true },
       { header: 'Department', accessorKey: 'departmentName' },
       { header: 'Designation', accessorKey: 'designationName' },
       { header: 'Work Location', accessorKey: 'workLocationName' }
@@ -69,6 +69,8 @@ const EmployeeList = ({ employees }: EmployeeListProps) => {
         isAllowedToEdit = true
       }
     }
+
+    console.log(tableData.data,'this is data',employees)
 
   return (
     <div className='flex flex-col items-end gap-6'>

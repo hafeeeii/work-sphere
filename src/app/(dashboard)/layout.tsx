@@ -11,24 +11,6 @@ import { getBusinessInfo } from '@/lib/business'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 
-export const users = [
-  {
-    id: '1',
-    name: 'Arham Khan',
-    username: 'Aarhamkhnz',
-    email: 'hello@arhamkhnz.com',
-    avatar: '/avatars/arhamkhnz.png',
-    role: 'administrator'
-  }
-  // {
-  //   id: "2",
-  //   name: "Ammar Khan",
-  //   username: "ammarkhnz",
-  //   email: "hello@ammarkhnz.com",
-  //   avatar: "",
-  //   role: "admin",
-  // },
-]
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -53,8 +35,15 @@ export default async function DashboardLayout({
         tenantId: businessId,
         userId
       }
+    },
+    include: {
+      user: true
     }
   })
+
+  if (!tenantUser) {
+    redirect('/login')
+  }
 
   return (
     <BusinessUserProvider businessUser={tenantUser}>
@@ -78,7 +67,7 @@ export default async function DashboardLayout({
                 </div>
                 <div className='flex items-center gap-2'>
                   <ThemeSwitcher />
-                  <AccountMenu users={users} />
+                  <AccountMenu tenantUser={tenantUser} />
                 </div>
               </div>
             </header>

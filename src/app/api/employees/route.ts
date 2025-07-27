@@ -35,6 +35,23 @@ export async function GET(request: NextRequest) {
         ...(email && { email: { contains: email } }),
         tenantId: businessId
       },
+      include:{
+        designationMeta:{
+          select:{
+            name: true
+          }
+        },
+        departmentMeta:{
+          select:{
+            name: true
+          }
+        },
+        workLocationMeta:{
+          select:{
+            name: true
+          }
+        }
+      },
       orderBy: [
         {
           [sortBy]: sortOrder

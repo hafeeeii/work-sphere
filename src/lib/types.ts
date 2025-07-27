@@ -60,15 +60,15 @@ export const EmployeeSchema = z.object({
     nationality: z.string().optional(),
 
     // Contact Information
-    phoneNumber: required("Phone number"),
+    phoneNumber: required("Phone number").regex(/^\d{10}$/,'Invalid phone number'),
     email: required("Email").email("Invalid email"),
     workEmail: z.string().email("Invalid email").optional().or(z.literal('')),
     addressLine1: z.string().optional(),
     addressLine2: z.string().optional(),
 
     //  Identification
-    aadhaarNumber: z.string().optional(),
-    panNumber: z.string().optional(),
+    aadhaarNumber: z.string().regex(/^[2-9][0-9]{11}$/,'Invalid Aadhaar number').or(z.literal('')),
+    panNumber: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]$/, 'Invalid PAN number').or(z.literal('')),
     driverLicenseNumber: z.string().optional(),
 
     //  Employment Details
@@ -85,7 +85,7 @@ export const EmployeeSchema = z.object({
     bankAccountHolderName: required("Bank account holder name"),
     bankAccountNumber: required("Bank account number"),
     bankAccountType:  z.nativeEnum(BankAccountType),
-    bankIfscCode: required("Bank IFSC code"),
+    bankIfscCode: required("Bank IFSC code").regex(/^[A-Z]{4}0[A-Z0-9]{6}$/,'Invalid IFSC code').or(z.literal('')),
     bankBranch: required("Bank branch"),
     inviteUser: z.boolean()
 })
