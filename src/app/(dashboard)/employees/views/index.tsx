@@ -1,6 +1,7 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { checkPermission } from '@/lib/auth'
 import { EmployeeWithRelations } from '@/lib/types'
 import { PlusIcon } from 'lucide-react'
@@ -52,36 +53,43 @@ const EmployeeList = ({ employees }: EmployeeListProps) => {
   }
 
   const router = useRouter()
-    const { businessUser } = useBusinessUser()
+  const { businessUser } = useBusinessUser()
 
-    let isAllowedToCreate = false
-    let isAllowedToDelete = false
-    let isAllowedToEdit = false
+  let isAllowedToCreate = false
+  let isAllowedToDelete = false
+  let isAllowedToEdit = false
 
-    if (businessUser) {
-      if (checkPermission(businessUser, 'create', 'employee')) {
-        isAllowedToCreate = true
-      }
-      if (checkPermission(businessUser, 'delete', 'employee')) {
-        isAllowedToDelete = true
-      }
-      if (checkPermission(businessUser, 'update', 'employee')) {
-        isAllowedToEdit = true
-      }
+  if (businessUser) {
+    if (checkPermission(businessUser, 'create', 'employee')) {
+      isAllowedToCreate = true
     }
-
-    console.log(tableData.data,'this is data',employees)
+    if (checkPermission(businessUser, 'delete', 'employee')) {
+      isAllowedToDelete = true
+    }
+    if (checkPermission(businessUser, 'update', 'employee')) {
+      isAllowedToEdit = true
+    }
+  }
 
   return (
-    <div className='flex flex-col items-end gap-6'>
-      {isAllowedToCreate && (
-        <Button onClick={() => router.push('/employees/form/personal-details')}>
-          <PlusIcon />
-          Create Employee
-        </Button>
-      )}
-      <SharedTable tableData={tableData} onDelete={deleteEmployee} isAllowedToDelete={isAllowedToDelete}  isAllowedToEdit={isAllowedToEdit} />
-    </div>
+    <Card>
+      <CardContent>
+        <div className='mt-4 flex flex-col items-end gap-6'>
+          {isAllowedToCreate && (
+            <Button onClick={() => router.push('/employees/form/personal-details')}>
+              <PlusIcon />
+              Create Employee
+            </Button>
+          )}
+          <SharedTable
+            tableData={tableData}
+            onDelete={deleteEmployee}
+            isAllowedToDelete={isAllowedToDelete}
+            isAllowedToEdit={isAllowedToEdit}
+          />
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 

@@ -2,6 +2,7 @@
 
 import { EmailTemplate } from "@/components/email-template"
 import { getBusinessInfo } from "@/lib/business"
+import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { InviteSchema } from "@/lib/types"
 import { rootDomain } from "@/lib/utils"
@@ -15,7 +16,7 @@ export async function createInvite(prevState: unknown, formData: FormData) {
     if (!parsed.success) {
         return {
             status: false,
-            message: 'Please fill all the required fields',
+            message: 'Validation failed',
             error: parsed.error.message
         }
     }
@@ -73,14 +74,14 @@ export async function createInvite(prevState: unknown, formData: FormData) {
             from: `${businessName} <noreply@invite.worksphere.icu>`,
             to: parsed.data.email,
             subject: `Invitation from ${businessName}`,
-            react: EmailTemplate({ name: parsed.data.name, businessName, inviteLink: `${rootDomain}/business/invites`, invitedBy: invite.inviter?.name ?? 'Admin' , inviteEmail: parsed.data.email }),
+            react: EmailTemplate({ name: parsed.data.name, businessName, inviteLink: `${rootDomain}/business/invites`, invitedBy: invite.inviter?.name ?? 'Admin', inviteEmail: parsed.data.email }),
 
         })
 
         if (result.error) {
             return {
                 status: false,
-                message: 'Email sending failed: ' + result.error?.message,
+                message: 'Failed to send email',
                 error: result.error
             }
         }
@@ -102,11 +103,10 @@ export async function createInvite(prevState: unknown, formData: FormData) {
             error: null
         }
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: err
+            message: getErrorMessage(error),
+            error: error
         }
     }
 
@@ -117,7 +117,7 @@ export async function updateInvite(prevState: unknown, formData: FormData) {
     if (!parsed.success) {
         return {
             status: false,
-            message: 'Please fill all the required fields',
+            message: 'Validation failed',
             error: parsed.error.message
         }
     }
@@ -160,11 +160,10 @@ export async function updateInvite(prevState: unknown, formData: FormData) {
             error: null
         }
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: err
+            message: getErrorMessage(error),
+            error
         }
     }
 }
@@ -211,11 +210,10 @@ export async function deleteInvite(id: string) {
             error: null
         }
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: err
+            message: getErrorMessage(error),
+            error
         }
     }
 

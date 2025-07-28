@@ -1,6 +1,7 @@
 'use server'
 
 import { getBusinessInfo } from "@/lib/business"
+import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { LeaveSchema } from "@/lib/types"
 import { LeaveStatus } from "@prisma/client"
@@ -10,7 +11,11 @@ export const applyLeave = async (prev: unknown, formData: FormData) => {
     const parsed = LeaveSchema.safeParse(Object.fromEntries(formData))
 
     if (!parsed.success) {
-        throw new Error ('Please fill all the required fields')
+        return {
+            status: false,
+            message: 'Validation failed',
+            error: parsed.error.message
+        }
     }
 
     const { id, from, to, ...rest } = parsed.data
@@ -23,7 +28,7 @@ export const applyLeave = async (prev: unknown, formData: FormData) => {
         const business = await getBusinessInfo()
 
         if (!business.status || !business.data) {
-            throw new Error(business.message)
+            return business
         }
 
         const { businessId, userId } = business.data
@@ -54,11 +59,19 @@ export const applyLeave = async (prev: unknown, formData: FormData) => {
             })
 
             if (!leaveBalance) {
-              throw new Error('Leave balance not found')
+                return {
+                    status: false,
+                    message: 'Leave balance not found',
+                    error: null
+                }
             }
 
             if (leaveBalance.available !== null && leaveBalance.available < leaveDays) {
-             throw new Error('Insufficient leave balance')
+                return {
+                    status: false,
+                    message: 'Insufficient leave balance',
+                    error: null
+                }
             }
 
             await tx.leaveBalance.update({
@@ -91,11 +104,10 @@ export const applyLeave = async (prev: unknown, formData: FormData) => {
             error: null
         }
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: err?.message || 'Data base error occurred' ,
-            error: err
+            message: getErrorMessage(error),
+            error
         }
     }
 }

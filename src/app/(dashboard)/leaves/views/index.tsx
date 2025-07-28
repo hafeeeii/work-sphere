@@ -6,6 +6,7 @@ import { getBusinessInfo } from '@/lib/business'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { checkPermission } from '@/lib/auth'
+import { Card, CardContent } from '@/components/ui/card'
 
 const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string } }) => {
   const business = await getBusinessInfo()
@@ -37,7 +38,9 @@ const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string 
   ]
 
   return (
-    <div className='h-full rounded-lg border p-4'>
+    <Card className='h-full py-4'>
+      <CardContent>
+
       <Tabs defaultValue={tabs[0].tab} className='h-full'>
         <TabsList>
           {tabs.map(tab => (
@@ -52,7 +55,8 @@ const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string 
           </TabsContent>
         ))}
       </Tabs>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 

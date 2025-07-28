@@ -1,4 +1,5 @@
 'use server'
+import { getErrorMessage } from "@/lib/error"
 import { createDefaultBusinessLeaveBalanceForUser } from "@/lib/leave"
 import prisma from "@/lib/prisma"
 import { getValidSession } from "@/lib/session"
@@ -13,7 +14,8 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
         if (!session.status) {
             return {
                 status: false,
-                message: 'Not authenticated'
+                message: 'Not authenticated',
+                error: null
             }
         }
 
@@ -28,7 +30,8 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
         if (!invite) {
             return {
                 status: false,
-                message: 'Invite not found'
+                message: 'Invite not found',
+                error: null
             }
         }
 
@@ -48,6 +51,7 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
             return {
                 status: false,
                 message: 'Already part of this business',
+                error: null
             }
         }
 
@@ -87,13 +91,14 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
         return {
             status: true,
             message: 'Invite accepted successfully',
+            error: null,
         }
 
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
+            message: getErrorMessage(error),
+            error
         }
 
     }
@@ -107,7 +112,8 @@ export const declineInvite = async (prev: unknown, inviteId: string) => {
         if (!session.status) {
             return {
                 status: false,
-                message: 'Not authenticated'
+                message: 'Not authenticated',
+                error: null
             }
         }
         const invite = await prisma.invite.findUnique({
@@ -119,7 +125,8 @@ export const declineInvite = async (prev: unknown, inviteId: string) => {
         if (!invite) {
             return {
                 status: false,
-                message: 'Invite not found'
+                message: 'Invite not found',
+                error: null
             }
         }
 
@@ -141,14 +148,13 @@ export const declineInvite = async (prev: unknown, inviteId: string) => {
             status: true,
             message: 'Invite declined successfully',
             error: null,
-            data: null
         }
 
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
+            message: getErrorMessage(error),
+            error
         }
     }
 

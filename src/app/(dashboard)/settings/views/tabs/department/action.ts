@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { departmentSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { getBusinessInfo } from "@/lib/business";
+import { getErrorMessage } from "@/lib/error";
 
 // CREATE
 export async function saveDepartment(prevState: unknown, formData: FormData) {
@@ -12,8 +13,9 @@ export async function saveDepartment(prevState: unknown, formData: FormData) {
     if (!parsed.success) {
         return {
             status: false,
-            message: "Invalid department",
-        };
+            message: 'Validation failed',
+            error: parsed.error.message
+        }
     }
 
     const { id, ...rest } = parsed.data;
@@ -39,12 +41,13 @@ export async function saveDepartment(prevState: unknown, formData: FormData) {
         return {
             status: true,
             message: "Department created successfully",
+            error: null
         };
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: "Database error occurred:" + err?.message,
+            message: getErrorMessage(error),
+            error
         };
     }
 }
@@ -55,9 +58,9 @@ export async function updateDepartment(prevState: unknown, formData: FormData) {
     if (!parsed.success) {
         return {
             status: false,
-            message: "Please fill all the required fields",
-            error: parsed.error.message,
-        };
+            message: 'Validation failed',
+            error: parsed.error.message
+        }
     }
 
     try {
@@ -99,7 +102,7 @@ export async function updateDepartment(prevState: unknown, formData: FormData) {
     } catch (err) {
         return {
             status: false,
-            message: "Database error occurred",
+            message: getErrorMessage(err),
             error: err,
         };
     }
@@ -152,7 +155,7 @@ export async function deleteDepartment(id: string) {
     } catch (err) {
         return {
             status: false,
-            message: "Database error occurred",
+            message: getErrorMessage(err),
             error: err,
         };
     }

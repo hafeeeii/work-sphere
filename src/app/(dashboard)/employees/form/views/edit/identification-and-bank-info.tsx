@@ -83,16 +83,21 @@ export default function IdentificationAndBankInfoEdit({ employee }: { employee: 
     startTransition(() => updateAction(payload))
   }
 
-    const {businessUser} = useBusinessUser()
-  
-    let isAllowedToEdit = false
-    if (businessUser && checkPermission(businessUser, 'update', 'employee')) {
-      isAllowedToEdit = true
-    }
+  const { businessUser } = useBusinessUser()
 
-  return isAllowedToEdit && (
+  let isAllowedToEdit = false
+  if (businessUser && checkPermission(businessUser, 'update', 'employee')) {
+    isAllowedToEdit = true
+  }
+
+  if (!isAllowedToEdit) {
+    router.replace('/unauthorized')
+    return null
+  }
+
+  return (
     <Card className='w-full'>
-        <CardContent className='pt-2'>
+      <CardContent className='pt-2'>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             {/* Row: Bank Name & Account Holder Name */}

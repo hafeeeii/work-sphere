@@ -1,6 +1,7 @@
 'use server'
 
 import { getBusinessInfo } from "@/lib/business"
+import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { workLocationSchema } from "@/lib/types"
 import { revalidatePath } from "next/cache"
@@ -14,9 +15,10 @@ export async function saveWorkLocation(prevState: unknown,
 
 
     if (!parsed.success) {
-        return {
-            status: false,
-            message: 'Invalid work location'
+               return {
+            status:false,
+            message:'Validation failed',
+            error: parsed.error.message
         }
     }
 
@@ -39,26 +41,27 @@ export async function saveWorkLocation(prevState: unknown,
             }
         })
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
+            message: getErrorMessage(Error),
+            error
         }
     }
 
     revalidatePath('/settings')
     return {
         status: true,
-        message: 'Work location created successfully'
+        message: 'Work location created successfully',
+        error: null
     }
 }
 
 export async function updateWorkLocation(prevState: unknown, formData: FormData) {
     const parsed = workLocationSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
-        return {
-            status: false,
-            message: 'Please fill all the required fields',
+               return {
+            status:false,
+            message:'Validation failed',
             error: parsed.error.message
         }
     }
@@ -139,19 +142,20 @@ export async function deleteWorkLocation(id: string) {
                 id
             },
         })
-    } catch (error) {
-        const err = error as Error
-        return {
-            status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: err
-        }
-    }
-    revalidatePath('/settings')
+
+            revalidatePath('/settings')
 
     return {
         status: true,
         message: 'Work location deleted successfully',
         error: null
     }
+    } catch (error) {
+        return {
+            status: false,
+            message: getErrorMessage(error),
+            error
+        }
+    }
+
 }

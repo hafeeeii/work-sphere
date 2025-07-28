@@ -1,6 +1,7 @@
 'use server'
 import { EmailTemplate } from "@/components/email-template"
 import { getBusinessInfo } from "@/lib/business"
+import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { EmployeeSchema } from "@/lib/types"
 import { rootDomain } from "@/lib/utils"
@@ -13,7 +14,7 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
     if (!parsed.success) {
         return {
             status: false,
-            message: parsed.error.message,
+            message: 'Validation failed',
             error: parsed.error.message
         }
     }
@@ -40,7 +41,11 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
         })
 
         if (employee) {
-            throw new Error('Employee with same email already exists')
+            return {
+                status: false,
+                message: 'Employee with same email already exists',
+                error: null
+            }
         }
 
         await prisma.employee.create({
@@ -109,7 +114,11 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
             })
 
             if (result.error) {
-                throw new Error(result.error?.message || 'Failed to send email')
+                return {
+                    status: false,
+                    message: 'Failed to send invite',
+                    error: result.error
+                }
             }
 
         }
@@ -121,11 +130,10 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
             error: null
         }
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: err?.message || 'Something went wrong',
-            error: err
+            message: getErrorMessage(error),
+            error: error
         }
     }
 
@@ -191,11 +199,10 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
             error: null
         }
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: err
+            message: getErrorMessage(error),
+            error
         }
     }
 }
@@ -242,11 +249,10 @@ export async function deleteEmployee(id: string) {
             error: null
         }
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: err
+            message: getErrorMessage(error),
+            error
         }
     }
 

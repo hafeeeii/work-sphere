@@ -1,6 +1,7 @@
 'use server'
 
 import { getBusinessInfo } from "@/lib/business"
+import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
@@ -34,7 +35,6 @@ export async function markAllAsRead() {
                 status: true,
                 message: 'Nothing to mark   ',
                 error: null,
-                data: null
             }
         }
 
@@ -56,17 +56,15 @@ export async function markAllAsRead() {
             status: true,
             message: 'All notifications marked as read',
             error: null,
-            data: null
         }
 
 
 
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: err
+            message: getErrorMessage(error),
+            error
         }
     }
 }

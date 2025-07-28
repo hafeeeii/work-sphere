@@ -5,16 +5,17 @@ import { designationSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { getBusinessInfo } from "@/lib/business";
 import { NotificationType } from "@prisma/client";
+import { getErrorMessage } from "@/lib/error";
 
 export async function saveDesignation(prevState: unknown, formData: FormData) {
     const parsed = designationSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
-        return {
-            status: false,
-            message: "Invalid designation",
-            error: parsed.error.message,
-        };
+                  return {
+            status:false,
+            message:'Validation failed',
+            error: parsed.error.message
+        }
     }
 
     const { id, ...rest } = parsed.data;
@@ -55,11 +56,10 @@ export async function saveDesignation(prevState: unknown, formData: FormData) {
             message: "Designation created successfully",
         };
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: "Database error occurred: " + err?.message,
-            error: err,
+            message:getErrorMessage(error), 
+            error,
         };
     }
 }
@@ -68,11 +68,11 @@ export async function updateDesignation(prevState: unknown, formData: FormData) 
     const parsed = designationSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
-        return {
-            status: false,
-            message: "Please fill all the required fields",
-            error: parsed.error.message,
-        };
+                return {
+            status:false,
+            message:'Validation failed',
+            error: parsed.error.message
+        }
     }
 
     try {
@@ -112,11 +112,10 @@ export async function updateDesignation(prevState: unknown, formData: FormData) 
             error: null,
         };
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: "Database error occurred: " + err?.message,
-            error: err,
+            message:getErrorMessage(error),
+            error,
         };
     }
 }
@@ -166,11 +165,10 @@ export async function deleteDesignation(id: string) {
             error: null,
         };
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: "Database error occurred: " + err?.message,
-            error: err,
+            message: getErrorMessage(error),
+            error,
         };
     }
 }

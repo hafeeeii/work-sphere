@@ -1,5 +1,6 @@
 'use server'
 
+import { getErrorMessage } from "@/lib/error"
 import { createDefaultBusinessLeaveBalanceForUser, defaultLeaveTypes } from "@/lib/leave"
 import prisma from "@/lib/prisma"
 import { getValidSession } from "@/lib/session"
@@ -17,7 +18,8 @@ export async function createBusiness(prevState: unknown,
     if (!parsed.success) {
         return {
             status: false,
-            message: 'Invalid business data'
+            message: 'Validation failed',
+            error: parsed.error.message
         }
     }
 
@@ -38,7 +40,8 @@ export async function createBusiness(prevState: unknown,
         if (existingTenant) {
             return {
                 status: false,
-                message: 'Subdomain already taken. Please choose another.'
+                message: 'Subdomain already taken. Please choose another.',
+                error: null
             };
         }
 
@@ -50,7 +53,8 @@ export async function createBusiness(prevState: unknown,
         if (!user) {
             return {
                 status: false,
-                message: 'User does not exist.'
+                message: 'User does not exist.',
+                error: null
             };
         }
 
@@ -79,22 +83,25 @@ export async function createBusiness(prevState: unknown,
                 ))
             })
 
-          await createDefaultBusinessLeaveBalanceForUser(tenant.id, ownerId, tx)
+            await createDefaultBusinessLeaveBalanceForUser(tenant.id, ownerId, tx)
 
             return tenant;
         })
 
+        revalidatePath('/business')
+        return {
+            status: true,
+            message: 'Business created successfully',
+            error: null
+        }
+
     } catch (error) {
-         const err = error as Error  
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message    ,
+            message: getErrorMessage(error),
+            error
         }
     }
 
-    revalidatePath('/business')
-    return {
-        status: true,
-        message: 'Business created successfully'
-    }
+
 }

@@ -1,5 +1,6 @@
 'use server'
 import { getBusinessInfo } from "@/lib/business"
+import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { LeaveStatus } from "@prisma/client"
 import { revalidatePath } from "next/cache"
@@ -10,7 +11,7 @@ export const approveLeave = async (prev: unknown, id: string) => {
         const business = await getBusinessInfo()
 
         if (!business.status || !business.data) {
-            throw new Error(business.message)
+            return business
         }
 
         const { businessId } = business.data
@@ -23,7 +24,11 @@ export const approveLeave = async (prev: unknown, id: string) => {
         })
 
         if (!leave || leave.tenantId !== businessId) {
-            throw new Error('Leave not found')
+            return {
+                status: false,
+                message: 'Leave not found',
+                error: null
+            }
         }
 
         await prisma.leave.update({
@@ -42,13 +47,14 @@ export const approveLeave = async (prev: unknown, id: string) => {
         return {
             status: true,
             message: 'Leave approved successfully',
+            error: null
         }
 
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: err?.message || 'Data base error occurred',
+            message: getErrorMessage(error),
+            error
         }
 
     }
@@ -60,7 +66,7 @@ export const rejectLeave = async (prev: unknown, id: string) => {
         const business = await getBusinessInfo()
 
         if (!business.status || !business.data) {
-            throw new Error(business.message)
+            return business
         }
 
         const { businessId } = business.data
@@ -73,7 +79,11 @@ export const rejectLeave = async (prev: unknown, id: string) => {
         })
 
         if (leave?.tenantId !== businessId || !leave) {
-            throw new Error('Leave not found')
+            return {
+                status: false,
+                message: 'Leave not found',
+                error: null
+            }
         }
 
         await prisma.leave.update({
@@ -92,13 +102,14 @@ export const rejectLeave = async (prev: unknown, id: string) => {
         return {
             status: true,
             message: 'Leave rejected successfully',
+            error: null
         }
 
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: err?.message || 'Data base error occurred',
+            message: getErrorMessage(error),
+            error
         }
     }
 

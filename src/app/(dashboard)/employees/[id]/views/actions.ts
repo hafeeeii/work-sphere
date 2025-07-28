@@ -1,6 +1,7 @@
 'use server'
 import { EmailTemplate } from "@/components/email-template"
 import { getBusinessInfo } from "@/lib/business"
+import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { EmployeeSchema } from "@/lib/types"
 import { rootDomain } from "@/lib/utils"
@@ -11,7 +12,11 @@ import { Resend } from "resend"
 export async function inviteEmployee(prevState: unknown, formData: FormData) {
     const parsed = EmployeeSchema.safeParse({ ...Object.fromEntries(formData), inviteUser: formData.get('inviteUser') === 'true' })
     if (!parsed.success) {
-        throw new Error(parsed.error.message)
+        return {
+            status: false,
+            message: 'Validation failed',
+            error: parsed.error.message
+        }
     }
 
     try {
@@ -72,7 +77,11 @@ export async function inviteEmployee(prevState: unknown, formData: FormData) {
         })
 
         if (result.error) {
-            throw new Error(result.error.message)
+            return {
+                status: false,
+                message: 'Failed to send email',
+                error: result.error
+            }
         }
 
         await prisma.invite.update({
@@ -104,11 +113,10 @@ export async function inviteEmployee(prevState: unknown, formData: FormData) {
             error: null
         }
     } catch (error) {
-        const err = error as Error
         return {
             status: false,
-            message: 'Data base error occurred: ' + err?.message,
-            error: err
+            message: getErrorMessage(error),
+            error
         }
     }
 

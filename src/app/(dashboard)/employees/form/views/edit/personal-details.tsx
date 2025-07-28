@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import { Button } from '@/components/ui/button'
 import LoadingButton from '@/components/ui/buttons/loading-button'
 import { Calendar } from '@/components/ui/calendar'
@@ -12,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import RequiredLabel from '@/components/ui/required-label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { checkPermission } from '@/lib/auth'
 import { getFormattedDate } from '@/lib/date'
 import { EmployeeFormValues, EmployeeSchema } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -22,8 +24,6 @@ import { useRouter } from 'next/navigation'
 import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { updateEmployee } from '../../../views/action'
-import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
 
 export default function PersonalDetailsEdit({ employee }: { employee: Employee }) {
   const [updateState, updateAction, isUpdatePending] = useActionState(updateEmployee, undefined)
@@ -92,14 +92,19 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
     startTransition(() => updateAction(payload))
   }
 
-  const {businessUser} = useBusinessUser()
+  const { businessUser } = useBusinessUser()
 
   let isAllowedToEdit = false
   if (businessUser && checkPermission(businessUser, 'update', 'employee')) {
     isAllowedToEdit = true
   }
 
-  return isAllowedToEdit && (
+  if (!isAllowedToEdit) {
+    router.replace('/unauthorized')
+    return null
+  }
+
+  return (
     <Card className='w-full'>
       <CardContent className='pt-2'>
         <Form {...form}>
