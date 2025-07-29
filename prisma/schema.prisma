@@ -264,10 +264,12 @@ model Leave {
 model LeaveType {
   id           String         @id @default(uuid())
   tenantId     String
-  name         String         @unique
+  name         String         
   leaves       Leave[]
   leaveBalance leaveBalance[]
   tenant       Tenant         @relation(fields: [tenantId], references: [id])
+
+  @@unique([name, tenantId])
 }
 
 model leaveBalance {

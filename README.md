@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HR Management SaaS — Multi-Tenant Web App 🚧
 
-## Getting Started
+> ⚠️ **This project is still under active development.**  
+> Features and structure may change. Not yet production-ready.
 
-First, run the development server:
+A scalable, full-stack **multi-tenant HR management system**, designed to support multiple businesses (tenants) under a single platform. Built with **Next.js**, **Prisma**, and **PostgreSQL**, the app supports custom subdomains, role-based access control, and clean UX flows for HR operations.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### ✅ Multi-Tenant Architecture
+- Custom **subdomain-based tenant routing** (e.g. `company1.app.com`, `company2.app.com`)
+- All data is scoped per tenant securely via `tenantId`.
 
-## Learn More
+### ✅ Authentication & Authorization
+- **JWT-based authentication**
+- Centralized **RBAC** (Role-Based Access Control) via permissions abstraction
+- Separate role definitions for **users** and **employees**
 
-To learn more about Next.js, take a look at the following resources:
+### ✅ User & Employee Management
+- Send **email invites** to join a tenant
+- Accept invite → auto-create user under tenant
+- Manage **employee details**, departments, designations, work locations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### ✅ Leave Management
+- Employees can **apply for leave**
+- Shows which employees are **currently on leave**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ✅ Form Handling
+- **Zod validation** for both client and server
+- Regex-based strict validation for fields like Aadhaar, PAN, etc.
+- Built with `react-hook-form` and custom UI components
 
-## Deploy on Vercel
+### ✅ Server Actions & API Routes
+- Next.js **Server Actions** for secure form handling and mutation
+- RESTful **API routes** for dynamic data fetching
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### ✅ Filtering, Pagination, and Performance
+- **Server-side pagination** for large datasets
+- Filter employees, leave requests, and notifications
+- Optimized database queries using **Prisma**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧱 Tech Stack
+
+| Tech | Purpose |
+|------|---------|
+| **Next.js App Router** | Full-stack React framework |
+| **Prisma ORM** | Type-safe DB access |
+| **PostgreSQL** | Relational DB |
+| **Tailwind CSS + shadcn/ui** | UI styling and components |
+| **React Hook Form + Zod** | Form state and validation |
+| **JWT** | Stateless auth |
+| **TypeScript** | End-to-end type safety |
+
+---
+
+## 🔮 Planned Features
+
+- Email/OTP verification
+- Audit logging for admin actions
+- Dashboard with key HR metrics (leave, headcount, pending requests)
+- Announcement system for company-wide updates
+- Task assignment and tracking for employees
