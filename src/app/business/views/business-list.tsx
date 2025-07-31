@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button'
 import Typography from '@/components/ui/typography'
 import { TenantUserWithRelations } from '@/lib/types'
 import { protocol, rootDomain } from '@/lib/utils'
-import { Building2, Mailbox, Users } from 'lucide-react'
+import { Building2, LogOut, Mailbox, Users } from 'lucide-react'
 import AddBusiness from './add-business'
 import { BusinessCard } from './business-card'
 import { useRouter } from 'next/navigation'
+import { logout } from '@/app/(auth)/actions'
 
 export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) {
   const businesses = props.businesses?.map(item => ({
@@ -30,19 +31,28 @@ export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) 
 
   return (
     <div className='min-h-screen'>
-      {/* Header */}
       <div className='border-b'>
         <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-          <div className='flex h-16 items-center justify-between'>
-            <div className='flex items-center space-x-3'>
+          {/* Header Content */}
+
+          <div className='flex h-24 flex-col items-center sm:h-16 sm:justify-between md:flex-row gap-4'>
+            <div className='flex items-center space-x-3 self-start sm:self-auto'>
               <Typography variant='h5'>Business Dashboard</Typography>
             </div>
             <div className='flex items-center gap-2'>
-              <Button variant={'outline'} onClick={() => router.push('/business/invites') }>
+              <Button variant={'outline'} onClick={() => router.push('/business/invites')}>
                 <Mailbox size={10} />
                 Pending Invites
               </Button>
               <AddBusiness />
+              <Button
+                onClick={() => logout()}
+                variant={'outline'}
+                size={'icon'}
+                className='bg-destructive/20 hover:bg-destructive'
+              >
+                <LogOut />
+              </Button>
             </div>
           </div>
         </div>

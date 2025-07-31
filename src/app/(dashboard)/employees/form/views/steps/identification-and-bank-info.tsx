@@ -120,8 +120,8 @@ export default function IdentificationAndBankInfo() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             {/* Row: Bank Name & Account Holder Name */}
-            <div className='flex gap-4'>
-              <div className='w-1/2'>
+            <div className='flex gap-4 flex-col lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='bankName'
@@ -136,7 +136,7 @@ export default function IdentificationAndBankInfo() {
                   )}
                 />
               </div>
-              <div className='w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='bankAccountHolderName'
@@ -154,8 +154,8 @@ export default function IdentificationAndBankInfo() {
             </div>
 
             {/* Row: Account Number & IFSC */}
-            <div className='flex gap-4'>
-              <div className='w-1/2'>
+            <div className='flex gap-4 flex-col lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='bankAccountNumber'
@@ -170,7 +170,7 @@ export default function IdentificationAndBankInfo() {
                   )}
                 />
               </div>
-              <div className='w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='bankIfscCode'
@@ -188,8 +188,8 @@ export default function IdentificationAndBankInfo() {
             </div>
 
             {/* Row: Bank Branch & Account Type */}
-            <div className='flex gap-4'>
-              <div className='w-1/2'>
+            <div className='flex gap-4 flex-col lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='bankBranch'
@@ -204,7 +204,7 @@ export default function IdentificationAndBankInfo() {
                   )}
                 />
               </div>
-              <div className='w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='bankAccountType'
@@ -230,8 +230,8 @@ export default function IdentificationAndBankInfo() {
             </div>
 
             {/* Row: Aadhaar, PAN, Driver License */}
-            <div className='flex gap-4'>
-              <div className='w-1/3'>
+            <div className='flex gap-4 flex-col lg:flex-row'>
+              <div className='lg:w-1/3'>
                 <FormField
                   control={form.control}
                   name='aadhaarNumber'
@@ -246,7 +246,7 @@ export default function IdentificationAndBankInfo() {
                   )}
                 />
               </div>
-              <div className='w-1/3'>
+              <div className='lg:w-1/3'>
                 <FormField
                   control={form.control}
                   name='panNumber'
@@ -261,7 +261,7 @@ export default function IdentificationAndBankInfo() {
                   )}
                 />
               </div>
-              <div className='w-1/3'>
+              <div className='lg:w-1/3'>
                 <FormField
                   control={form.control}
                   name='driverLicenseNumber'

@@ -6,7 +6,7 @@ import { markAllAsRead } from './actions'
 import { Loader } from 'lucide-react'
 import { toast } from 'sonner'
 
-function Header({status}:{status:boolean}) {
+function Header({ status }: { status: boolean }) {
   const [state, action, isPending] = useActionState(markAllAsRead, undefined)
 
   useEffect(() => {
@@ -24,12 +24,12 @@ function Header({status}:{status:boolean}) {
   }
   return (
     <div>
-      <div className='mb-6 flex items-center justify-between'>
+      <div className='mb-6 flex flex-col items-center justify-between sm:flex-row'>
         <div>
           <h1 className='text-2xl font-bold'>Notifications</h1>
           <p className='text-sm text-muted-foreground'>Stay updated with your latest activities and messages </p>
         </div>
-        <div className='flex gap-2'>
+        <div className='flex gap-2 self-end'>
           <Button variant='outline'>Settings</Button>
           <Button disabled={isPending || status} onClick={handleMarkAsRead}>
             {isPending && <Loader className='mr-2 h-4 w-4 animate-spin' />}

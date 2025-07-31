@@ -110,8 +110,8 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             {/* Row: Name & Email */}
-            <div className='flex gap-4'>
-              <div className='grid w-1/2'>
+            <div className='flex flex-col gap-4 lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='name'
@@ -126,7 +126,7 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
                   )}
                 />
               </div>
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='email'
@@ -144,8 +144,8 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
             </div>
 
             {/* Row: Phone Number & Gender */}
-            <div className='flex gap-4'>
-              <div className='grid w-1/2'>
+            <div className='flex flex-col gap-4 lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='phoneNumber'
@@ -160,7 +160,7 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
                   )}
                 />
               </div>
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='gender'
@@ -186,8 +186,8 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
             </div>
 
             {/* Row: Date of Birth & Marital Status */}
-            <div className='flex gap-4'>
-              <div className='grid w-1/2'>
+            <div className='flex flex-col gap-4 lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='dateOfBirth'
@@ -229,7 +229,7 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
                   )}
                 />
               </div>
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='maritalStatus'
@@ -263,8 +263,8 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
             </div>
 
             {/* Row: Language & Nationality */}
-            <div className='flex gap-4'>
-              <div className='grid w-1/2'>
+            <div className='flex flex-col gap-4 lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='language'
@@ -279,7 +279,7 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
                   )}
                 />
               </div>
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='nationality'
@@ -297,8 +297,8 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
             </div>
 
             {/* Row: Address Line 1 & Address Line 2 */}
-            <div className='flex gap-4'>
-              <div className='grid w-1/2'>
+            <div className='flex flex-col gap-4 lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='addressLine1'
@@ -313,7 +313,7 @@ export default function PersonalDetailsEdit({ employee }: { employee: Employee }
                   )}
                 />
               </div>
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='addressLine2'

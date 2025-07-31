@@ -34,9 +34,9 @@ const StepperHeader = () => {
   }
 
   return (
-    <div className='flex h-20 items-center justify-center bg-background px-8'>
+    <div className='flex h-20 items-center justify-center  px-8'>
       {isEditPage ? (
-        <h1 className='text-2xl font-medium'>{formattedTitle()}</h1>
+        <h1 className='text-2xl font-medium text-center'>{formattedTitle()}</h1>
       ) : (
         <div className='w-full max-w-4xl'>
           <div className='mb-12'>

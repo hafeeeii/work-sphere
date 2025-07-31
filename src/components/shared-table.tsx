@@ -58,7 +58,7 @@ export function SharedTable<T extends object>({
   onEdit,
   onDelete,
   isAllowedToDelete,
-  isAllowedToEdit,
+  isAllowedToEdit
 }: Props<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -114,7 +114,7 @@ export function SharedTable<T extends object>({
       const deleteWithId = onDelete.bind(null, row.original.id)
       return (
         <div className='flex justify-end gap-2'>
-          {(visibleActions.includes('edit') && isAllowedToEdit) && (
+          {visibleActions.includes('edit') && isAllowedToEdit && (
             <Button
               variant={'outline'}
               size={'icon'}
@@ -140,7 +140,7 @@ export function SharedTable<T extends object>({
               <Eye />
             </Button>
           )}
-          {(visibleActions.includes('delete') && isAllowedToDelete) && (
+          {visibleActions.includes('delete') && isAllowedToDelete && (
             <Button
               variant={'outline'}
               size={'icon'}
@@ -212,9 +212,9 @@ export function SharedTable<T extends object>({
             )
         )}
       </div>
-      <div className='rounded-md border'>
+      <div className='text-nowrap rounded-md border'>
         <Table>
-          <TableHeader className='bg-secondary'>
+          <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {

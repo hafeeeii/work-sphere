@@ -17,7 +17,6 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
   const to = searchParams.to || `${currentYear}-12-31`
   const year = new Date(from).getFullYear()
 
-
   const business = await getBusinessInfo()
 
   if (!business.status || !business.data) {
@@ -86,18 +85,14 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
     return acc
   }, [] as Array<LeaveType>)
 
-
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-end gap-2'>
-        <div>
-          <YearPicker />
-        </div>
-
+        <YearPicker />
         <LeaveApplyForm leaveTypes={updatedLeaveTypes} />
       </div>
       {/* Leave Types */}
-      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6'>
+      <div className='grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6'>
         {limitedLeaves.map((type, idx) => (
           <Card key={idx}>
             <CardContent className='space-y-2 p-4'>
@@ -147,7 +142,7 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
         <CardHeader>
           <h3 className='text-lg font-semibold'>Past Leaves & Holidays</h3>
         </CardHeader>
-        <CardContent>
+        <CardContent className='h-full w-full overflow-x-auto'>
           {pastLeaves.length > 0 ? (
             pastLeaves.map((leave, i) => (
               <div key={i} className='mb-2 flex items-center gap-4'>
@@ -156,8 +151,8 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
                   {format(new Date(leave.from), 'dd-MMM-yyyy, EEE')} <ArrowRight size={16} className='mx-4' />{' '}
                   {format(new Date(leave.to), 'dd-MMM-yyyy, EEE')}
                 </div>
-                <Badge>{leave.leaveType?.name}</Badge>
-                <span className='text-xs'>
+                <Badge className='text-nowrap'>{leave.leaveType?.name}</Badge>
+                <span className='text-nowrap text-xs'>
                   {getDaysCount(leave.from, leave.to)} {getDaysCount(leave.from, leave.to) == 1 ? 'day' : 'days'}
                 </span>
               </div>

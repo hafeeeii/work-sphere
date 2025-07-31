@@ -122,8 +122,8 @@ export default function EmploymentDetailsEdit({
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             {/* Row: Work Email & Date of Joining */}
 
-            <div className='flex gap-4'>
-              <div className='grid w-1/2'>
+            <div className='flex flex-col gap-4 lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='workEmail'
@@ -139,7 +139,7 @@ export default function EmploymentDetailsEdit({
                 />
               </div>
 
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='dateOfJoining'
@@ -184,8 +184,8 @@ export default function EmploymentDetailsEdit({
             </div>
 
             {/* Row: Designation & Department */}
-            <div className='flex gap-4'>
-              <div className='grid w-1/2'>
+            <div className='flex flex-col gap-4 lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='designation'
@@ -200,7 +200,7 @@ export default function EmploymentDetailsEdit({
                   )}
                 />
               </div>
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='department'
@@ -218,8 +218,8 @@ export default function EmploymentDetailsEdit({
             </div>
 
             {/* Row: Work Location & Reporting Manager */}
-            <div className='flex gap-4'>
-              <div className='grid w-1/2'>
+            <div className='flex flex-col gap-4 lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='workLocation'
@@ -235,7 +235,7 @@ export default function EmploymentDetailsEdit({
                 />
               </div>
 
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='reportingManagerId'
@@ -257,8 +257,8 @@ export default function EmploymentDetailsEdit({
               </div>
             </div>
 
-            <div className='flex gap-2'>
-              <div className='grid w-1/2'>
+            <div className='flex gap-2 flex-col lg:flex-row'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='role'
@@ -284,7 +284,7 @@ export default function EmploymentDetailsEdit({
                   )}
                 />
               </div>
-              <div className='grid w-1/2'>
+              <div className='lg:w-1/2'>
                 <FormField
                   control={form.control}
                   name='employmentType'

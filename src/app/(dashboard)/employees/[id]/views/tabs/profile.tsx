@@ -66,9 +66,9 @@ export default function ProfileTab({ employee }: ProfileTabProps) {
   ]
 
   return (
-    <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+    <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
       {/* Personal Info */}
-      <Card className='col-span-2'>
+      <Card className='lg:col-span-2 col-span-3'>
         <CardContent className='space-y-2 p-4'>
           <div className='flex items-center justify-between'>
             <h3 className='font-semibold'>Personal Information</h3>
@@ -85,7 +85,7 @@ export default function ProfileTab({ employee }: ProfileTabProps) {
       </Card>
 
       {/* ID Proof */}
-      <Card>
+      <Card className='col-span-3 lg:col-span-1'>
         <CardContent className='space-y-2 p-4'>
           <div className='flex items-center justify-between'>
             <h3 className='font-semibold'>ID Proof</h3>

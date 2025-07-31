@@ -89,12 +89,12 @@ export default async function EmployeeDetails({ id }: { id: string }) {
 
       {/* Header Section */}
       <div className='overflow-hidden rounded-xl border'>
-        <div className='flex items-center gap-8 p-4'>
+        <div className='flex flex-col lg:flex-row items-center gap-8 p-4'>
           <Avatar className='h-[80px] w-[80px]'>
             <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className='flex w-full'>
+          <div className='flex w-full flex-col lg:flex-row items-center text-center lg:text-start'>
             <div className='flex-1'>
               <h2 className='text-xl font-semibold'>{employee?.name}</h2>
               <p className='text-sm text-muted-foreground'>{employee?.designationMeta?.name}</p>

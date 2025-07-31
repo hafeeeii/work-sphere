@@ -10,7 +10,7 @@ export default function Layout({
   return (
     <main className='flex flex-col h-full w-full items-center'>
       <MultistepFormProvider>
-        <div className='w-full flex flex-col px-52 py-6 gap-6'>
+        <div className='w-full flex flex-col lg:px-52 py-6 gap-6'>
           <StepperHeader/>
         {children}
         </div>

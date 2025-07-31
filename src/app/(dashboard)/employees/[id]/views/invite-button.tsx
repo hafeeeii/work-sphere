@@ -65,7 +65,7 @@ export default function InviteButton({
     hasNotBeenInvited &&
     isAllowedToEdit && (
       <Card>
-        <CardContent className='flex items-center justify-between py-4'>
+        <CardContent className='flex items-center justify-between py-4 gap-2'>
           <p className='text-sm'>
             {' '}
             An invitation has not been sent to this employee yet. Click the &quot;Invite&quot; button to send now

@@ -1,7 +1,6 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { checkPermission } from '@/lib/auth'
 import { EmployeeWithRelations } from '@/lib/types'
 import { PlusIcon } from 'lucide-react'
@@ -72,24 +71,23 @@ const EmployeeList = ({ employees }: EmployeeListProps) => {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <div className='mt-4 flex flex-col items-end gap-6'>
-          {isAllowedToCreate && (
-            <Button onClick={() => router.push('/employees/form/personal-details')}>
-              <PlusIcon />
-              Create Employee
-            </Button>
-          )}
-          <SharedTable
-            tableData={tableData}
-            onDelete={deleteEmployee}
-            isAllowedToDelete={isAllowedToDelete}
-            isAllowedToEdit={isAllowedToEdit}
-          />
-        </div>
-      </CardContent>
-    </Card>
+<div >
+  <div className='mt-4 flex flex-col items-end gap-6 '>
+    {isAllowedToCreate && (
+      <Button onClick={() => router.push('/employees/form/personal-details')}>
+        <PlusIcon />
+        Create Employee
+      </Button>
+    )}
+  <SharedTable
+    tableData={tableData}
+    onDelete={deleteEmployee}
+    isAllowedToDelete={isAllowedToDelete}
+    isAllowedToEdit={isAllowedToEdit}
+  />
+</div>
+</div>
+
   )
 }
 

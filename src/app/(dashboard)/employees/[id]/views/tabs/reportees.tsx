@@ -14,7 +14,7 @@ export default function Reportees({
   return reportees.length > 0 ? (
     <div className='mt-5 flex flex-wrap gap-5'>
       {reportees.map((reportee, idx) => (
-        <div className='w-1/4' key={idx}>
+        <div className='lg:w-1/4  w-full' key={idx}>
           <ReporteesCard employee={reportee} key={idx} />
         </div>
       ))}

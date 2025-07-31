@@ -37,7 +37,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
               </div>
               <span
                 className={cn(
-                  "mt-2 text-sm font-medium transition-colors duration-200",
+                  "mt-2 text-sm font-medium text-center transition-colors duration-200",
                   index <= currentStep
                     ? "text-foreground"
                     : "text-muted-foreground"

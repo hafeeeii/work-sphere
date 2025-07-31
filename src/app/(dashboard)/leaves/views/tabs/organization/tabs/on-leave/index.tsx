@@ -68,9 +68,9 @@ export default async function OnLeaveTab() {
               {leaves.length} {leaves.length === 1 ? 'leave' : 'leaves'}
             </div>
           </AccordionTrigger>
-          <AccordionContent className='space-y-4'>
+          <AccordionContent className='space-y-4 text-nowrap overflow-x-auto'>
             {leaves.map(leave => (
-              <div key={leave.id} className='flex items-center justify-between'>
+              <div key={leave.id} className='flex items-center justify-between gap-4'>
                 <div className='flex items-center gap-4'>
                   <div>{leave.user.name}</div>
                   <div className='text-sm text-muted-foreground'>

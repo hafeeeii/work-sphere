@@ -32,33 +32,38 @@ export default async function Invites() {
     }
   })
 
-
   return (
     <div className='mx-auto max-w-5xl p-6'>
-      <div className='mb-6 flex items-center justify-between'>
+      <div className='mb-6 flex flex-col items-start justify-between sm:flex-row sm:items-center'>
         <div>
           <h1 className='text-2xl font-bold'>Pending Invites</h1>
           <p className='text-sm text-muted-foreground'>View and manage your pending invitations to join businesses</p>
         </div>
 
-        <BackButton />
+        <BackButton className='self-end sm:self-auto' />
       </div>
 
       <div className='space-y-4'>
         {invites && invites.length > 0 ? (
           invites.map((val, idx) => (
-            <div key={idx} className='flex items-center gap-4 rounded-lg border px-4 py-4 shadow-sm'>
-              <Avatar>
-                <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+            <div
+              key={idx}
+              className='flex flex-col items-center justify-between gap-4 rounded-lg border px-4 py-4 shadow-sm sm:flex-row'
+            >
+              <div className='flex gap-4 self-start sm:self-auto'>
+                <Avatar>
+                  <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
 
-              <div className='flex-1'>
-                <p className='text-base font-medium'>{val.tenant.name}</p>
-                <p className='text-sm text-muted-foreground'>Invited by {val.inviter.name}</p>
+                <div className='flex-1'>
+                  <p className='text-base font-medium'>{val.tenant.name}</p>
+                  <p className='text-sm text-muted-foreground'>Invited by {val.inviter.name}</p>
+                </div>
               </div>
-
-             <ActionButtons id={val.id} status={val.status}/>
+              <div className='self-end sm:self-auto'>
+                <ActionButtons id={val.id} status={val.status} />
+              </div>
             </div>
           ))
         ) : (

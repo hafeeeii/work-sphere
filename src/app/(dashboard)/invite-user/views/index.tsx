@@ -1,14 +1,13 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
+import { checkPermission } from '@/lib/auth'
 import { getInvite } from '@/services/invite'
 import { Invite } from '@prisma/client'
+import { useRouter } from 'next/navigation'
 import React from 'react'
+import { useBusinessUser } from '../../business-user-provider'
 import { deleteInvite } from './action'
 import Form from './form'
-import { useBusinessUser } from '../../business-user-provider'
-import { checkPermission } from '@/lib/auth'
-import { useRouter } from 'next/navigation'
-import { Card, CardContent } from '@/components/ui/card'
 
 export default function UserInvite({ invites }: { invites: Invite[] }) {
   const [showForm, setShowForm] = React.useState(false)
@@ -74,13 +73,9 @@ export default function UserInvite({ invites }: { invites: Invite[] }) {
   }
 
   return (
-    <Card>
-      <CardContent>
-         <div className='flex flex-col items-end gap-6 mt-4'>
-        {isAllowedToCreate && <Form showForm={showForm} invite={invite} toggleForm={toggleForm} />}
-        <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteInvite} />
-      </div>
-      </CardContent>
-    </Card>
+    <div className='mt-4 flex flex-col items-end gap-6'>
+      {isAllowedToCreate && <Form showForm={showForm} invite={invite} toggleForm={toggleForm} />}
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteInvite} />
+    </div>
   )
 }

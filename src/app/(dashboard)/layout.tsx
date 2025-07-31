@@ -1,16 +1,15 @@
-import type { Metadata } from 'next'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
-import { Separator } from '@/components/ui/separator'
-import { SearchDialog } from '@/components/ui/search-dialog'
-import { ThemeSwitcher } from '@/components/ui/theme-switcher'
-import { cn } from '@/lib/utils'
 import { AccountMenu } from '@/components/ui/account-menu'
-import { BusinessUserProvider } from './business-user-provider'
+import { Card, CardContent } from '@/components/ui/card'
+import { SearchDialog } from '@/components/ui/search-dialog'
+import { Separator } from '@/components/ui/separator'
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { ThemeSwitcher } from '@/components/ui/theme-switcher'
 import { getBusinessInfo } from '@/lib/business'
-import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-
+import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { BusinessUserProvider } from './business-user-provider'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -22,8 +21,6 @@ export default async function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const contentLayout = 'centered' // This can be dynamic based on your app's state or props  "centered" | "full-width"
-
   const business = await getBusinessInfo()
   if (!business || !business.data) {
     redirect('/login')
@@ -46,23 +43,17 @@ export default async function DashboardLayout({
   }
 
   return (
-    <BusinessUserProvider businessUser={tenantUser}>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset
-          className={cn(
-            contentLayout === 'centered' && '!mx-auto max-w-screen-2xl',
-            // Adds right margin for inset sidebar in centered layout up to 113rem.
-            // On wider screens with collapsed sidebar, removes margin and sets margin auto for alignment.
-            'max-[113rem]:peer-data-[variant=inset]:!mr-2 min-[101rem]:peer-data-[variant=inset]:peer-data-[state=collapsed]:!mr-auto bg-card p-2'
-          )}
-        >
-          <div className='flex h-full min-h-[97vh] flex-col rounded-2xl bg-background'>
-            <header className='group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear'>
+    <div>
+      <BusinessUserProvider businessUser={tenantUser}>
+        <SidebarProvider className='flex min-h-screen w-full overflow-x-hidden'>
+          <AppSidebar />
+
+          <div className='flex h-full w-full flex-col overflow-hidden bg-background'>
+            <header className='flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear'>
               <div className='flex w-full items-center justify-between px-4 lg:px-6'>
                 <div className='flex items-center gap-1 lg:gap-2'>
                   <SidebarTrigger className='-ml-1' />
-                  <Separator orientation='vertical' className='mx-2 data-[orientation=vertical]:h-4' />
+                  <Separator orientation='vertical' className='mx-2' />
                   <SearchDialog />
                 </div>
                 <div className='flex items-center gap-2'>
@@ -71,10 +62,14 @@ export default async function DashboardLayout({
                 </div>
               </div>
             </header>
-            <div className='h-full p-4 md:p-6'>{children}</div>
+            <div className='h-full w-full p-4'>
+              <Card className='h-full'>
+                <CardContent className='pt-4'>{children}</CardContent>
+              </Card>
+            </div>
           </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </BusinessUserProvider>
+        </SidebarProvider>
+      </BusinessUserProvider>
+    </div>
   )
 }

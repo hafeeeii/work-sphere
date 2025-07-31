@@ -1,7 +1,8 @@
 'use client'
-import { Briefcase, Home, LogOut, Settings, Umbrella, User2Icon } from 'lucide-react'
+import { Briefcase, LogOut, Settings, Umbrella, User2Icon } from 'lucide-react'
 
 import { logout } from '@/app/(auth)/actions'
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import {
   Sidebar,
   SidebarContent,
@@ -12,11 +13,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
+import { checkPermission } from '@/lib/auth'
 import { getDefaultSortById } from '@/lib/sort-utils'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
 export function AppSidebar() {
   const path = usePathname()
 
@@ -30,11 +30,11 @@ if (businessUser && checkPermission(businessUser, 'view', 'invite-user')) {
 
 // Menu items.
 const items = [
-  {
-    title: 'Dashboard',
-    url: '/dashboard',
-    icon: Home
-  },
+  // {
+  //   title: 'Dashboard',
+  //   url: '/dashboard',
+  //   icon: Home
+  // },
   {
     title: 'Employees',
     url: `/employees?${getDefaultSortById('name')}`,

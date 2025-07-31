@@ -35,31 +35,32 @@ export default async function LeaveBalanceTab() {
     <div className='space-y-2 p-6'>
       {leaveBalances.map((value, idx) => (
         <Card key={idx} className='shadow-sm'>
-          <CardContent className='flex items-center justify-between p-4'>
-            <div className='flex items-center gap-4 w-3/4'>
-              {/* <div className={cn("w-10 h-10 rounded-full flex items-center justify-center")}>
-              </div> */}
-              <div className='w-1/2'>
+          <CardContent className='flex flex-col items-center gap-2 p-4 sm:items-stretch sm:justify-between lg:flex-row lg:items-center'>
+            <div className='flex flex-col items-center justify-between gap-4 text-nowrap sm:flex-row lg:w-3/4 lg:justify-start'>
+              <div className='lg:w-1/2'>
                 <div className='text-sm font-semibold'>{value.leaveType?.name}</div>
               </div>
-            <div className='space-y-1 text-sm'>
-              {value.available !== null && (
+              <div className='space-y-1 text-center text-sm sm:text-start'>
+                {value.available !== null && (
+                  <div>
+                    <span className='text-muted-foreground'>Available </span>
+                    <span className='font-semibold text-green-400'>
+                      {value.available} {value.available === 1 ? 'day' : 'days'}
+                    </span>
+                  </div>
+                )}
                 <div>
-                  <span className='text-muted-foreground'>Available </span>
-                  <span className='font-semibold text-green-400'>
-                    {value.available} {value.available === 1 ? 'day' : 'days'}
+                  <span className='text-muted-foreground'>Booked </span>
+                  <span className='font-semibold text-red-400'>
+                    {value.booked} {value.booked === 1 ? 'day' : 'days'}
                   </span>
                 </div>
-              )}
-              <div>
-                <span className='text-muted-foreground'>Booked </span>
-                <span className='font-semibold text-red-400'>
-                  {value.booked} {value.booked === 1 ? 'day' : 'days'}
-                </span>
               </div>
             </div>
+
+            <div className='md:self-end lg:self-auto'>
+              <LeaveApplyForm leaveTypes={updatedLeaveTypes} leaveTypeId={value.leaveTypeId} />
             </div>
-            <LeaveApplyForm leaveTypes={updatedLeaveTypes} leaveTypeId={value.leaveTypeId} />
           </CardContent>
         </Card>
       ))}

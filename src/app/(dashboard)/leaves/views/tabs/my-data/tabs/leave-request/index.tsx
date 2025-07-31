@@ -67,7 +67,7 @@ export default async function LeaveRequestTab() {
   }
 
   return (
-    <div className='flex flex-col items-end gap-6'>
+    <div className='flex flex-col items-end gap-6 text-nowrap'>
       <LeaveApplyForm leaveTypes={updatedLeaveTypes} />
       <Table>
         <TableHeader>
