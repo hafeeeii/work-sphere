@@ -4,7 +4,7 @@ import { getBusinessInfo } from "@/lib/business"
 import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { LeaveSchema } from "@/lib/types"
-import { LeaveStatus } from "@prisma/client"
+import { LeaveStatus, NotificationType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 export const applyLeave = async (prev: unknown, formData: FormData) => {
@@ -42,6 +42,16 @@ export const applyLeave = async (prev: unknown, formData: FormData) => {
                     status: LeaveStatus.PENDING,
                     from: new Date(from),
                     to: new Date(to)
+                }
+            })
+
+            await tx.notification.create({
+                data: {
+                    createdById: userId,
+                    tenantId: businessId,
+                    title: "Leave Request",
+                    message: "A leave request has been submitted",
+                    type: NotificationType.REQUEST,
                 }
             })
 

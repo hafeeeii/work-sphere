@@ -4,11 +4,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Input } from '@/components/ui/input'
 import { startTransition, useActionState, useEffect } from 'react'
 
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import RequiredLabel from '@/components/ui/required-label'
 import { DesignationFormValues, designationSchema } from '@/lib/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Designation } from '@prisma/client'
-import { Loader, PlusIcon } from 'lucide-react'
+import { PlusIcon, Save } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { saveDesignation, updateDesignation } from './action'
@@ -103,10 +104,9 @@ const Form = ({ designation, showForm, toggleForm }: FormProps) => {
             </div>
           </div>
           <DialogFooter>
-            <Button disabled={!isValid || isPending} type='submit'>
-              {isPending && <Loader className='mr-2 h-4 w-4 animate-spin' />}
+            <LoadingButton type='submit' disabled={!isValid} isLoading={isPending} icon={<Save />}>
               Save
-            </Button>
+            </LoadingButton>
           </DialogFooter>
         </form>
       </DialogContent>

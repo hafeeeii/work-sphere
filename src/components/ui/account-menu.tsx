@@ -18,6 +18,7 @@ import { getUnreadNotificationsCount } from '@/services/user'
 import { TenantUser, User } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { Badge } from './badge'
+import { logout } from '@/app/(auth)/actions'
 
 export function AccountMenu({
   tenantUser
@@ -91,7 +92,7 @@ export function AccountMenu({
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>
           <LogOut />
           Log out
         </DropdownMenuItem>

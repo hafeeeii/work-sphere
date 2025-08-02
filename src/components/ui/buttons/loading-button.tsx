@@ -8,11 +8,11 @@ type LoadingButtonProps = ButtonProps & {
   icon?: React.ReactNode
 }
 
-const LoadingButton = ({ children, isLoading, isValid = true,icon, ...props }: LoadingButtonProps) => {
+const LoadingButton = ({ children, isLoading, isValid = true, icon, ...props }: LoadingButtonProps) => {
   return (
-    <Button disabled={!isValid || isLoading} {...props} type='submit'>
+    <Button {...props} disabled={!isValid || isLoading} type='submit'>
       {isLoading && <Loader className='animate-spin' />}
-      {(!isLoading && icon) && icon}
+      {!isLoading && icon && icon}
       {children}
     </Button>
   )

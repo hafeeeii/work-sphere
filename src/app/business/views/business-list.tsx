@@ -1,13 +1,13 @@
 'use client'
+import { logout } from '@/app/(auth)/actions'
 import { Button } from '@/components/ui/button'
 import Typography from '@/components/ui/typography'
 import { TenantUserWithRelations } from '@/lib/types'
 import { protocol, rootDomain } from '@/lib/utils'
 import { Building2, LogOut, Mailbox, Users } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import AddBusiness from './add-business'
 import { BusinessCard } from './business-card'
-import { useRouter } from 'next/navigation'
-import { logout } from '@/app/(auth)/actions'
 
 export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) {
   const businesses = props.businesses?.map(item => ({

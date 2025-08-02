@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { startTransition, useActionState, useEffect, useState } from 'react'
 
 import { Autocomplete } from '@/components/ui/autocomplete'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import { Calendar } from '@/components/ui/calendar'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -15,7 +16,7 @@ import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LeaveType } from '@prisma/client'
 import { format } from 'date-fns'
-import { Loader, PlusIcon } from 'lucide-react'
+import { PlusIcon, Send } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { applyLeave } from './actions'
@@ -206,10 +207,9 @@ const LeaveApplyForm = ({ leaveTypes, leaveTypeId }: FormProps) => {
             />
           </div>
           <DialogFooter>
-            <Button disabled={!isValid || isPending} type='submit'>
-              {isPending && <Loader className='mr-2 h-4 w-4 animate-spin' />}
+            <LoadingButton isLoading={isPending} disabled={!isValid} icon={<Send/>}>
               Apply
-            </Button>
+            </LoadingButton>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     try {
         const user = await prisma.user.findUnique({
             include:{
-              tenantUser:{
+              tenantUsers:{
                 include:{
                     tenant:true,
                     user:true,

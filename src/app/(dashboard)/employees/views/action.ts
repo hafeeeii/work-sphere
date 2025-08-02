@@ -168,6 +168,7 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
                 }
             }
         })
+
         if (!employee) {
             return {
                 status: false,
@@ -205,6 +206,7 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
             error
         }
     }
+
 }
 
 export async function deleteEmployee(id: string) {

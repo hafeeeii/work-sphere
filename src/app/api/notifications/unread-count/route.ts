@@ -17,24 +17,27 @@ export const GET = async () => {
             return NextResponse.json({ error: "Error fetching notifications count", status: 401 });
         }
 
-        const count = await prisma.notification.findMany({
+        const unreadCount = await prisma.notification.count({
             where: {
                 tenantId: businessId,
+                // OR = at least one of the conditions is must be true
                 OR: [
                     { userId },
-                    { userId: null }
-                ]
-            },
-            include: {
-                notificationRead: {
-                    where: {
-                        userId
+                    { userId: null },
+                ],
+                notificationsRead: {
+                    // none = checks that no related record matches the condition.
+                    none: {
+                        userId: userId,
                     },
+                },
+                //  exclude notifications created by current user
+                NOT: {
+                    createdById: userId
                 }
-            }
-        })
+            },
+        });
 
-        const unreadCount = count.filter((notif) => notif.notificationRead.length === 0).length
         return NextResponse.json({ unreadCount })
     } catch (err) {
         console.error(err, "Error");

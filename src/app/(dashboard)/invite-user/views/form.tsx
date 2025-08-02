@@ -1,15 +1,15 @@
 'use client'
 import { Button } from '@/components/ui/button'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { DrawerClose, DrawerFooter } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import RequiredLabel from '@/components/ui/required-label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import LoadingButton from '@/components/ui/buttons/loading-button'
 import { InviteFormValues, InviteSchema } from '@/lib/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Invite, Role } from '@prisma/client'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, UserPlus } from 'lucide-react'
 import { startTransition, useActionState, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -54,7 +54,7 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
   useEffect(() => {
     if (state?.status) {
       onClose()
-    }    
+    }
 
     if (state?.message) {
       if (state.status) {
@@ -66,8 +66,7 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
   }, [updateState, createState])
 
   useEffect(() => {
-    if (showForm) 
-    reset(defaultValues)
+    if (showForm) reset(defaultValues)
   }, [showForm])
 
   const onSubmit = (data: InviteFormValues) => {
@@ -88,7 +87,7 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
     <Dialog open={showForm} onOpenChange={onClose}>
       <DialogTrigger asChild>
         <Button className='max-w-fit' onClick={onClose}>
-          <PlusIcon  />
+          <PlusIcon />
           Invite User
         </Button>
       </DialogTrigger>
@@ -98,59 +97,51 @@ const Form = ({ showForm, invite, toggleForm }: Props) => {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className='w-full space-y-6'>
           <div className='space-y-4'>
-
-            
-              <div className='flex gap-4'>
-                <div className='grid w-full gap-1.5'>
-                  <RequiredLabel htmlFor='email'>Name</RequiredLabel>
-                  <Controller
-                    name='name'
-                    control={control}
-                    render={({ field }) => <Input {...field} id='name' placeholder='John Doe' />}
-                  />
-                </div>
+            <div className='flex gap-4'>
+              <div className='grid w-full gap-1.5'>
+                <RequiredLabel htmlFor='email'>Name</RequiredLabel>
+                <Controller
+                  name='name'
+                  control={control}
+                  render={({ field }) => <Input {...field} id='name' placeholder='John Doe' />}
+                />
               </div>
-              <div className='flex gap-4'>
-                <div className='grid w-full gap-1.5'>
-                  <RequiredLabel htmlFor='email'>Email</RequiredLabel>
-                  <Controller
-                    name='email'
-                    control={control}
-                    render={({ field }) => <Input {...field} id='email' placeholder='john@example.com' />}
-                  />
-                </div>
+            </div>
+            <div className='flex gap-4'>
+              <div className='grid w-full gap-1.5'>
+                <RequiredLabel htmlFor='email'>Email</RequiredLabel>
+                <Controller
+                  name='email'
+                  control={control}
+                  render={({ field }) => <Input {...field} id='email' placeholder='john@example.com' />}
+                />
               </div>
-               <div className='grid w-full gap-1.5'>
-                  <RequiredLabel htmlFor='role'>Role</RequiredLabel>
-                  <Controller
-                    name='role'
-                    control={control}
-                    render={({ field }) => (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className='h-10'>
-                          <SelectValue placeholder='Select gender' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={Role.VIEWER}>Viewer</SelectItem>
-                          <SelectItem value={Role.AUDITOR}>Auditor</SelectItem>
-                          <SelectItem value={Role.STAKEHOLDER}>Stakeholder</SelectItem>
-
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </div>
-
+            </div>
+            <div className='grid w-full gap-1.5'>
+              <RequiredLabel htmlFor='role'>Role</RequiredLabel>
+              <Controller
+                name='role'
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className='h-10'>
+                      <SelectValue placeholder='Select gender' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={Role.VIEWER}>Viewer</SelectItem>
+                      <SelectItem value={Role.AUDITOR}>Auditor</SelectItem>
+                      <SelectItem value={Role.STAKEHOLDER}>Stakeholder</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
           </div>
           <DrawerFooter>
-            <div className='flex justify-between'>
-              <DrawerClose asChild>
-                <Button variant='outline' onClick={onClose}>
-                  Cancel
-                </Button>
-              </DrawerClose>
-              <LoadingButton isLoading={isPending} isValid={isValid} type='submit'>
-                {invite?.id ? 'Update' : 'Invite' }
+            <div className='flex justify-end'>
+              <DrawerClose asChild></DrawerClose>
+              <LoadingButton isLoading={isPending} isValid={isValid} type='submit' icon={<UserPlus />}>
+                {invite?.id ? 'Update' : 'Invite'}
               </LoadingButton>
             </div>
           </DrawerFooter>

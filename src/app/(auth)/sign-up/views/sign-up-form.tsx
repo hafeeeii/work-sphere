@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { signUp } from '../../actions'
 import { toast } from 'sonner'
 import InputErrorMessage from '@/components/ui/input-error-message'
+import { UserPlus } from 'lucide-react'
 
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [state, action, isLoading] = useActionState(signUp, undefined)
@@ -114,7 +115,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                     )}
                   />
                 </div>
-                <LoadingButton isLoading={isLoading} isValid={isValid}>
+                <LoadingButton isLoading={isLoading} isValid={isValid} icon={<UserPlus />}>
                   Create Account
                 </LoadingButton>
               </form>

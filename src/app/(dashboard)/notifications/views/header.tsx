@@ -1,10 +1,11 @@
 'use client'
 import { Button } from '@/components/ui/button'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import { Input } from '@/components/ui/input'
-import React, { startTransition, useActionState, useEffect } from 'react'
-import { markAllAsRead } from './actions'
-import { Loader } from 'lucide-react'
+import { CheckCheck, Settings } from 'lucide-react'
+import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
+import { markAllAsRead } from './actions'
 
 function Header({ status }: { status: boolean }) {
   const [state, action, isPending] = useActionState(markAllAsRead, undefined)
@@ -30,11 +31,13 @@ function Header({ status }: { status: boolean }) {
           <p className='text-sm text-muted-foreground'>Stay updated with your latest activities and messages </p>
         </div>
         <div className='flex gap-2 self-end'>
-          <Button variant='outline'>Settings</Button>
-          <Button disabled={isPending || status} onClick={handleMarkAsRead}>
-            {isPending && <Loader className='mr-2 h-4 w-4 animate-spin' />}
-            Mark All as Read
+          <Button variant='outline'>
+            <Settings />
+            Settings
           </Button>
+          <LoadingButton onClick={handleMarkAsRead} disabled={status} isLoading={isPending} icon={<CheckCheck />}>
+            Mark All as Read
+          </LoadingButton>
         </div>
       </div>
 
