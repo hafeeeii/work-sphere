@@ -13,6 +13,7 @@ import { PlusIcon, Save } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { saveWorkLocation, updateWorkLocation } from './action'
+import { Label } from '@/components/ui/label'
 
 type FormProps = {
   workLocation?: WorkLocation | null
@@ -151,7 +152,7 @@ const Form = ({ workLocation, showForm, toggleForm }: FormProps) => {
 
           <div className='flex gap-4'>
             <div className='grid w-full items-center gap-1.5'>
-              <RequiredLabel htmlFor='addressLine2'>Address Line 2</RequiredLabel>
+              <Label htmlFor='addressLine2'>Address Line 2</Label>
               <Controller
                 name='addressLine2'
                 control={control}
@@ -161,7 +162,7 @@ const Form = ({ workLocation, showForm, toggleForm }: FormProps) => {
           </div>
 
           <DialogFooter>
-            <LoadingButton type='submit' disabled={!isValid} isLoading={isPending} icon={<Save />}>
+            <LoadingButton type='submit' isValid={isValid} isLoading={isPending} icon={<Save />}>
               Save
             </LoadingButton>
           </DialogFooter>

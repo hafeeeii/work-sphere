@@ -1,93 +1,171 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import React from "react";
-import CountChart from "./CountChart";
-import FinanceChart from "./FinanceChart";
-import { LeaveChart } from "./LeaveChart";
-import TotalNumbersCard from "./TotalNumbersCard";
+import { StatsCard } from './stats-card'
 
-const topSectionData = [
-  { date: "2024-12-01", total: 15, title: "Managers" },
-  { date: "2024-12-10", total: 120, title: "Employees" },
-  { date: "2024-12-15", total: 8, title: "Teams" },
-  { date: "2024-12-17", total: 200, title: "Tasks" },
-];
+import { checkPermission } from '@/lib/auth'
+import { getBusinessInfo } from '@/lib/business'
+import prisma from '@/lib/prisma'
+import { LeaveStatus } from '@prisma/client'
+import { Building, Clock, Mail, Users } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import { ActivityFeed } from './activity-feed'
+import { QuickActions } from './quick-action'
 
-const Dashboard = () => {
+const Dashboard = async () => {
+  const business = await getBusinessInfo()
+  if (!business || !business.data) {
+    return null
+  }
+
+  const tenantUser = await prisma.tenantUser.findUnique({
+    where: {
+      userId_tenantId: {
+        tenantId: business.data.businessId,
+        userId: business.data.userId
+      }
+    },
+    include: {
+      user: true
+    }
+  })
+
+  if (!tenantUser) {
+    return null
+  }
+
+  let isAllowedToView = false
+  if (checkPermission(tenantUser, 'update', 'dashboard')) {
+    isAllowedToView = true
+  }
+
+  if (!isAllowedToView) {
+    redirect('/unauthorized')
+  }
+
+  const now = new Date()
+  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const endOfLastMonth = new Date(startOfThisMonth.getTime() - 1)
+
+  const employeeCount = await prisma.employee.count({
+    where: {
+      tenantId: business.data.businessId
+    }
+  })
+
+  const employeeCountLastMonth = await prisma.employee.count({
+    where: {
+      tenantId: business.data.businessId,
+      createdAt: {
+        gte: startOfLastMonth,
+        lte: endOfLastMonth
+      }
+    }
+  })
+
+  const pendingLeaveRequests = await prisma.leave.count({
+    where: {
+      tenantId: business.data.businessId,
+      status: LeaveStatus.PENDING
+    }
+  })
+
+  // request that start very soon
+  const twoDaysFromNow = new Date()
+  twoDaysFromNow.setDate(now.getDate() + 2)
+  const urgentLeaveRequests = await prisma.leave.count({
+    where: {
+      tenantId: business.data.businessId,
+      status: LeaveStatus.PENDING,
+      from: {
+        lte: twoDaysFromNow
+      }
+    }
+  })
+
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(now.getDate() - 7)
+
+  const lastSevenDaysPendingInvitation = await prisma.invite.count({
+    where: {
+      tenantId: business.data.businessId,
+      createdAt: {
+        gte: sevenDaysAgo
+      }
+    }
+  })
+
+  const departments = await prisma.department.count({
+    where: {
+      tenantId: business.data.businessId
+    }
+  })
+
+  const currentMonth = now.getMonth()
+  const quarterStartMonth = currentMonth - (currentMonth % 3)
+  const startOfQuarter = new Date(now.getFullYear(), quarterStartMonth, 1)
+
+  const newDepartmentsThisQuarter = await prisma.department.count({
+    where: {
+      tenantId: business.data.businessId,
+      createdAt: {
+        gte: startOfQuarter
+      }
+    }
+  })
+
+  let percentageChange = 0
+
+  if (employeeCountLastMonth === 0) {
+    percentageChange = employeeCount === 0 ? 0 : 100
+  } else {
+    percentageChange = ((employeeCount - employeeCountLastMonth) / employeeCountLastMonth) * 100
+  }
+
+  const formattedPercentageChange =
+    percentageChange >= 0 ? `+${percentageChange.toFixed(2)}%` : `${percentageChange.toFixed(2)}%`
+
   return (
-    <div className="w-full min-h-screen flex gap-8">
-      <div className="min-w-[70%] h-full space-y-10">
-        {/* left side */}
-        <div className="flex  gap-4 h-[20%] w-full">
-          {/* left-top */}
-          {topSectionData.map((val) => (
-            <React.Fragment key={val.title}>
-              <TotalNumbersCard
-                date={val.date}
-                title={val.title}
-                total={val.total}
-              />
-            </React.Fragment>
-          ))}
-        </div>
-
-        {/* left-middle */}
-        <div className="w-full h-[50%] flex gap-4 items-end">
-          <div className="w-[35%] h-full">
-            <CountChart />
-          </div>
-          <div className="w-[65%] h-full flex items-end">
-            <LeaveChart />
-          </div>
-        </div>
-
-        {/* left-bottom */}
-        <div className="w-full h-[30%]">
-          <FinanceChart />
-        </div>
+    <main className='mx-auto max-w-7xl px-6'>
+      {/* Welcome Section */}
+      <div className='mb-4'>
+        <h2 className='mb-2 text-3xl font-bold text-foreground'>Welcome back, {tenantUser.user?.name} </h2>
+        <p className='text-muted-foreground'>Here&apos;s what&apos;s happening at your workspace today.</p>
       </div>
-      {/* right side */}
-      <div className="space-y-4 bgr">
-        {/* right-top */}
-          {/* <RightSideCalender /> */}
-        {/* right-middle */}
-        <div className="space-y-2">
-          <h4 className="font-semibold">Events</h4>
-         {[1,2,3].map((val,idx) => (
-           <Card key={idx}>
-           <CardHeader>
-             <h5 className="font-medium">Lorem, ipsum dolor.</h5>
-             <p className="text-xs text-primary/80">12:00 PM - 2:00 PM</p>
-           </CardHeader>
-           <CardContent>
-             <p className="text-xs">
-               Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae,
-               distinctio!
-             </p>
-           </CardContent>
-         </Card>
-         ))}
-        </div>
-        {/* right-bottom */}
-        <div className="space-y-2">
-          <h4 className="font-semibold">Announcements</h4>
-         {[1,2,3].map((val,idx) => (
-           <Card key={idx}>
-           <CardHeader>
-             <h5 className="font-medium">Lorem, ipsum dolor.</h5>
-             <p className="text-xs text-primary/80">12:00 PM - 2:00 PM</p>
-           </CardHeader>
-           <CardContent>
-             <p className="text-xs">
-               Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae,
-               distinctio!
-             </p>
-           </CardContent>
-         </Card>
-         ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
-export default Dashboard;
+      {/* Stats Grid */}
+      <div className='mb-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
+        <StatsCard
+          title='Total Employees'
+          value={employeeCount}
+          icon={Users}
+          trend={`${formattedPercentageChange} from last month`}
+        />
+        <StatsCard
+          title='Pending Leave Requests'
+          value={pendingLeaveRequests}
+          icon={Clock}
+          trend={`${urgentLeaveRequests} urgent requests`}
+        />
+        <StatsCard
+          title='Active Invites'
+          value={lastSevenDaysPendingInvitation}
+          icon={Mail}
+          trend='Sent in last 7 days'
+        />
+        <StatsCard
+          title='Departments'
+          value={departments}
+          icon={Building}
+          trend={`${newDepartmentsThisQuarter} new this quarter`}
+        />
+      </div>
+
+      {/* Content Grid */}
+      <div className='grid grid-cols-1 gap-8 lg:grid-cols-2'>
+        <ActivityFeed />
+        <QuickActions />
+      </div>
+    </main>
+  )
+}
+
+export default Dashboard

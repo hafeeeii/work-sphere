@@ -27,7 +27,7 @@ export const workLocationSchema = z.object({
     city: required('city'),
     pincode: required('pincode'),
     addressLine1: required('address line 1'),
-    addressLine2: required('address line 2')
+    addressLine2: z.string()
 })
 
 

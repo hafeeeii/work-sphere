@@ -312,7 +312,7 @@ export default function IdentificationAndBankInfo() {
                 <ArrowLeft />
                 Back
               </Button>
-              <LoadingButton type='submit' disabled={!isValid} isLoading={isSavePending} icon={<Save />}>
+              <LoadingButton type='submit' isValid={isValid} isLoading={isSavePending} icon={<Save />}>
                 Save
               </LoadingButton>
             </div>

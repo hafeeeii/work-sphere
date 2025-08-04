@@ -35,7 +35,7 @@ function Header({ status }: { status: boolean }) {
             <Settings />
             Settings
           </Button>
-          <LoadingButton onClick={handleMarkAsRead} disabled={status} isLoading={isPending} icon={<CheckCheck />}>
+          <LoadingButton onClick={handleMarkAsRead} isValid={status} isLoading={isPending} icon={<CheckCheck />}>
             Mark All as Read
           </LoadingButton>
         </div>

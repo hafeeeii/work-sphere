@@ -64,7 +64,7 @@ export default async function DashboardLayout({
             </header>
             <div className='h-full w-full p-4'>
               <Card className='h-full'>
-                <CardContent className='pt-4'>{children}</CardContent>
+                <CardContent className='pt-4 bg-background rounded-lg'>{children}</CardContent>
               </Card>
             </div>
           </div>

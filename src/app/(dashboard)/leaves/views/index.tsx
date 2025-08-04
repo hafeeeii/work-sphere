@@ -1,12 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { checkPermission } from '@/lib/auth'
+import { getBusinessInfo } from '@/lib/business'
+import prisma from '@/lib/prisma'
+import { redirect } from 'next/navigation'
+import HolidaysTab from './tabs/holidays'
 import MyDataTab from './tabs/my-data'
 import OrganizationTab from './tabs/organization'
-import HolidaysTab from './tabs/holidays'
-import { getBusinessInfo } from '@/lib/business'
-import { redirect } from 'next/navigation'
-import prisma from '@/lib/prisma'
-import { checkPermission } from '@/lib/auth'
-import { Card, CardContent } from '@/components/ui/card'
 
 const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string } }) => {
   const business = await getBusinessInfo()
@@ -38,8 +37,7 @@ const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string 
   ]
 
   return (
-    <Card className='h-full py-4'>
-      <CardContent>
+    <div >
 
       <Tabs defaultValue={tabs[0].tab} className='h-full'>
         <TabsList>
@@ -55,8 +53,7 @@ const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string 
           </TabsContent>
         ))}
       </Tabs>
-      </CardContent>
-    </Card>
+    </div>
   )
 }
 

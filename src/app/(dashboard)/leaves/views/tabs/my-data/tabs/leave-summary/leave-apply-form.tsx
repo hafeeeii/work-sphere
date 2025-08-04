@@ -207,7 +207,7 @@ const LeaveApplyForm = ({ leaveTypes, leaveTypeId }: FormProps) => {
             />
           </div>
           <DialogFooter>
-            <LoadingButton isLoading={isPending} disabled={!isValid} icon={<Send/>}>
+            <LoadingButton isLoading={isPending} isValid={isValid} icon={<Send/>}>
               Apply
             </LoadingButton>
           </DialogFooter>

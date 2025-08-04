@@ -115,7 +115,7 @@ const AddBusiness = () => {
             </div>
           </div>
           <DialogFooter>
-            <LoadingButton type='submit' disabled={!isValid} isLoading={isPending} icon={<Save />}>
+            <LoadingButton type='submit' isValid={isValid} isLoading={isPending} icon={<Save />}>
               Save
             </LoadingButton>
           </DialogFooter>

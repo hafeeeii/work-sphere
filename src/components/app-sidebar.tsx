@@ -20,95 +20,104 @@ import { usePathname } from 'next/navigation'
 export function AppSidebar() {
   const path = usePathname()
 
-  
-const { businessUser } = useBusinessUser()
+  const { businessUser } = useBusinessUser()
 
-let isAllowedToViewInviteUser = false
-if (businessUser && checkPermission(businessUser, 'view', 'invite-user')) {
-  isAllowedToViewInviteUser = true
-}
+  let isAllowedToViewInviteUser = false
+  let isAllowedToViewDashboard = false
+  if (businessUser) {
+    if (checkPermission(businessUser, 'view', 'invite-user')) {
+      isAllowedToViewInviteUser = true
+    }
 
-// Menu items.
-const items = [
-  {
-    title: 'Dashboard',
-    url: '/dashboard',
-    icon: Home
-  },
-  {
-    title: 'Employees',
-    url: `/employees?${getDefaultSortById('name')}`,
-    icon: Briefcase
-  },
-  // {
-  //   title: "Teams",
-  //   url: "/teams",
-  //   icon: Building2,
-  // },
-  // {
-  //   title: "Training Programs",
-  //   url: "/training-programs",
-  //   icon: GraduationCap,
-  // },
-  ...(isAllowedToViewInviteUser
-    ? [
-        {
-          title: 'Invite Users',
-          url: '/invite-user',
-          icon: User2Icon
-        }
-      ]
-    : []),
-  {
-    title: 'Leave Tracker',
-    url: '/leaves',
-    icon: Umbrella
+    if (checkPermission(businessUser, 'view', 'dashboard')) {
+      isAllowedToViewDashboard = true
+    }
   }
-  // {
-  //   title: "Performance Reviews",
-  //   url: "/performance-reviews",
-  //   icon: Star,
-  // },
-  // {
-  //   title: "Tasks",
-  //   url: "/tasks",
-  //   icon: ListChecks,
-  // },
-  // {
-  //   title: "Time Tracking",
-  //   url: "/time-tracking",
-  //   icon: Timer,
-  // },
-  // {
-  //   title: "Meetings/Company Events",
-  //   url: "/meetings-events",
-  //   icon: CalendarDays,
-  // },
-  // {
-  //   title: "News/Updates",
-  //   url: "/news-updates",
-  //   icon: Newspaper,
-  // },
-]
 
-const others = [
-  // {
-  //   title: "Profile",
-  //   url: "/profile",
-  //   icon: User2,
-  // },
-  {
-    title: 'Settings',
-    url: '/settings',
-    icon: Settings
-  },
-  {
-    title: 'Logout',
-    url: '/login',
-    icon: LogOut
-  }
-]
+  // Menu items.
+  const items = [
+    ...(isAllowedToViewDashboard
+      ? [
+          {
+            title: 'Dashboard',
+            url: '/dashboard',
+            icon: Home
+          }
+        ]
+      : []),
+    {
+      title: 'Employees',
+      url: `/employees?${getDefaultSortById('name')}`,
+      icon: Briefcase
+    },
+    // {
+    //   title: "Teams",
+    //   url: "/teams",
+    //   icon: Building2,
+    // },
+    // {
+    //   title: "Training Programs",
+    //   url: "/training-programs",
+    //   icon: GraduationCap,
+    // },
+    ...(isAllowedToViewInviteUser
+      ? [
+          {
+            title: 'Invite Users',
+            url: '/invite-user',
+            icon: User2Icon
+          }
+        ]
+      : []),
+    {
+      title: 'Leave Tracker',
+      url: '/leaves',
+      icon: Umbrella
+    }
+    // {
+    //   title: "Performance Reviews",
+    //   url: "/performance-reviews",
+    //   icon: Star,
+    // },
+    // {
+    //   title: "Tasks",
+    //   url: "/tasks",
+    //   icon: ListChecks,
+    // },
+    // {
+    //   title: "Time Tracking",
+    //   url: "/time-tracking",
+    //   icon: Timer,
+    // },
+    // {
+    //   title: "Meetings/Company Events",
+    //   url: "/meetings-events",
+    //   icon: CalendarDays,
+    // },
+    // {
+    //   title: "News/Updates",
+    //   url: "/news-updates",
+    //   icon: Newspaper,
+    // },
+  ]
 
+  const others = [
+    // {
+    //   title: "Profile",
+    //   url: "/profile",
+    //   icon: User2,
+    // },
+    {
+      title: 'Settings',
+      url: '/settings',
+      icon: Settings
+    },
+    {
+      title: 'Logout',
+      url: '/login',
+      icon: LogOut
+    }
+  ]
 
   const handleLogout = () => {
     logout()

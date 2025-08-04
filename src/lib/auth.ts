@@ -9,7 +9,8 @@ type Resource =
   | 'department'
   | 'work-location'
   | 'leave-pending-request'
-  | 'leave-my-data';
+  | 'leave-my-data'
+  | 'dashboard'
 
 // Generate permissions based on access level
 const generatePolicy = (
@@ -42,6 +43,7 @@ const FULL_ACCESS = COMMON_RESOURCES.flatMap((res) => generatePolicy('full', res
   generatePolicy('full', 'leave-pending-request'),
   generatePolicy('full', 'leave-my-data'),
   generatePolicy('full', 'invite-user'),
+  generatePolicy('full', 'dashboard'),
 );
 
 const VIEW_ONLY = COMMON_RESOURCES.flatMap((res) => generatePolicy('view', res));

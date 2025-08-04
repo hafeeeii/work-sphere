@@ -317,7 +317,7 @@ export default function EmploymentDetailsEdit({
                 <X />
                 Cancel
               </Button>
-              <LoadingButton isLoading={isUpdatePending} type='submit' disabled={!isValid || isUpdatePending}>
+              <LoadingButton isLoading={isUpdatePending} type='submit' isValid={isValid}>
                 Update
               </LoadingButton>
             </div>
