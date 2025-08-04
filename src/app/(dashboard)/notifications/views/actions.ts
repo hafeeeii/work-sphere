@@ -43,6 +43,7 @@ export async function markAllAsRead() {
         const createData = notifications.map((notif) => ({
             notificationId: notif.id,
             userId,
+            tenantId:businessId
         }))
 
         await prisma.notificationRead.createMany({

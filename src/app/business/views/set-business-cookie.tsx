@@ -14,7 +14,7 @@ export default function SetBusinessCookie({ businessId }: { businessId: string }
       const data = await res.json()
 
       if (data.status) {
-        router.push('/employees')
+        router.push('/dashboard')
       }
     }
     handleBusinessCookie()

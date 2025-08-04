@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
+import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import { Button } from '@/components/ui/button'
 import LoadingButton from '@/components/ui/buttons/loading-button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,16 +12,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import RequiredLabel from '@/components/ui/required-label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { checkPermission } from '@/lib/auth'
 import { EmployeeFormValues, EmployeeSchema } from '@/lib/types'
 import { BankAccountType } from '@prisma/client'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Save } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { saveEmployee } from '../../../views/action'
 import { useMultistepForm } from '../../multistep-form-provider'
-import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
 
 export default function IdentificationAndBankInfo() {
   const { formData, clearFormData, updateFormData } = useMultistepForm()
@@ -312,7 +312,7 @@ export default function IdentificationAndBankInfo() {
                 <ArrowLeft />
                 Back
               </Button>
-              <LoadingButton type='submit' disabled={!isValid || isSavePending} isLoading={isSavePending}>
+              <LoadingButton type='submit' disabled={!isValid} isLoading={isSavePending} icon={<Save />}>
                 Save
               </LoadingButton>
             </div>

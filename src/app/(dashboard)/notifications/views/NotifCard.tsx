@@ -1,12 +1,11 @@
 import { cn } from '@/lib/utils'
 import { Notification } from '@prisma/client'
-import { Mail, Megaphone, Ticket, Users } from 'lucide-react'
+import { Hand, Mail, Megaphone, Ticket, Users } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
 
 type NotifCardProps = {
   notif: Notification & {
-    notificationRead: {
+    notificationsRead: {
       readAt: Date
     }[]
   }
@@ -18,17 +17,18 @@ export default function NotifCard({ notif, index }: NotifCardProps) {
     TICKET: <Ticket className='h-5 w-5 text-blue-500' />,
     MESSAGE: <Mail className='h-5 w-5 text-green-500' />,
     TEAM: <Users className='h-5 w-5 text-purple-500' />,
-    ANNOUNCEMENT: <Megaphone className='h-5 w-5 text-red-500' />
+    ANNOUNCEMENT: <Megaphone className='h-5 w-5 text-red-500' />,
+    REQUEST: <Hand className='h-5 w-5 text-yellow-500' />,
   }
 
-  const status = notif.notificationRead.length > 0 ? 'read' : 'unread'
+  const status = notif.notificationsRead.length > 0 ? 'read' : 'unread'
   return (
     <div
       className={cn(
         'w-full',
         status === 'unread' && 'bg-muted/70',
         status === 'unread' && index === 0 && 'rounded-t-lg',
-        status === 'unread' && index === notif.notificationRead.length - 1 && 'rounded-b-lg'
+        status === 'unread' && index === notif.notificationsRead.length - 1 && 'rounded-b-lg'
       )}
     >
       <Link href={'/'}>

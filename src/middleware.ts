@@ -80,7 +80,7 @@ export default async function middleware(request: NextRequest) {
 
   // Logged in + visiting public page (e.g., /login or /sign-up)
   if (isLoggedIn && isPublic) {
-    const redirectUrl = businessId ? "/employees" : "/business";
+    const redirectUrl = businessId ? "/dashboard" : "/business";
     if (path !== redirectUrl) {
       return NextResponse.redirect(new URL(redirectUrl, request.url));
     }

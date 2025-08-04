@@ -23,6 +23,7 @@ enum NotificationType {
   TICKET
   TEAM
   ANNOUNCEMENT
+  REQUEST
 }
 
 enum InviteStatus {
@@ -65,32 +66,34 @@ enum BankAccountType {
 }
 
 model Tenant {
-  id            String         @id @default(uuid())
-  name          String
-  subdomain     String         @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  tenantUser    TenantUser[]
-  notification  Notification[]
-  Invite        Invite[]
-  leaves        Leave[]
-  leaveBalances leaveBalance[]
-  leaveTypes    LeaveType[]
+  id                String             @id @default(uuid())
+  name              String
+  subdomain         String             @unique
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  tenantUsers       TenantUser[]
+  notifications     Notification[]
+  notificationsRead NotificationRead[]
+  Invites           Invite[]
+  leaves            Leave[]
+  leaveBalances     leaveBalance[]
+  leaveTypes        LeaveType[]
 }
 
 model User {
-  id               String             @id @default(uuid())
-  email            String             @unique
-  passwordHash     String
-  name             String
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  tenantUser       TenantUser[]
-  notification     Notification[]
-  notificationRead NotificationRead[]
-  Invite           Invite[]
-  leaves           Leave[]
-  leaveBalance     leaveBalance[]
+  id                String             @id @default(uuid())
+  email             String             @unique
+  passwordHash      String
+  name              String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  tenantUsers       TenantUser[]
+  notifications     Notification[]     @relation("NotificationRecipient")
+  notificationsRead NotificationRead[]
+  Invites           Invite[]
+  leaves            Leave[]
+  leaveBalances     leaveBalance[]
+  notificationsSent Notification[]     @relation("NotificationCreator")
 }
 
 // join table for many-to-many relationship between User and Tenant
@@ -105,28 +108,32 @@ model TenantUser {
 }
 
 model Notification {
-  id               String             @id @default(uuid())
-  title            String
-  message          String
-  type             NotificationType
-  read             Boolean            @default(false)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  userId           String?
-  tenantId         String
-  user             User?              @relation(fields: [userId], references: [id])
-  tenant           Tenant             @relation(fields: [tenantId], references: [id])
-  notificationRead NotificationRead[]
+  id                String             @id @default(uuid())
+  title             String
+  message           String
+  type              NotificationType
+  read              Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  userId            String?
+  createdById       String
+  tenantId          String
+  user              User?              @relation("NotificationRecipient", fields: [userId], references: [id])
+  CreatedBy         User               @relation("NotificationCreator", fields: [createdById], references: [id])
+  tenant            Tenant             @relation(fields: [tenantId], references: [id])
+  notificationsRead NotificationRead[]
 }
 
 model NotificationRead {
   userId         String
   notificationId String
+  tenantId       String
   readAt         DateTime     @default(now())
   user           User         @relation(fields: [userId], references: [id])
   notification   Notification @relation(fields: [notificationId], references: [id])
+  Tenant         Tenant       @relation(fields: [tenantId], references: [id])
 
-  @@id([userId, notificationId])
+  @@id([userId, tenantId, notificationId])
 }
 
 model Invite {
@@ -189,8 +196,8 @@ model Employee {
   inviteUser            Boolean         @default(true)
 
   // Relations
-  reportingManager Employee?        @relation("ManagerReportee",fields: [reportingManagerId], references: [id])
-  reportees     Employee[] @relation("ManagerReportee")
+  reportingManager Employee?    @relation("ManagerReportee", fields: [reportingManagerId], references: [id])
+  reportees        Employee[]   @relation("ManagerReportee")
   workLocationMeta WorkLocation @relation(fields: [workLocation], references: [id])
   departmentMeta   Department   @relation(fields: [department], references: [id])
   designationMeta  Designation  @relation(fields: [designation], references: [id])
@@ -262,12 +269,12 @@ model Leave {
 }
 
 model LeaveType {
-  id           String         @id @default(uuid())
-  tenantId     String
-  name         String         
-  leaves       Leave[]
-  leaveBalance leaveBalance[]
-  tenant       Tenant         @relation(fields: [tenantId], references: [id])
+  id            String         @id @default(uuid())
+  tenantId      String
+  name          String
+  leaves        Leave[]
+  leaveBalances leaveBalance[]
+  tenant        Tenant         @relation(fields: [tenantId], references: [id])
 
   @@unique([name, tenantId])
 }

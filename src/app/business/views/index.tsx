@@ -39,7 +39,7 @@ const Business = async () => {
 
   return (
     <div className='p-4'>
-      <BusinessList businesses={user?.tenantUser} />
+      <BusinessList businesses={user?.tenantUsers} />
       {business.data && (
       <SetBusinessCookie businessId={business.data?.businessId}/>
       )}

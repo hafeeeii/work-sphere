@@ -40,7 +40,7 @@ export default async function Invites() {
           <p className='text-sm text-muted-foreground'>View and manage your pending invitations to join businesses</p>
         </div>
 
-        <BackButton className='self-end sm:self-auto' />
+        <BackButton className='self-end sm:self-auto' path='/business' />
       </div>
 
       <div className='space-y-4'>

@@ -116,7 +116,7 @@ export default async function Notifications() {
       createdAt: 'desc'
     },
     include: {  
-      notificationRead: {
+      notificationsRead: {
         where: {
           userId
         },
@@ -129,7 +129,7 @@ export default async function Notifications() {
 
   const hasItems = notifications.length > 0 
 
-  const markAllAsReadStatus = notifications.every((notif) => notif.notificationRead.length > 0)
+  const markAllAsReadStatus = notifications.every((notif) => notif.notificationsRead.length > 0)
 
   return (
     <div className='mx-auto max-w-5xl p-6'>

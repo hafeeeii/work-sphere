@@ -3,7 +3,7 @@ import { getErrorMessage } from "@/lib/error"
 import { createDefaultBusinessLeaveBalanceForUser } from "@/lib/leave"
 import prisma from "@/lib/prisma"
 import { getValidSession } from "@/lib/session"
-import { InviteStatus } from "@prisma/client"
+import { InviteStatus, NotificationType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 
@@ -67,6 +67,16 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
                 },
             })
 
+            await tx.notification.create({
+                data: {
+                    title: 'New User Joined',
+                    message: `${invite.name} has joined your business`,
+                    tenantId: invite.tenantId,
+                    type: NotificationType.ANNOUNCEMENT,
+                    createdById: userId
+                }
+            })
+
             // create default leave balance
 
             await createDefaultBusinessLeaveBalanceForUser(invite.tenantId, userId, tx)
@@ -109,13 +119,15 @@ export const declineInvite = async (prev: unknown, inviteId: string) => {
     try {
         const session = await getValidSession()
 
-        if (!session.status) {
+        if (!session.status || !session.data?.userId) {
             return {
                 status: false,
                 message: 'Not authenticated',
                 error: null
             }
         }
+
+        const userId = session.data?.userId
         const invite = await prisma.invite.findUnique({
             where: {
                 id: inviteId
@@ -130,14 +142,29 @@ export const declineInvite = async (prev: unknown, inviteId: string) => {
             }
         }
 
-        await prisma.invite.update({
-            where: {
-                id: inviteId
-            },
-            data: {
-                declinedAt: new Date(),
-                status: InviteStatus.DECLINED
-            }
+
+        await prisma.$transaction(async (tx) => {
+
+            await tx.invite.update({
+                where: {
+                    id: inviteId
+                },
+                data: {
+                    declinedAt: new Date(),
+                    status: InviteStatus.DECLINED
+                }
+            })
+
+            await tx.notification.create({
+                data: {
+                    title: 'Invite Declined',
+                    message: `${invite.name} has declined your invite`,
+                    tenantId: invite.tenantId,
+                    type: NotificationType.ANNOUNCEMENT,
+                    createdById: userId
+                }
+            })
+
         })
 
 

@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma";
 import { designationSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { getBusinessInfo } from "@/lib/business";
-import { NotificationType } from "@prisma/client";
 import { getErrorMessage } from "@/lib/error";
 
 export async function saveDesignation(prevState: unknown, formData: FormData) {
@@ -31,24 +30,13 @@ export async function saveDesignation(prevState: unknown, formData: FormData) {
         const businessId = business.data?.businessId as string
 
 
-        await prisma.$transaction(async (tx) => {
-            await tx.designation.create({
+            await prisma.designation.create({
                 data: {
                     ...rest,
                     tenantId: businessId,
                 },
             });
 
-            await tx.notification.create({
-                data: {
-                    tenantId: businessId,
-                    title: "New department created",
-                    message: "A new department has been created",
-                    type: NotificationType.ANNOUNCEMENT,
-                }
-            })
-
-        })
         revalidatePath("/settings");
 
         return {

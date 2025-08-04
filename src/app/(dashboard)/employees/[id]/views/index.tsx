@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation'
 import InviteButton from './invite-button'
 import ProfileTab from './tabs/profile'
 import Reportees from './tabs/reportees'
+import BackButton from '@/components/ui/buttons/back-button'
 
 export default async function EmployeeDetails({ id }: { id: string }) {
   const business = await getBusinessInfo()
@@ -40,7 +41,7 @@ export default async function EmployeeDetails({ id }: { id: string }) {
           name: true
         }
       },
-      reportingManager:{
+      reportingManager: {
         select: {
           name: true
         }
@@ -48,25 +49,25 @@ export default async function EmployeeDetails({ id }: { id: string }) {
     }
   })
 
-  const reportees =await prisma.employee.findUnique({
+  const reportees = await prisma.employee.findUnique({
     where: {
       tenantId_id: {
         id,
         tenantId: businessId
       }
     },
-    select:{
-      reportees:{
-        select:{
-          id:true,
-          name:true,
-          designationMeta:{
-            select:{
-              name:true
+    select: {
+      reportees: {
+        select: {
+          id: true,
+          name: true,
+          designationMeta: {
+            select: {
+              name: true
             }
           }
         }
-      },
+      }
     }
   })
 
@@ -76,25 +77,26 @@ export default async function EmployeeDetails({ id }: { id: string }) {
 
   const tabs = [
     { tab: 'Profile', content: <ProfileTab employee={employee} /> },
-    { tab: 'Reportees', content: <Reportees reportees={reportees?.reportees ?? []}/> },
+    { tab: 'Reportees', content: <Reportees reportees={reportees?.reportees ?? []} /> }
 
     // { tab: 'Holidays', content: '' }
   ]
 
   return (
     <div className='space-y-6'>
+      <BackButton path='/employees'/>
       {/* Shows invite button if employee is not invited */}
 
-       <InviteButton employee={employee} hasNotBeenInvited={!employee.inviteUser} />
+      <InviteButton employee={employee} hasNotBeenInvited={!employee.inviteUser} />
 
       {/* Header Section */}
       <div className='overflow-hidden rounded-xl border'>
-        <div className='flex flex-col lg:flex-row items-center gap-8 p-4'>
+        <div className='flex flex-col items-center gap-8 p-4 lg:flex-row'>
           <Avatar className='h-[80px] w-[80px]'>
             <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className='flex w-full flex-col lg:flex-row items-center text-center lg:text-start'>
+          <div className='flex w-full flex-col items-center text-center lg:flex-row lg:text-start'>
             <div className='flex-1'>
               <h2 className='text-xl font-semibold'>{employee?.name}</h2>
               <p className='text-sm text-muted-foreground'>{employee?.designationMeta?.name}</p>

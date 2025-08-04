@@ -1,5 +1,5 @@
 'use client'
-import { Briefcase, LogOut, Settings, Umbrella, User2Icon } from 'lucide-react'
+import { Briefcase, Home, LogOut, Settings, Umbrella, User2Icon } from 'lucide-react'
 
 import { logout } from '@/app/(auth)/actions'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
@@ -30,11 +30,11 @@ if (businessUser && checkPermission(businessUser, 'view', 'invite-user')) {
 
 // Menu items.
 const items = [
-  // {
-  //   title: 'Dashboard',
-  //   url: '/dashboard',
-  //   icon: Home
-  // },
+  {
+    title: 'Dashboard',
+    url: '/dashboard',
+    icon: Home
+  },
   {
     title: 'Employees',
     url: `/employees?${getDefaultSortById('name')}`,

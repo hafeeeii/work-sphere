@@ -1,18 +1,18 @@
 'use client'
-import { Input } from '@/components/ui/input'
-import React, { startTransition, useActionState, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { startTransition, useActionState, useEffect, useState } from 'react'
 
-import { Controller, useForm } from 'react-hook-form'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import RequiredLabel from '@/components/ui/required-label'
-import { Loader, PlusIcon } from 'lucide-react'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useUser } from '@/components/user-provider'
 import { BusinessFormValues, BusinessSchema } from '@/lib/types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { PlusIcon, Save } from 'lucide-react'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { createBusiness } from './action'
-import { useUser } from '@/components/user-provider'
-
 
 const AddBusiness = () => {
   const [saveState, saveAction, isSavePending] = useActionState(createBusiness, undefined)
@@ -22,14 +22,14 @@ const AddBusiness = () => {
     setShowForm(!showForm)
   }
 
-  const state = saveState 
-  const isPending = isSavePending 
-  const {user} = useUser()
+  const state = saveState
+  const isPending = isSavePending
+  const { user } = useUser()
 
-  const defaultValues:BusinessFormValues = {
-    name:'',
-    ownerId:user?.userId || '',
-    subdomain:''
+  const defaultValues: BusinessFormValues = {
+    name: '',
+    ownerId: user?.userId || '',
+    subdomain: ''
   }
 
   const {
@@ -53,7 +53,6 @@ const AddBusiness = () => {
       onClose()
     }
 
-  
     if (state?.message) {
       if (state.status) {
         toast.success(state.message)
@@ -61,7 +60,7 @@ const AddBusiness = () => {
         toast.error(state.message)
       }
     }
-  }, [ saveState])
+  }, [saveState])
 
   useEffect(() => {
     if (showForm) reset(defaultValues)
@@ -74,7 +73,6 @@ const AddBusiness = () => {
       formData.append(key, data[key as keyof typeof data].toString())
     })
 
-
     startTransition(() => saveAction(formData))
   }
 
@@ -82,7 +80,7 @@ const AddBusiness = () => {
     <Dialog open={showForm} onOpenChange={onClose}>
       <DialogTrigger asChild>
         <Button className='max-w-fit' onClick={toggleForm}>
-           <PlusIcon />
+          <PlusIcon />
           Create Business
         </Button>
       </DialogTrigger>
@@ -92,7 +90,7 @@ const AddBusiness = () => {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
           <div className='flex flex-col gap-4'>
-            <div className='grid  items-center gap-1.5'>
+            <div className='grid items-center gap-1.5'>
               <RequiredLabel htmlFor='name'>Business Name</RequiredLabel>
               <Controller
                 name='name'
@@ -100,20 +98,26 @@ const AddBusiness = () => {
                 render={({ field }) => <Input {...field} id='name' placeholder='Horizontal Pvt Ltd' />}
               />
             </div>
-            <div className='grid  items-center gap-1.5'>
+            <div className='grid items-center gap-1.5'>
               <RequiredLabel htmlFor='subdomain'>Subdomain</RequiredLabel>
               <Controller
                 name='subdomain'
                 control={control}
-                render={({ field }) => <Input {...field} onChange={(e) => field.onChange(e.target.value.toLowerCase())} id='subdomain' placeholder='horizontal' />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    onChange={e => field.onChange(e.target.value.toLowerCase())}
+                    id='subdomain'
+                    placeholder='horizontal'
+                  />
+                )}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button disabled={!isValid || isPending} type='submit'>
-              {isPending && <Loader className='mr-2 h-4 w-4 animate-spin' />}
+            <LoadingButton type='submit' disabled={!isValid} isLoading={isPending} icon={<Save />}>
               Save
-            </Button>
+            </LoadingButton>
           </DialogFooter>
         </form>
       </DialogContent>

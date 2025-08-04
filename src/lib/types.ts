@@ -103,7 +103,7 @@ export type TenantUserWithRelations = TenantUser & {
     tenant: Tenant
 }
 export type UserWithRelations = User & {
-    tenantUser: TenantUserWithRelations[]
+    tenantUsers: TenantUserWithRelations[]
 }
 
 

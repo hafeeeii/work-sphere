@@ -53,7 +53,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
         }
     }
 
-    redirect('/employees')
+    redirect('/dashboard')
 
 }
 
