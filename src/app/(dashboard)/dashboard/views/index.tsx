@@ -1,6 +1,6 @@
 import { StatsCard } from './stats-card'
 
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 import { getBusinessInfo } from '@/lib/business'
 import prisma from '@/lib/prisma'
 import { LeaveStatus } from '@prisma/client'

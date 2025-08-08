@@ -1,21 +1,24 @@
 'use client'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import LoadingButton from '@/components/ui/buttons/loading-button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import Link from 'next/link'
-import { Controller, useForm } from 'react-hook-form'
-import { useActionState, useEffect } from 'react'
-import RequiredLabel from '@/components/ui/required-label'
-import LoadingButton from '@/components/ui/buttons/loading-button'
-import { SignUpFormValues, SignUpSchema } from '@/lib/types'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { signUp } from '../../actions'
-import { toast } from 'sonner'
 import InputErrorMessage from '@/components/ui/input-error-message'
+import RequiredLabel from '@/components/ui/required-label'
+import { useUser } from '@/components/user-provider'
+import { SignUpFormValues, SignUpSchema } from '@/lib/types'
+import { cn } from '@/lib/utils'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { UserPlus } from 'lucide-react'
+import Link from 'next/link'
+import { useActionState, useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { signUp } from '../../actions'
 
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  const { subdomain } = useUser()
+
   const [state, action, isLoading] = useActionState(signUp, undefined)
 
   const defaultValues = {
@@ -38,6 +41,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
       toast.error(state.message)
     }
   }, [state])
+
+  
+  if (subdomain) {
+    return null
+  }
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>

@@ -63,7 +63,8 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
                 data: {
                     tenantId: invite.tenantId,
                     userId,
-                    role: invite.role
+                    role: invite.role,
+                    email: invite.email
                 },
             })
 

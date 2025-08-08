@@ -1,7 +1,7 @@
 'use client'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import { Button } from '@/components/ui/button'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 import { Pencil } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 

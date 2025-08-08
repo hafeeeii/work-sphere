@@ -9,6 +9,7 @@ const encodedKey = new TextEncoder().encode(secretKey);
 export type User = {
   userId: string
   expiresAt: Date
+  subdomain?: string
 }
 
 export async function createSession(userId: string) {
@@ -19,7 +20,7 @@ export async function createSession(userId: string) {
   cookieStore.set("session", session, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite:process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     expires: expiresAt,
     domain: (process.env.NODE_ENV === 'production' && rootDomain.includes('.')) ? '.' + rootDomain : undefined
   });
@@ -30,9 +31,15 @@ export async function deleteSession() {
   cookieStore.set('session', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite:process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     expires: new Date(0),
     domain: (process.env.NODE_ENV === 'production' && rootDomain.includes('.')) ? '.' + rootDomain : undefined
+  })
+
+  cookieStore.set('businessId', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    expires: new Date(0)
   })
 }
 

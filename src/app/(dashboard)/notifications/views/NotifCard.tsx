@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import { Notification } from '@prisma/client'
+import { formatDistanceToNow } from 'date-fns'
 import { Hand, Mail, Megaphone, Ticket, Users } from 'lucide-react'
 import Link from 'next/link'
 
@@ -18,7 +19,7 @@ export default function NotifCard({ notif, index }: NotifCardProps) {
     MESSAGE: <Mail className='h-5 w-5 text-green-500' />,
     TEAM: <Users className='h-5 w-5 text-purple-500' />,
     ANNOUNCEMENT: <Megaphone className='h-5 w-5 text-red-500' />,
-    REQUEST: <Hand className='h-5 w-5 text-yellow-500' />,
+    REQUEST: <Hand className='h-5 w-5 text-yellow-500' />
   }
 
   const status = notif.notificationsRead.length > 0 ? 'read' : 'unread'
@@ -39,7 +40,7 @@ export default function NotifCard({ notif, index }: NotifCardProps) {
             <p className='text-sm text-muted-foreground'>{notif.message}</p>
           </div>
           <div className='whitespace-nowrap text-right text-sm'>
-            <div>{notif.createdAt.toLocaleDateString()}</div>
+            <div>{formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}</div>
           </div>
         </div>
       </Link>

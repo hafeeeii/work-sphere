@@ -134,7 +134,7 @@ const Form = ({ workLocation, showForm, toggleForm }: FormProps) => {
               <Controller
                 name='pincode'
                 control={control}
-                render={({ field }) => <Input {...field} id='pincode' placeholder='400001' value={field.value || ''} />}
+                render={({ field }) => <Input {...field} type='number' id='pincode' placeholder='400001' value={field.value || ''} />}
               />
             </div>
           </div>

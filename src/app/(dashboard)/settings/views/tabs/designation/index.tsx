@@ -6,7 +6,7 @@ import { getDesignation } from '@/services/designation'
 import { Designation } from '@prisma/client'
 import { deleteDesignation } from './action'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 
 type DesignationTabProps = {
   designations: Designation[]

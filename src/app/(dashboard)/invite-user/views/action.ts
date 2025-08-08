@@ -33,6 +33,26 @@ export async function createInvite(prevState: unknown, formData: FormData) {
 
         const { businessId, userId, businessName } = business.data
 
+        // To check invitation to this email already exists
+        const inviteAlreadyExists = await prisma.invite.findUnique({
+            where: {
+                tenantId_email:{
+                    tenantId: businessId,
+                    email: parsed.data.email
+                }
+            }
+        })
+
+        if (inviteAlreadyExists) {
+            return {
+                status: false,
+                message: 'Invitation to this email already sent',
+                error: null
+            }
+        }
+
+        // To check if user already part of business
+
         const userAlreadyExists = await prisma.user.findUnique({
             where: {
                 email: parsed.data.email

@@ -29,6 +29,7 @@ export default async function RootLayout ({
 }>) {
       const cookieStore = await cookies()
       const cookie = cookieStore.get('session')?.value
+      const subdomain = cookieStore.get('subdomain')?.value
       let session = null;
   
       if (cookie) {
@@ -47,7 +48,7 @@ export default async function RootLayout ({
           enableSystem
           disableTransitionOnChange
         >
-          <UserProvider user={(session as User) ?? null}>
+          <UserProvider user={(session as User) ?? null} subdomain={subdomain}>
           {children}
           </UserProvider>
           <Toaster/>

@@ -1,6 +1,6 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 import { getInvite } from '@/services/invite'
 import { Invite } from '@prisma/client'
 import { useRouter } from 'next/navigation'

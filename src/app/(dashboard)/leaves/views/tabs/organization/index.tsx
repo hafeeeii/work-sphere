@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 import { getBusinessInfo } from '@/lib/business'
 import prisma from '@/lib/prisma'
 import { redirect } from 'next/navigation'

@@ -14,9 +14,11 @@ import InputErrorMessage from '@/components/ui/input-error-message'
 import RequiredLabel from '@/components/ui/required-label'
 import { toast } from 'sonner'
 import { User } from 'lucide-react'
+import { useUser } from '@/components/user-provider'
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [state, action, isPending] = useActionState(login, undefined)
+  const { subdomain } = useUser()
 
   const defaultValues = {
     email: '',
@@ -103,16 +105,18 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                     )}
                   />
                 </div>
-                <LoadingButton className='w-full' isLoading={isPending} isValid={isValid} icon={<User/>}>
+                <LoadingButton className='w-full' isLoading={isPending} isValid={isValid} icon={<User />}>
                   Login
                 </LoadingButton>
               </form>
-              <div className='text-center text-sm'>
-                Don&apos;t have an account?{' '}
-                <Link href='/sign-up' className='underline underline-offset-4'>
-                  Sign up
-                </Link>
-              </div>
+              {!subdomain && (
+                <div className='text-center text-sm'>
+                  Don&apos;t have an account?{' '}
+                  <Link href='/sign-up' className='underline underline-offset-4'>
+                    Sign up
+                  </Link>
+                </div>
+              )}
             </div>
           </>
         </CardContent>

@@ -25,7 +25,7 @@ export const workLocationSchema = z.object({
     name: required('work location'),
     state: required('state'),
     city: required('city'),
-    pincode: required('pincode'),
+    pincode: required('pincode').regex(/^[1-9][][0-9]{5}$/,'Invalid pincode'),
     addressLine1: required('address line 1'),
     addressLine2: z.string()
 })
@@ -35,14 +35,14 @@ export type WorkLocationFormValues = z.infer<typeof workLocationSchema>
 
 export const SignUpSchema = z.object({
     name: required('Name'),
-    email: required('Email'),
-    password: required('Password'),
+    email: required('Email').email('Invalid email'),
+    password: required('Password').min(8, 'Password must be at least 8 characters long'),
 })
 
 export type SignUpFormValues = z.infer<typeof SignUpSchema>
 
 export const LoginSchema = z.object({
-    email: required('Email'),
+    email: required('Email').email('Invalid email'),
     password: required('Password')
 })
 

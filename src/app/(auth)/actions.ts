@@ -1,14 +1,39 @@
 'use server'
 
+import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
 import { createSession, deleteSession } from "@/lib/session"
 import { LoginSchema, SignUpSchema } from "@/lib/types"
-import { redirect } from "next/navigation"
 import bcrypt from "bcrypt"
-import { getErrorMessage } from "@/lib/error"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
 
 export async function signUp(prevState: unknown, formData: FormData) {
+    const cookieStore = await cookies()
+    const subdomain = cookieStore.get('subdomain')?.value
+
+
+    // check subdomain exists
+
+    if (subdomain) {
+        const tenant = await prisma.tenant.findUnique({
+            where: {
+                subdomain: subdomain,
+            }
+        })
+
+
+        if (!tenant) {
+            return {
+                status: false,
+                message: 'Subdomain not found',
+                error: null
+            }
+        }
+
+    }
+
     const parsed = SignUpSchema.safeParse(Object.fromEntries(formData))
 
     if (!parsed.success) {
@@ -28,6 +53,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
             }
         })
 
+
         if (user?.id) {
             return {
                 status: false,
@@ -35,6 +61,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
                 error: null
             }
         }
+
 
         const newUser = await prisma.user.create({
             data: {
@@ -58,6 +85,33 @@ export async function signUp(prevState: unknown, formData: FormData) {
 }
 
 export async function login(prevState: unknown, formData: FormData) {
+
+    const cookieStore = await cookies()
+    const subdomain = cookieStore.get('subdomain')?.value
+    let tenantId = null
+
+    // check subdomain exists
+
+    if (subdomain) {
+        const tenant = await prisma.tenant.findUnique({
+            where: {
+                subdomain: subdomain
+            }
+        })
+
+        if (!tenant) {
+            return {
+                status: false,
+                message: 'Subdomain not found',
+                error: null
+            }
+        }
+
+        tenantId = tenant.id
+
+    }
+
+
     const parsed = LoginSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
         return {
@@ -81,6 +135,27 @@ export async function login(prevState: unknown, formData: FormData) {
                 status: false,
                 message: 'No user found',
                 error: null
+            }
+        }
+
+        if (tenantId && subdomain) {
+            // check if user is part of the tenant
+
+            const tenantUser = await prisma.tenantUser.findUnique({
+                where: {
+                    tenantId_email: {
+                        email,
+                        tenantId
+                    }
+                }
+            })
+
+            if (!tenantUser) {
+                return {
+                    status: false,
+                    message: 'User is not part of the business',
+                    error: null
+                }
             }
         }
 

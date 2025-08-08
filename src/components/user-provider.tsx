@@ -3,16 +3,18 @@ import { User } from "@/lib/session";
 import { createContext, ReactNode, useContext } from "react";
 
 
-const UserContext = createContext<{user:User | null}>({
-    user:null
+const UserContext = createContext<{user:User | null, subdomain?:string | null}>({
+    user:null,
+    subdomain: null
 })
 
-export const UserProvider = ({user, children}:{
+export const UserProvider = ({user,subdomain, children}:{
     user:User | null,
+    subdomain?:string | null
     children: ReactNode
 }) => {
     return (
-        <UserContext.Provider value={{user}}>
+        <UserContext.Provider value={{user, subdomain}}>
             {children}
         </UserContext.Provider>
     )

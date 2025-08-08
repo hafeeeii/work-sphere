@@ -3,13 +3,13 @@ import { logout } from '@/app/(auth)/actions'
 import { Button } from '@/components/ui/button'
 import Typography from '@/components/ui/typography'
 import { TenantUserWithRelations } from '@/lib/types'
-import { protocol, rootDomain } from '@/lib/utils'
-import { Building2, LogOut, Mailbox, Users } from 'lucide-react'
+import { cn, protocol, rootDomain } from '@/lib/utils'
+import { Building2, LogOut, Mail, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import AddBusiness from './add-business'
 import { BusinessCard } from './business-card'
 
-export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) {
+export function BusinessList(props: { businesses?: TenantUserWithRelations[], hasPendingInvites: boolean }) {
   const businesses = props.businesses?.map(item => ({
     ...item,
     tenant: {
@@ -41,7 +41,7 @@ export function BusinessList(props: { businesses?: TenantUserWithRelations[] }) 
             </div>
             <div className='flex items-center gap-2'>
               <Button variant={'outline'} onClick={() => router.push('/business/invites')}>
-                <Mailbox size={10} />
+                <Mail size={10} className={cn( props.hasPendingInvites ? 'text-primary animate-pulse' : '')}/>
                 Pending Invites
               </Button>
               <AddBusiness />

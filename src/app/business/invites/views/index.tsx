@@ -24,7 +24,7 @@ export default async function Invites() {
 
   const invites = await prisma.invite.findMany({
     where: {
-      email: user.email
+      email: user.email,
     },
     include: {
       tenant: true,

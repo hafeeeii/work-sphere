@@ -29,5 +29,7 @@ export default async function UserInvitePage({ searchParams }: { searchParams: P
   })
 
 
+  console.log(invites, businessId,'thisis invites')
+
   return <UserInvite invites={invites} />
 }

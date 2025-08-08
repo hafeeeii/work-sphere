@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 import { getDefaultSortById } from '@/lib/sort-utils'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -122,6 +122,9 @@ export function AppSidebar() {
   const handleLogout = () => {
     logout()
   }
+
+  console.log('items', `/employees?${getDefaultSortById('name')}`.split('?')[0])
+  
   return (
     <Sidebar>
       <SidebarContent className='bg-card'>
@@ -131,7 +134,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map(item => (
                 <SidebarMenuItem key={item.title} className='bg mt-3 pl-2'>
-                  <SidebarMenuButton asChild isActive={path === item.url}>
+                  <SidebarMenuButton asChild    isActive={path.includes((item.url?.split('?')[0]))}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -148,7 +151,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title} className='mt-3 pl-2'>
                   <SidebarMenuButton
                     asChild
-                    isActive={path === item.url}
+                  isActive={path.includes((item.url?.split('?')[0]))}
                     {...(item.url === '/login' ? { onClick: handleLogout } : {})}
                   >
                     <Link href={item.url}>

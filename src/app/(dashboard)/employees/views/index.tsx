@@ -1,7 +1,7 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
 import { Button } from '@/components/ui/button'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 import { EmployeeWithRelations } from '@/lib/types'
 import { PlusIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'

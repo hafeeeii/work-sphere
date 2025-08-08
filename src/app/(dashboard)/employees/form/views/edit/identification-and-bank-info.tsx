@@ -18,7 +18,7 @@ import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { updateEmployee } from '../../../views/action'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 
 export default function IdentificationAndBankInfoEdit({ employee }: { employee: Employee }) {
   const [updateState, updateAction, isUpdatePending] = useActionState(updateEmployee, undefined)

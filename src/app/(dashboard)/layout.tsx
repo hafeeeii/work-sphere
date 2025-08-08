@@ -10,6 +10,7 @@ import prisma from '@/lib/prisma'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { BusinessUserProvider } from './business-user-provider'
+import { deleteSession } from '@/lib/session'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -39,6 +40,7 @@ export default async function DashboardLayout({
   })
 
   if (!tenantUser) {
+    deleteSession()
     redirect('/login')
   }
 

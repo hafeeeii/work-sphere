@@ -19,7 +19,7 @@ import { ArrowRight, CalendarIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useMultistepForm } from '../../multistep-form-provider'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 
 export default function PersonalDetails() {
   const { formData, updateFormData } = useMultistepForm()

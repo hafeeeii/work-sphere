@@ -6,7 +6,7 @@ import { WorkLocation } from '@prisma/client'
 import { getWorkLocation } from '@/services/work-location'
 import { deleteWorkLocation } from './action'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 
 type WorkLocationTabProps = {
   workLocations: WorkLocation[]

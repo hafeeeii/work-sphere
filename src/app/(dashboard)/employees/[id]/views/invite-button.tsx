@@ -7,7 +7,7 @@ import { startTransition, useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { inviteEmployee } from './actions'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 
 export default function InviteButton({
   employee,

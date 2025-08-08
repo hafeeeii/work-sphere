@@ -6,7 +6,7 @@ import { Department } from '@prisma/client'
 import { getDepartment } from '@/services/department'
 import { deleteDepartment } from './action'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
-import { checkPermission } from '@/lib/auth'
+import { checkPermission } from '@/lib/authz'
 
 type DepartmentTabProps = {
   departments: Department[]

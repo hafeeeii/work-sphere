@@ -100,11 +100,13 @@ model User {
 model TenantUser {
   userId   String
   tenantId String
+  email    String
   role     Role
   user     User   @relation(fields: [userId], references: [id])
   tenant   Tenant @relation(fields: [tenantId], references: [id])
 
   @@id([userId, tenantId])
+  @@unique([tenantId, email])
 }
 
 model Notification {
@@ -139,7 +141,7 @@ model NotificationRead {
 model Invite {
   name       String
   id         String       @id @default(uuid())
-  email      String       @unique
+  email      String      
   tenantId   String
   invitedBy  String
   role       Role
@@ -151,6 +153,8 @@ model Invite {
   emailSent  Boolean      @default(false)
   acceptedAt DateTime?
   declinedAt DateTime?
+
+  @@unique([tenantId, email])
 }
 
 model Employee {

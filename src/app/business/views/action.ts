@@ -70,7 +70,8 @@ export async function createBusiness(prevState: unknown,
                 data: {
                     userId: ownerId,
                     tenantId: tenant.id,
-                    role: Role.OWNER
+                    role: Role.OWNER,
+                    email: user.email
                 }
             })
 
