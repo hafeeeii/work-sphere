@@ -1,13 +1,17 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
 import React from 'react'
-import Form from './form'
 import { WorkLocation } from '@prisma/client'
 import { getWorkLocation } from '@/services/work-location'
 import { deleteWorkLocation } from './action'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import { checkPermission } from '@/lib/authz'
+import dynamic from 'next/dynamic'
 
+
+const DynamicForm  = dynamic(() => import('./form'), {
+  ssr:false
+})
 type WorkLocationTabProps = {
   workLocations: WorkLocation[]
 }
@@ -74,7 +78,7 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
 
   return (
     <div className='flex flex-col items-end gap-6'>
-      {isAllowedToCreate && <Form workLocation={workLocation} showForm={showForm} toggleForm={toggleForm} />}
+      {isAllowedToCreate && <DynamicForm workLocation={workLocation} showForm={showForm} toggleForm={toggleForm} />}
       <SharedTable
         tableData={tableData}
         onEdit={onEdit}

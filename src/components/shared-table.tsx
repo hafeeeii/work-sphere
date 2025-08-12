@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { Input } from './ui/input'
+import debounce from 'lodash/debounce'
 
 type Props<T extends object> = {
   onEdit?: (id: string) => void
@@ -67,6 +68,15 @@ export function SharedTable<T extends object>({
   const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const router = useRouter()
 
+const debouncedUpdateURL = React.useMemo(
+  () =>
+    debounce((param: URLSearchParams) => {
+      router?.push(`?${param.toString()}`)
+    }, 500),
+  [router]
+);
+
+
   const loadData = () => {
     // sorting
     const existingParamsString = window.location.search
@@ -100,7 +110,7 @@ export function SharedTable<T extends object>({
       param.set('pageSize', pagination.pageSize.toString())
     }
 
-    router?.push(`?${param.toString()}`)
+    debouncedUpdateURL(param)
   }
 
   React.useEffect(() => {

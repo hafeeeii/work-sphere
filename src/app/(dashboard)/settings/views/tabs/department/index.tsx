@@ -1,12 +1,16 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
 import React from 'react'
-import Form from './form'
+import dynamic from 'next/dynamic'
 import { Department } from '@prisma/client'
 import { getDepartment } from '@/services/department'
 import { deleteDepartment } from './action'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import { checkPermission } from '@/lib/authz'
+
+const DynamicForm = dynamic(() => import('./form'), {
+  ssr:false
+})
 
 type DepartmentTabProps = {
   departments: Department[]
@@ -74,7 +78,7 @@ const DepartmentTab = ({ departments }: DepartmentTabProps) => {
 
   return (
     <div className='flex flex-col items-end gap-6'>
-      {isAllowedToCreate && <Form department={department} showForm={showForm} toggleForm={toggleForm} />}
+      {isAllowedToCreate && <DynamicForm department={department} showForm={showForm} toggleForm={toggleForm} />}
       <SharedTable
         tableData={tableData}
         onEdit={onEdit}

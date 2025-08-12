@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import YearPicker from '@/components/ui/year-picker'
 import { getBusinessInfo } from '@/lib/business'
+import { getDaysCount } from '@/lib/date'
 import { getOrCreateLeaveBalanceForUser } from '@/lib/leave'
 import prisma from '@/lib/prisma'
 import { LeaveType } from '@prisma/client'
@@ -9,30 +10,27 @@ import { format } from 'date-fns'
 import { ArrowRight, CalendarIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import LeaveApplyForm from './leave-apply-form'
-import { getDaysCount } from '@/lib/date'
 
 export default async function LeaveSummaryTab({ searchParams }: { searchParams: { [key: string]: string } }) {
   const currentYear = new Date().getFullYear()
   const from = searchParams.from || `${currentYear}-01-01`
   const to = searchParams.to || `${currentYear}-12-31`
   const year = new Date(from).getFullYear()
-
   const business = await getBusinessInfo()
 
   if (!business.status || !business.data) {
     redirect('/login')
   }
 
-  // leave balances
-  const leaveBalances = await getOrCreateLeaveBalanceForUser(business.data.businessId, business.data.userId, year)
-  // leave types
-  const leaveTypes = await prisma.leaveType.findMany({
+
+  const [leaveBalances, leaveTypes, pastLeaves, upcomingLeaves] = await Promise.all([
+    getOrCreateLeaveBalanceForUser(business.data.businessId, business.data.userId, year),
+  prisma.leaveType.findMany({
     where: {
       tenantId: business.data.businessId
     }
-  })
-
-  const pastLeaves = await prisma.leave.findMany({
+  }),
+  prisma.leave.findMany({
     where: {
       tenantId: business.data.businessId,
       userId: business.data.userId,
@@ -51,9 +49,8 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
         }
       }
     }
-  })
-
-  const upcomingLeaves = await prisma.leave.findMany({
+  }),
+   await prisma.leave.findMany({
     where: {
       tenantId: business.data.businessId,
       userId: business.data.userId,
@@ -75,9 +72,12 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
     }
   })
 
+  ])
+
+
   const limitedLeaves = leaveBalances.slice(0, 6)
 
-  const updatedLeaveTypes = leaveTypes.reduce((acc, type) => {
+  const updatedLeaveTypes = (leaveTypes).reduce((acc, type) => {
     const balance = leaveBalances.find(b => b.leaveTypeId === type.id)
     if (!(balance?.available === 0 && balance.available !== null)) {
       acc.push(type)

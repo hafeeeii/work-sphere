@@ -1,12 +1,17 @@
 'use client'
 import { SharedTable } from '@/components/shared-table'
 import React from 'react'
-import Form from './form'
 import { getDesignation } from '@/services/designation'
 import { Designation } from '@prisma/client'
 import { deleteDesignation } from './action'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import { checkPermission } from '@/lib/authz'
+import dynamic from 'next/dynamic'
+
+
+const DynamicForm  = dynamic(() => import('./form'), {
+  ssr:false
+})
 
 type DesignationTabProps = {
   designations: Designation[]
@@ -72,7 +77,7 @@ const DesignationTab = ({ designations }: DesignationTabProps) => {
 
   return (
     <div className='flex flex-col items-end gap-6'>
-      {isAllowedToCreate && <Form designation={designation} showForm={showForm} toggleForm={toggleForm} />}
+      {isAllowedToCreate && <DynamicForm designation={designation} showForm={showForm} toggleForm={toggleForm} />}
       <SharedTable
         tableData={tableData}
         onEdit={onEdit}

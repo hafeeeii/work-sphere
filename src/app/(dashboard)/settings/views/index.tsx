@@ -8,9 +8,12 @@ import DesignationTab from './tabs/designation'
 import WorkLocationTab from './tabs/work-location'
 
 const Settings = async ({ searchParams }: { searchParams: { [key: string]: string } }) => {
-  const departments = await getDepartments((await cookies()).toString(), searchParams)
-  const designations = await getDesignations((await cookies()).toString(), searchParams)
-  const workLocations = await getWorkLocations((await cookies()).toString(), searchParams)
+  const cookieString = (await cookies()).toString()
+  const [departments, designations, workLocations] = await Promise.all([
+    getDepartments(cookieString, searchParams),
+    getDesignations(cookieString, searchParams),
+    getWorkLocations(cookieString, searchParams)
+  ])
 
   const tabs = [
     { tab: 'Designation', content: <DesignationTab designations={designations} /> },
@@ -30,7 +33,7 @@ const Settings = async ({ searchParams }: { searchParams: { [key: string]: strin
         </TabsList>
         {tabs.map(tab => (
           <TabsContent key={tab.tab} value={tab.tab}>
-           {tab.content}
+            {tab.content}
           </TabsContent>
         ))}
       </Tabs>
