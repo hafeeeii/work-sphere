@@ -80,7 +80,7 @@ export async function signUp(prevState: unknown, formData: FormData) {
         }
     }
 
-    redirect('/dashboard')
+    redirect('/home')
 
 }
 

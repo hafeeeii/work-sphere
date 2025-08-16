@@ -1,5 +1,15 @@
 'use client'
-import { Briefcase, Home, LogOut, Settings, Umbrella, User2Icon } from 'lucide-react'
+import {
+  Briefcase,
+  FileClock,
+  Home,
+  LayoutGrid,
+  LogOut,
+  Megaphone,
+  Settings,
+  Umbrella,
+  User2Icon
+} from 'lucide-react'
 
 import { logout } from '@/app/(auth)/actions'
 import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
@@ -36,12 +46,17 @@ export function AppSidebar() {
 
   // Menu items.
   const items = [
+    {
+      title: 'Home',
+      url: '/home',
+      icon: Home
+    },
     ...(isAllowedToViewDashboard
       ? [
           {
             title: 'Dashboard',
             url: '/dashboard',
-            icon: Home
+            icon: LayoutGrid
           }
         ]
       : []),
@@ -73,6 +88,16 @@ export function AppSidebar() {
       title: 'Leave Tracker',
       url: '/leaves',
       icon: Umbrella
+    },
+    {
+      title: 'Announcements',
+      url: '/announcements',
+      icon: Megaphone
+    },
+    {
+      title: 'Audit Trail',
+      url: '/audit-trail',
+      icon: FileClock
     }
     // {
     //   title: "Performance Reviews",
@@ -123,8 +148,6 @@ export function AppSidebar() {
     logout()
   }
 
-  console.log('items', `/employees?${getDefaultSortById('name')}`.split('?')[0])
-  
   return (
     <Sidebar>
       <SidebarContent className='bg-card'>
@@ -134,7 +157,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map(item => (
                 <SidebarMenuItem key={item.title} className='bg mt-3 pl-2'>
-                  <SidebarMenuButton asChild    isActive={path.includes((item.url?.split('?')[0]))}>
+                  <SidebarMenuButton asChild disabled={true} isActive={path.includes(item.url?.split('?')[0])}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -151,7 +174,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title} className='mt-3 pl-2'>
                   <SidebarMenuButton
                     asChild
-                  isActive={path.includes((item.url?.split('?')[0]))}
+                    isActive={path.includes(item.url?.split('?')[0])}
                     {...(item.url === '/login' ? { onClick: handleLogout } : {})}
                   >
                     <Link href={item.url}>

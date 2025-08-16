@@ -45,9 +45,9 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div>
+    <div className='h-full'>
       <BusinessUserProvider businessUser={tenantUser}>
-        <SidebarProvider className='flex min-h-screen w-full overflow-x-hidden'>
+        <SidebarProvider className='flex h-full min-h-screen w-full overflow-x-hidden '>
           <AppSidebar />
 
           <div className='flex h-full w-full flex-col overflow-hidden bg-background'>
@@ -66,7 +66,7 @@ export default async function DashboardLayout({
             </header>
             <div className='h-full w-full p-4'>
               <Card className='h-full'>
-                <CardContent className='pt-4 bg-background rounded-lg'>{children}</CardContent>
+                <CardContent className='h-full rounded-lg bg-background pt-4'>{children}</CardContent>
               </Card>
             </div>
           </div>

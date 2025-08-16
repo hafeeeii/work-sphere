@@ -140,7 +140,7 @@ const Dashboard = async () => {
           trend={`${formattedPercentageChange} from last month`}
         />
         <StatsCard
-          title='Pending Leave Requests'
+          title='Leave Requests'
           value={pendingLeaveRequests}
           icon={Clock}
           trend={`${urgentLeaveRequests} urgent requests`}
