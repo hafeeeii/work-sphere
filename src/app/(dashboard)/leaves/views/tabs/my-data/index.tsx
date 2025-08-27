@@ -13,8 +13,8 @@ export default async function MyDataTab({ searchParams }: { searchParams: { [key
   ]
 
   return (
-    <Tabs defaultValue={tabs[0].tab} className='flex h-full flex-col'>
-      <TabsList className='flex h-auto flex-wrap items-center justify-start space-y-1'>
+    <Tabs defaultValue={tabs[0].tab} className='h-full'>
+      <TabsList >
         {tabs.map(tab => (
           <TabsTrigger key={tab.tab} value={tab.tab}>
             {tab.tab}

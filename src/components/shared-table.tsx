@@ -68,16 +68,15 @@ export function SharedTable<T extends object>({
   const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const router = useRouter()
 
-const debouncedUpdateURL = React.useMemo(
-  () =>
-    debounce((param: URLSearchParams) => {
+  const debouncedFilter = React.useMemo(() => {
+    const fn = debounce((param: URLSearchParams) => {
       router?.push(`?${param.toString()}`)
-    }, 500),
-  [router]
-);
+    }, 500)
 
+    return fn
+  }, [router])
 
-  const loadData = () => {
+  React.useEffect(() => {
     // sorting
     const existingParamsString = window.location.search
     const param = new URLSearchParams(existingParamsString)
@@ -85,13 +84,6 @@ const debouncedUpdateURL = React.useMemo(
     if (sorting[0]) {
       param.set('sortBy', sorting[0].id)
       param.set('sortOrder', sorting[0].desc ? 'desc' : 'asc')
-    }
-
-    // filtering
-    if (columnFilters[0]) {
-      columnFilters.forEach(filter => {
-        param.set(filter.id, filter?.value as string)
-      })
     }
 
     // remove filters that are not in the table
@@ -110,12 +102,25 @@ const debouncedUpdateURL = React.useMemo(
       param.set('pageSize', pagination.pageSize.toString())
     }
 
-    debouncedUpdateURL(param)
-  }
+    router.push(`?${param.toString()}`)
+  }, [sorting, pagination])
 
   React.useEffect(() => {
-    loadData()
-  }, [sorting, columnFilters, pagination])
+    const existingParamsString = window.location.search
+    const param = new URLSearchParams(existingParamsString)
+    // filtering
+    if (columnFilters[0]) {
+      columnFilters.forEach(filter => {
+        param.set(filter.id, filter?.value as string)
+      })
+    }
+
+    debouncedFilter(param)
+
+    return () => {
+      debouncedFilter.cancel()
+    }
+  }, [columnFilters])
 
   const actions = {
     id: 'actions',
@@ -126,6 +131,7 @@ const debouncedUpdateURL = React.useMemo(
         <div className='flex justify-end gap-2'>
           {visibleActions.includes('edit') && isAllowedToEdit && (
             <Button
+              className='size-8'
               variant={'outline'}
               size={'icon'}
               onClick={() => {
@@ -141,6 +147,7 @@ const debouncedUpdateURL = React.useMemo(
           )}
           {visibleActions.includes('details') && (
             <Button
+              className='size-8'
               variant={'outline'}
               size={'icon'}
               onClick={() => {
@@ -152,6 +159,7 @@ const debouncedUpdateURL = React.useMemo(
           )}
           {visibleActions.includes('delete') && isAllowedToDelete && (
             <Button
+              className='size-8'
               variant={'outline'}
               size={'icon'}
               onClick={async () => {

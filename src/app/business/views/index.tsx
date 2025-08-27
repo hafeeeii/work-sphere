@@ -45,7 +45,7 @@ const Business = async () => {
       {business.status ? (
         <div className='flex h-screen overflow-hidden w-full flex-col items-center justify-center'>
           <Loader className='animate-spin' />
-          <h1 className='mt-4 text-2xl font-bold'>Setting up business</h1>
+          <h1 className='text-2xl font-bold'>Setting up business</h1>
         </div>
       ) : (
         <BusinessList businesses={user?.tenantUsers} hasPendingInvites={hasPendingInvites > 0}/>

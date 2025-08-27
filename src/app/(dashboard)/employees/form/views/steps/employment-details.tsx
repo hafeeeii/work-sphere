@@ -100,7 +100,7 @@ export default function EmploymentDetails({
                   name='workEmail'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Work Email</FormLabel>
+                      <RequiredLabel>Work Email</RequiredLabel>
                       <FormControl>
                         <Input type='email' placeholder='email@example.com' {...field} />
                       </FormControl>

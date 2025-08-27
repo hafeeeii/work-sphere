@@ -171,8 +171,8 @@ model Employee {
 
   // Contact Information
   phoneNumber  String
-  email        String  @unique
-  workEmail    String?
+  email        String  
+  workEmail    String 
   addressLine1 String?
   addressLine2 String?
 

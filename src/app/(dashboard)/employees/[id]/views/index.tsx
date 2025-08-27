@@ -107,7 +107,7 @@ export default async function EmployeeDetails({ id }: { id: string }) {
 
             <div className='flex flex-1 flex-col justify-end gap-1'>
               <p className='flex items-center gap-2 text-sm text-muted-foreground'>
-                <Mail size={15} /> {employee?.workEmail || 'N/A'}
+                <Mail size={15} /> {employee?.workEmail}
               </p>
               <p className='flex items-center gap-2 text-sm text-muted-foreground'>
                 <Phone size={15} />

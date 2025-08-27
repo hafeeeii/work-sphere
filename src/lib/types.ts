@@ -62,7 +62,7 @@ export const EmployeeSchema = z.object({
     // Contact Information
     phoneNumber: required("Phone number").regex(/^\d{10}$/,'Invalid phone number'),
     email: required("Email").email("Invalid email"),
-    workEmail: z.string().email("Invalid email").optional().or(z.literal('')),
+    workEmail: required('Work Email').email("Invalid email"),
     addressLine1: z.string().optional(),
     addressLine2: z.string().optional(),
 

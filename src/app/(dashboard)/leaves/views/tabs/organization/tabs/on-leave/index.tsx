@@ -58,35 +58,41 @@ export default async function OnLeaveTab() {
     {} as Record<string, (Leave & { leaveType: { name: string }; user: { name: string } })[]>
   )
 
+  const data = Object.entries(groupByDate)
+
   return (
-    <Accordion type='single'  collapsible className='w-full' >
-      {Object.entries(groupByDate).map(([date, leaves]) => (
-        <AccordionItem value={date} key={date}>
-          <AccordionTrigger className='flex items-center justify-between hover:no-underline'>
-            <div>{date}</div>
-            <div className='text-sm text-muted-foreground'>
-              {leaves.length} {leaves.length === 1 ? 'leave' : 'leaves'}
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className='space-y-4 text-nowrap overflow-x-auto'>
-            {leaves.map(leave => (
-              <div key={leave.id} className='flex items-center justify-between gap-4'>
-                <div className='flex items-center gap-4'>
-                  <div>{leave.user.name}</div>
-                  <div className='text-sm text-muted-foreground'>
-                    {leave.leaveType.name} ({getFormattedDate(leave.from)} - {getFormattedDate(leave.to)})
-                  </div>
-                </div>
-                <div>
-                  <div className='text-sm '>
-                    {getDaysCount(leave.from, leave.to)} {getDaysCount(leave.from, leave.to) === 1 ? 'day' : 'days'}
-                  </div>
-                </div>
+    <Accordion type='single' collapsible className='w-full'>
+      {data.length > 0 ? (
+        data.map(([date, leaves]) => (
+          <AccordionItem value={date} key={date}>
+            <AccordionTrigger className='flex items-center justify-between hover:no-underline'>
+              <div>{date}</div>
+              <div className='text-sm text-muted-foreground'>
+                {leaves.length} {leaves.length === 1 ? 'leave' : 'leaves'}
               </div>
-            ))}
-          </AccordionContent>
-        </AccordionItem>
-      ))}
+            </AccordionTrigger>
+            <AccordionContent className='space-y-4 overflow-x-auto text-nowrap'>
+              {leaves.map(leave => (
+                <div key={leave.id} className='flex items-center justify-between gap-4'>
+                  <div className='flex items-center gap-4'>
+                    <div>{leave.user.name}</div>
+                    <div className='text-sm text-muted-foreground'>
+                      {leave.leaveType.name} ({getFormattedDate(leave.from)} - {getFormattedDate(leave.to)})
+                    </div>
+                  </div>
+                  <div>
+                    <div className='text-sm'>
+                      {getDaysCount(leave.from, leave.to)} {getDaysCount(leave.from, leave.to) === 1 ? 'day' : 'days'}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+        ))
+      ) : (
+        <p className='mt-10 text-center text-sm text-muted-foreground'>No leaves found</p>
+      )}
     </Accordion>
   )
 }

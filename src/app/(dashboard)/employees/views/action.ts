@@ -36,7 +36,10 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
 
         const employee = await prisma.employee.findUnique({
             where: {
-                email: parsed.data.email
+                tenantId_email:{
+                    tenantId: businessId,
+                    email: parsed.data.workEmail
+                }
             }
         })
 
@@ -61,15 +64,15 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
 
 
         if (inviteUser) {
-            // checks if user already part of the business
-
+            
             const userAlreadyExists = await prisma.user.findUnique({
                 where: {
-                    email: parsed.data.email
+                    email: parsed.data.workEmail
                 }
             })
-
+            
             if (userAlreadyExists) {
+                // checks if user already part of the business
                 const userAlreadyPartOfBusiness = await prisma.tenantUser.findUnique({
                     where: {
                         userId_tenantId: {
@@ -96,7 +99,7 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
                     tenantId: businessId,
                     invitedBy: userId,
                     name: parsed.data.name,
-                    email: parsed.data.email,
+                    email: parsed.data.workEmail,
                     role: parsed.data.role
                 },
                 include: {
@@ -107,9 +110,9 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
             const resend = new Resend(process.env.RESEND_API_KEY)
             const result = await resend.emails.send({
                 from: `${businessName} <noreply@invite.worksphere.icu>`,
-                to: parsed.data.email,
+                to: parsed.data.workEmail,
                 subject: `Invitation from ${businessName}`,
-                react: EmailTemplate({ name: parsed.data.name, businessName, inviteLink: `${rootDomain}/business/invites`, invitedBy: invite.inviter?.name ?? 'Admin', inviteEmail: parsed.data.email }),
+                react: EmailTemplate({ name: parsed.data.name, businessName, inviteLink: `${rootDomain}/business/invites`, invitedBy: invite.inviter?.name ?? 'Admin', inviteEmail: parsed.data.workEmail }),
 
             })
 
