@@ -35,7 +35,8 @@ export async function fetchBusinessIdFromSubdomain(subdomain: string, userId: st
         data: {
             businessId: business.id,
             businessName: business.name,
-            userId
+            userId,
+            role:tenantUser.role
         }
     }
 }

@@ -7,11 +7,11 @@ export const GET = async () => {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return NextResponse.json(business, { status: 401 });
         }
-        const businessId = business.data?.businessId
-        const userId = business.data?.userId
+
+        const { businessId, userId, role } = business.data
 
         if (!businessId || !userId) {
             return NextResponse.json({ error: "Error fetching notifications count", status: 401 });
@@ -23,7 +23,12 @@ export const GET = async () => {
                 // OR = at least one of the conditions is must be true
                 OR: [
                     { userId },
-                    { userId: null },
+                    {
+                        AND: [{
+                            userId: null,
+                            targetRoles: { has: role }
+                        }]
+                    },
                 ],
                 notificationsRead: {
                     // none = checks that no related record matches the condition.

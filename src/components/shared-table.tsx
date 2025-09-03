@@ -16,12 +16,12 @@ import * as React from 'react'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import clsx from 'clsx'
-import { Eye, Pencil, Trash } from 'lucide-react'
+import debounce from 'lodash/debounce'
+import { Check, Eye, Pencil, Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { Input } from './ui/input'
-import debounce from 'lodash/debounce'
 
 type Props<T extends object> = {
   onEdit?: (id: string) => void
@@ -159,7 +159,7 @@ export function SharedTable<T extends object>({
           )}
           {visibleActions.includes('delete') && isAllowedToDelete && (
             <Button
-              className='size-8'
+              className='size-8 bg-destructive/20 hover:bg-destructive/40'
               variant={'outline'}
               size={'icon'}
               onClick={async () => {
@@ -274,10 +274,11 @@ export function SharedTable<T extends object>({
               {[5, 10, 20, 30, 40, 50].map(pageSize => (
                 <DropdownMenuCheckboxItem
                   key={pageSize}
-                  checked={pageSize === pagination.pageSize}
                   onCheckedChange={() => setPagination(prev => ({ ...prev, pageSize }))}
+                  className='flex justify-between px-2'
                 >
                   {pageSize}
+                  {pagination.pageSize === pageSize ? <Check className='size-4' /> : null}
                 </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuContent>

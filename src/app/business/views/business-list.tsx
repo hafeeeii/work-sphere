@@ -49,7 +49,7 @@ export function BusinessList(props: { businesses?: TenantUserWithRelations[], ha
                 onClick={() => logout()}
                 variant={'outline'}
                 size={'icon'}
-                className='bg-destructive/20 hover:bg-destructive'
+                className='bg-destructive/20 hover:bg-destructive/40'
               >
                 <LogOut />
               </Button>

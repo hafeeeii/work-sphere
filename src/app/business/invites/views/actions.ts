@@ -74,7 +74,8 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
                     message: `${invite.name} has joined your business`,
                     tenantId: invite.tenantId,
                     type: NotificationType.ANNOUNCEMENT,
-                    createdById: userId
+                    createdById: userId,
+                    targetRoles:['OWNER','ADMIN','HR']
                 }
             })
 
@@ -101,7 +102,7 @@ export const acceptInvite = async (prev: unknown, inviteId: string) => {
 
         return {
             status: true,
-            message: 'Invite accepted successfully',
+            message: 'Invitation accepted successfully',
             error: null,
         }
 
@@ -162,7 +163,8 @@ export const declineInvite = async (prev: unknown, inviteId: string) => {
                     message: `${invite.name} has declined your invite`,
                     tenantId: invite.tenantId,
                     type: NotificationType.ANNOUNCEMENT,
-                    createdById: userId
+                    createdById: userId,
+                    targetRoles:['OWNER','ADMIN','HR']
                 }
             })
 

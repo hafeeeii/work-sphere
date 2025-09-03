@@ -92,30 +92,37 @@ import NotifCard from './NotifCard'
 // ] as const
 
 export default async function Notifications() {
-
   const business = await getBusinessInfo()
 
   if (!business.status || !business.data) {
     return null
   }
 
-  const {businessId, userId} = business?.data
+  const { businessId, userId, role } = business?.data
 
   if (!businessId || !userId) {
-     return redirect('/login')
+    return redirect('/login')
   }
-
-
 
   const notifications = await prisma.notification.findMany({
     where: {
       tenantId: businessId,
-      OR: [{ userId: userId }, { userId: null }]
+      OR: [
+        { userId: userId },
+        {
+          AND: [
+            {
+              userId: null,
+              targetRoles: { has: role }
+            }
+          ]
+        }
+      ]
     },
     orderBy: {
       createdAt: 'desc'
     },
-    include: {  
+    include: {
       notificationsRead: {
         where: {
           userId
@@ -127,13 +134,13 @@ export default async function Notifications() {
     }
   })
 
-  const hasItems = notifications.length > 0 
+  const hasItems = notifications.length > 0
 
   const markAllAsReadStatus = notifications.every((notif) => notif.notificationsRead.length > 0)
 
   return (
     <div className='mx-auto max-w-5xl p-6'>
-      <Header status={markAllAsReadStatus}/>
+      <Header status={!markAllAsReadStatus}/>
 
       {hasItems ? (
         <div className='divide-y rounded-lg border'>

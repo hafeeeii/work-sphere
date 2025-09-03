@@ -25,7 +25,7 @@ function Header({ status }: { status: boolean }) {
   }
   return (
     <div>
-      <div className='mb-6 flex flex-col items-center justify-between sm:flex-row'>
+      <div className='mb-6 flex flex-col items-center justify-between lg:flex-row lg:gap-60 gap-4'>
         <div>
           <h1 className='text-2xl font-bold'>Notifications</h1>
           <p className='text-sm text-muted-foreground'>Stay updated with your latest activities and messages </p>

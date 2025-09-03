@@ -27,7 +27,7 @@ const Business = async () => {
   const session = await decrypt(cookie)
 
   if (!(session as User).userId) {
-   return null
+    return null
   }
 
   const user = await getUser((session as User).userId)
@@ -35,20 +35,20 @@ const Business = async () => {
 
   const hasPendingInvites = await prisma.invite.count({
     where: {
-     email: user?.email,
-     status:InviteStatus.PENDING
+      email: user?.email,
+      status: InviteStatus.PENDING
     }
   })
 
   return (
-    <div className='p-4'>
+    <div className='h-full'>
       {business.status ? (
-        <div className='flex h-screen overflow-hidden w-full flex-col items-center justify-center'>
+        <div className='flex h-full w-full flex-col items-center justify-center overflow-hidden'>
           <Loader className='animate-spin' />
           <h1 className='text-2xl font-bold'>Setting up business</h1>
         </div>
       ) : (
-        <BusinessList businesses={user?.tenantUsers} hasPendingInvites={hasPendingInvites > 0}/>
+        <BusinessList businesses={user?.tenantUsers} hasPendingInvites={hasPendingInvites > 0} />
       )}
       {business.data && <SetBusinessCookie businessId={business.data?.businessId} />}
     </div>

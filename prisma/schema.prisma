@@ -119,7 +119,8 @@ model Notification {
   updatedAt         DateTime           @updatedAt
   userId            String?
   createdById       String
-  tenantId          String
+  tenantId          String             
+  targetRoles       Role[]             @default([])
   user              User?              @relation("NotificationRecipient", fields: [userId], references: [id])
   CreatedBy         User               @relation("NotificationCreator", fields: [createdById], references: [id])
   tenant            Tenant             @relation(fields: [tenantId], references: [id])

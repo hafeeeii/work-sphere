@@ -3,7 +3,7 @@ import { StatsCard } from './stats-card'
 import { checkPermission } from '@/lib/authz'
 import { getBusinessInfo } from '@/lib/business'
 import prisma from '@/lib/prisma'
-import { LeaveStatus } from '@prisma/client'
+import { InviteStatus, LeaveStatus } from '@prisma/client'
 import { Building, Clock, Mail, Users } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { ActivityFeed } from './activity-feed'
@@ -89,7 +89,8 @@ const Dashboard = async () => {
       tenantId: business.data.businessId,
       createdAt: {
         gte: sevenDaysAgo
-      }
+      },
+      status: InviteStatus.PENDING
     }
   })
 

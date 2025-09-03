@@ -8,11 +8,11 @@ import { revalidatePath } from "next/cache"
 export async function markAllAsRead() {
     try {
         const business = await getBusinessInfo()
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
-        const businessId = business.data?.businessId
-        const userId = business.data?.userId
+       
+        const {businessId,userId, role} = business.data
 
         if (!businessId || !userId) {
             return business
@@ -23,7 +23,12 @@ export async function markAllAsRead() {
         const notifications = await prisma.notification.findMany({
             where: {
                 tenantId: businessId,
-                OR: [{ userId: userId }, { userId: null }]
+                OR: [{ userId: userId }, {
+                    AND:[{
+                        userId: null,
+                        targetRoles:{has:role}
+                    }]
+                }]
             },
             select: {
                 id: true

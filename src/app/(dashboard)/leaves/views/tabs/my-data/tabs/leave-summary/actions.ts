@@ -52,6 +52,7 @@ export const applyLeave = async (prev: unknown, formData: FormData) => {
                     title: "Leave Request",
                     message: "A leave request has been submitted",
                     type: NotificationType.REQUEST,
+                    targetRoles:['MANAGER', 'ADMIN', 'OWNER', 'HR']
                 }
             })
 

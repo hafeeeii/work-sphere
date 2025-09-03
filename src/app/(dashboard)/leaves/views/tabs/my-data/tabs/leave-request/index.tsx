@@ -97,7 +97,7 @@ export default async function LeaveRequestTab() {
           ) : (
             <TableRow>
               <TableCell colSpan={6} className='h-24 text-center text-muted-foreground'>
-                No leaves found.
+                No leave found
               </TableCell>
             </TableRow>
           )}
