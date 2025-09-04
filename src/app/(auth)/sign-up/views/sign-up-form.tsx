@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import InputErrorMessage from '@/components/ui/input-error-message'
 import RequiredLabel from '@/components/ui/required-label'
-import { useUser } from '@/components/user-provider'
+import { useUser } from '@/components/context/user-context'
 import { SignUpFormValues, SignUpSchema } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'

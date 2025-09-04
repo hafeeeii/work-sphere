@@ -95,7 +95,7 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
       <div className='grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6'>
         {limitedLeaves.map((type, idx) => (
           <Card key={idx}>
-            <CardContent className='space-y-2 p-4'>
+            <CardContent className='space-y-2'>
               {/* <div className={cn('text-3xl', type.color)}>{type.icon}</div> */}
               <div className='text-sm font-semibold'>{type.leaveType?.name}</div>
               {type.available !== null && (

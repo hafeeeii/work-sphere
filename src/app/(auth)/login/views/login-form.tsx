@@ -14,7 +14,7 @@ import InputErrorMessage from '@/components/ui/input-error-message'
 import RequiredLabel from '@/components/ui/required-label'
 import { toast } from 'sonner'
 import { User } from 'lucide-react'
-import { useUser } from '@/components/user-provider'
+import { useUser } from '@/components/context/user-context'
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [state, action, isPending] = useActionState(login, undefined)

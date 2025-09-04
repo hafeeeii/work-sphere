@@ -20,9 +20,22 @@ export async function fetchBusinessIdFromSubdomain(subdomain: string, userId: st
         where: { userId_tenantId: { tenantId: business?.id, userId } },
     })
 
+    const userName = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true }
+    })
+
     if (!tenantUser) return {
         status: false,
         message: 'Business not found',
+        error: null,
+        data: null
+    }
+
+
+    if (!userName) return {
+        status: false,
+        message: 'User not found',
         error: null,
         data: null
     }
@@ -36,7 +49,8 @@ export async function fetchBusinessIdFromSubdomain(subdomain: string, userId: st
             businessId: business.id,
             businessName: business.name,
             userId,
-            role:tenantUser.role
+            userName: userName.name,
+            role: tenantUser.role
         }
     }
 }

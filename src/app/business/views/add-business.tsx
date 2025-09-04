@@ -6,7 +6,7 @@ import { startTransition, useActionState, useEffect, useState } from 'react'
 
 import LoadingButton from '@/components/ui/buttons/loading-button'
 import RequiredLabel from '@/components/ui/required-label'
-import { useUser } from '@/components/user-provider'
+import { useUser } from '@/components/context/user-context'
 import { BusinessFormValues, BusinessSchema } from '@/lib/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PlusIcon, Save } from 'lucide-react'
