@@ -64,8 +64,8 @@ export default async function DashboardLayout({
                 </div>
               </div>
             </header>
-            <div className='h-full w-full p-4'>
-              <Card className='h-full'>
+            <div className='flex h-full flex-col overflow-y-auto p-4'>
+              <Card className='flex-1'>
                 <CardContent className='flex h-full flex-col rounded-lg bg-background pt-4'>{children}</CardContent>
               </Card>
             </div>

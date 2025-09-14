@@ -71,7 +71,6 @@ const EmployeeList = ({ employees }: EmployeeListProps) => {
   }
 
   return (
-<div >
   <div className='mt-4 flex flex-col items-end gap-6 '>
     {isAllowedToCreate && (
       <Button onClick={() => router.push('/employees/form/personal-details')}>
@@ -85,7 +84,6 @@ const EmployeeList = ({ employees }: EmployeeListProps) => {
     isAllowedToDelete={isAllowedToDelete}
     isAllowedToEdit={isAllowedToEdit}
   />
-</div>
 </div>
 
   )
