@@ -50,7 +50,8 @@ export async function fetchBusinessIdFromSubdomain(subdomain: string, userId: st
             businessName: business.name,
             userId,
             userName: userName.name,
-            role: tenantUser.role
+            role: tenantUser.role,
+            email:tenantUser.email
         }
     }
 }

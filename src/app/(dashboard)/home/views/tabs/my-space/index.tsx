@@ -16,7 +16,7 @@ export default function MySpaceTab() {
           ))}
         </TabsList>
         {[{ value: 'overview', content: <OverviewTab /> }].map(tab => (
-          <TabsContent key={tab.value} value={tab.value} className='h-full'>
+          <TabsContent key={tab.value} value={tab.value} className='h-[calc(100%-50px)] '>
             {tab.content}
           </TabsContent>
         ))}

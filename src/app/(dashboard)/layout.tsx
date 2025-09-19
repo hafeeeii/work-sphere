@@ -1,16 +1,15 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { AccountMenu } from '@/components/ui/account-menu'
-import { Card, CardContent } from '@/components/ui/card'
 import { SearchDialog } from '@/components/ui/search-dialog'
 import { Separator } from '@/components/ui/separator'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { ThemeSwitcher } from '@/components/ui/theme-switcher'
 import { getBusinessInfo } from '@/lib/business'
 import prisma from '@/lib/prisma'
+import { deleteSession } from '@/lib/session'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { BusinessUserProvider } from './business-user-provider'
-import { deleteSession } from '@/lib/session'
 
 export const metadata: Metadata = {
   title: 'WorkSphere',
@@ -45,33 +44,31 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className='h-full'>
-      <BusinessUserProvider businessUser={tenantUser}>
-        <SidebarProvider className='flex h-full min-h-screen w-full overflow-x-hidden'>
-          <AppSidebar />
+    <BusinessUserProvider businessUser={tenantUser}>
+      <SidebarProvider className='flex h-screen w-screen min-h-screen overflow-x-hidden'>
+        <AppSidebar />
 
-          <div className='flex h-full w-full flex-col bg-background'>
-            <header className='flex h-12 w-full shrink-0 items-center gap-2 border-b ease-linear'>
-              <div className='flex w-full items-center justify-between px-4 lg:px-6'>
-                <div className='flex items-center gap-1 lg:gap-2'>
-                  <SidebarTrigger className='-ml-1' />
-                  <Separator orientation='vertical' className='mx-2' />
-                  <SearchDialog />
-                </div>
-                <div className='flex items-center gap-2'>
-                  <ThemeSwitcher />
-                  <AccountMenu tenantUser={tenantUser} />
-                </div>
+        <div className='flex h-full w-full flex-col bg-background'>
+          <header className='flex h-12 w-full shrink-0 items-center gap-2 border-b ease-linear'>
+            <div className='flex w-full items-center justify-between px-4 lg:px-6'>
+              <div className='flex items-center gap-1 lg:gap-2'>
+                <SidebarTrigger className='-ml-1' />
+                <Separator orientation='vertical' className='mx-2' />
+                <SearchDialog />
               </div>
-            </header>
-            <div className='flex h-full flex-col overflow-y-auto p-4'>
-              <Card className='flex-1'>
-                <CardContent className='flex h-full flex-col rounded-lg bg-background pt-4'>{children}</CardContent>
-              </Card>
+              <div className='flex items-center gap-2'>
+                <ThemeSwitcher />
+                <AccountMenu tenantUser={tenantUser} />
+              </div>
+            </div>
+          </header>
+          <div className='min-h-[calc(100%-48px)]  p-4'>
+            <div className='border h-full rounded-md p-4'> 
+           {children}
             </div>
           </div>
-        </SidebarProvider>
-      </BusinessUserProvider>
-    </div>
+        </div>
+      </SidebarProvider>
+    </BusinessUserProvider>
   )
 }

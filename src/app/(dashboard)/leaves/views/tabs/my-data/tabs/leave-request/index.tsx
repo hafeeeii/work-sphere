@@ -13,7 +13,6 @@ import { getOrCreateLeaveBalanceForUser } from '@/lib/leave'
 import prisma from '@/lib/prisma'
 import { cn } from '@/lib/utils'
 import { LeaveStatus, LeaveType } from '@prisma/client'
-import { redirect } from 'next/navigation'
 import LeaveApplyForm from '../leave-summary/leave-apply-form'
 
 
@@ -21,7 +20,7 @@ export default async function LeaveRequestTab() {
   const business = await getBusinessInfo()
 
   if (!business.status || !business.data) {
-    redirect('/login')
+    return null
   }
 
   const year = new Date().getFullYear()

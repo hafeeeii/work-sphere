@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className='flex h-full w-full flex-col gap-6'>
       <Tabs defaultValue='mySpace' className='flex h-full flex-col'>
-        <TabsList className='flex self-start'>
+        <TabsList className='flex self-start '>
           {[
             { value: 'mySpace', label: 'My Space' },
             { value: 'team', label: 'Team' },
@@ -23,7 +23,7 @@ export default function Home() {
           { value: 'team', content: <TeamTab /> },
           { value: 'organization', content: <OrganizationTab /> }
         ].map(tab => (
-          <TabsContent key={tab.value} value={tab.value} className='h-full'>
+          <TabsContent key={tab.value} value={tab.value} className='h-[calc(100%-36px)]'>
             {tab.content}
           </TabsContent>
         ))}
