@@ -35,6 +35,7 @@ export function AccountMenu({
   useEffect(() => {
     const interval = setInterval(() => {
       getUnreadNotificationsCount().then(count => {
+        console.log(count,'this is log')
         setNotificationsCount(count ?? 0)
       })
     }, 10000)

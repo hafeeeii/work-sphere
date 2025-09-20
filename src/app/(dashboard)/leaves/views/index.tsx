@@ -37,21 +37,22 @@ const Leaves = async ({ searchParams }: { searchParams: { [key: string]: string 
   ]
 
   return (
-    <div >
-
-      <Tabs defaultValue={tabs[0].tab} className='h-full'>
-        <TabsList>
+    <div className='h-[calc(100vh-120px)] w-full'>
+      <Tabs defaultValue={tabs[0].tab} className='flex h-full flex-col'>
+        <TabsList className='self-start'>
           {tabs.map(tab => (
             <TabsTrigger key={tab.tab} value={tab.tab}>
               {tab.tab}
             </TabsTrigger>
           ))}
         </TabsList>
-        {tabs.map(tab => (
-          <TabsContent key={tab.tab} value={tab.tab} className='h-full'>
-            <div className='h-full'>{tab.content}</div>
-          </TabsContent>
-        ))}
+        <div className='h-full overflow-y-auto'>
+          {tabs.map(tab => (
+            <TabsContent key={tab.tab} value={tab.tab}>
+              {tab.content}
+            </TabsContent>
+          ))}
+        </div>
       </Tabs>
     </div>
   )

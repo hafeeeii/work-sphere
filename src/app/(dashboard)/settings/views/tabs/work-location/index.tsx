@@ -8,9 +8,8 @@ import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import { checkPermission } from '@/lib/authz'
 import dynamic from 'next/dynamic'
 
-
-const DynamicForm  = dynamic(() => import('./form'), {
-  ssr:false
+const DynamicForm = dynamic(() => import('./form'), {
+  ssr: false
 })
 type WorkLocationTabProps = {
   workLocations: WorkLocation[]
@@ -19,6 +18,24 @@ type WorkLocationTabProps = {
 const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
   const [showForm, setShowForm] = React.useState(false)
   const [workLocation, setWorkLocation] = React.useState<WorkLocation | null>(null)
+
+  const { businessUser } = useBusinessUser()
+
+  let isAllowedToCreate = false
+  let isAllowedToDelete = false
+  let isAllowedToEdit = false
+
+  if (businessUser) {
+    if (checkPermission(businessUser, 'create', 'work-location')) {
+      isAllowedToCreate = true
+    }
+    if (checkPermission(businessUser, 'delete', 'work-location')) {
+      isAllowedToDelete = true
+    }
+    if (checkPermission(businessUser, 'update', 'work-location')) {
+      isAllowedToEdit = true
+    }
+  }
 
   const toggleForm = () => {
     setShowForm(!showForm)
@@ -41,7 +58,10 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
 
   const tableData: TableData = {
     editMode: 'toggle',
-    visibleActions: ['edit', 'delete'],
+    visibleActions: [
+      ...(isAllowedToEdit ? (['edit'] as const) : []),
+      ...(isAllowedToDelete ? (['delete'] as const) : [])
+    ],
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true },
       { header: 'State', accessorKey: 'state', sortable: true },
@@ -58,34 +78,11 @@ const WorkLocationTab = ({ workLocations }: WorkLocationTabProps) => {
     setWorkLocation(workLocations)
     toggleForm()
   }
-  const { businessUser } = useBusinessUser()
-
-  let isAllowedToCreate = false
-  let isAllowedToDelete = false
-  let isAllowedToEdit = false
-
-  if (businessUser) {
-    if (checkPermission(businessUser, 'create', 'work-location')) {
-      isAllowedToCreate = true
-    }
-    if (checkPermission(businessUser, 'delete', 'work-location')) {
-      isAllowedToDelete = true
-    }
-    if (checkPermission(businessUser, 'update', 'work-location')) {
-      isAllowedToEdit = true
-    }
-  }
 
   return (
     <div className='flex flex-col items-end gap-6'>
       {isAllowedToCreate && <DynamicForm workLocation={workLocation} showForm={showForm} toggleForm={toggleForm} />}
-      <SharedTable
-        tableData={tableData}
-        onEdit={onEdit}
-        onDelete={deleteWorkLocation}
-        isAllowedToDelete={isAllowedToDelete}
-        isAllowedToEdit={isAllowedToEdit}
-      />
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteWorkLocation} />
     </div>
   )
 }

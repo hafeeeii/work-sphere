@@ -1,4 +1,5 @@
 'use server'
+import { checkPermission } from "@/lib/authz"
 import { getBusinessInfo } from "@/lib/business"
 import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
@@ -14,7 +15,17 @@ export const approveLeave = async (prev: unknown, id: string) => {
             return business
         }
 
-        const { businessId } = business.data
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'create', 'leave-pending-request')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
+
 
 
         const leave = await prisma.leave.findUnique({
@@ -69,7 +80,17 @@ export const rejectLeave = async (prev: unknown, id: string) => {
             return business
         }
 
-        const { businessId } = business.data
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'update', 'leave-pending-request')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
+
 
 
         const leave = await prisma.leave.findUnique({
@@ -77,6 +98,7 @@ export const rejectLeave = async (prev: unknown, id: string) => {
                 id,
             },
         })
+
 
         if (leave?.tenantId !== businessId || !leave) {
             return {
@@ -86,14 +108,36 @@ export const rejectLeave = async (prev: unknown, id: string) => {
             }
         }
 
-        await prisma.leave.update({
-            where: {
-                id,
-            },
-            data: {
-                status: LeaveStatus.REJECTED,
-                rejectedAt: new Date()
-            }
+        const leaveDays = Math.floor((new Date(leave.to).getTime() - new Date(leave.from).getTime()) / (1000 * 60 * 60 * 24)) + 1
+        const year = new Date(leave.from).getFullYear()
+
+        await prisma.$transaction(async (tx) => {
+
+            const { leaveTypeId } = await prisma.leave.update({
+                where: {
+                    id,
+                },
+                data: {
+                    status: LeaveStatus.REJECTED,
+                    rejectedAt: new Date()
+                }
+            })
+
+            await tx.leaveBalance.update({
+                where: {
+                    tenantId_userId_leaveTypeId_year: {
+                        tenantId: businessId,
+                        userId,
+                        leaveTypeId,
+                        year
+                    }
+                },
+                data: {
+                    available: {
+                        increment: leaveDays
+                    }
+                }
+            })
         })
 
 

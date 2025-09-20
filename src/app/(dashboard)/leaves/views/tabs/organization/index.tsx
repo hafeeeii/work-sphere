@@ -37,21 +37,21 @@ export default async function OrganizationTab() {
   ]
 
   return (
-    <div >
-      <Tabs defaultValue={tabs[0].tab}>
-        <TabsList >
-          {tabs.map(tab => (
-            <TabsTrigger key={tab.tab} value={tab.tab}>
-              {tab.tab}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+    <Tabs defaultValue={tabs[0].tab} className='flex h-full flex-col overflow-hidden'>
+      <TabsList className='self-start'>
         {tabs.map(tab => (
-          <TabsContent key={tab.tab} value={tab.tab}>
-            <div className='h-full'>{tab.content}</div>
+          <TabsTrigger key={tab.tab} value={tab.tab}>
+            {tab.tab}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      <div className='h-full'>
+        {tabs.map(tab => (
+          <TabsContent key={tab.tab} value={tab.tab} className='h-full'>
+            {tab.content}
           </TabsContent>
         ))}
-      </Tabs>
-    </div>
+      </div>
+    </Tabs>
   )
 }

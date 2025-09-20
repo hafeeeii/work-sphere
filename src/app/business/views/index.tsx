@@ -43,7 +43,7 @@ const Business = async () => {
   return (
     <div className='h-full'>
       {business.status ? (
-        <div className='flex h-full w-full flex-col items-center justify-center overflow-hidden'>
+        <div className='flex h-screen w-full flex-col items-center justify-center overflow-hidden'>
           <Loader className='animate-spin' />
           <h1 className='text-2xl font-bold'>Setting up business</h1>
         </div>

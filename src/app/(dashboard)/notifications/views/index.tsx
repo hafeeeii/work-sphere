@@ -117,7 +117,15 @@ export default async function Notifications() {
             }
           ]
         }
-      ]
+      ],
+      notificationsRead: {
+        none: {
+          userId
+        }
+      },
+      NOT: {
+        createdById: userId
+      }
     },
     orderBy: {
       createdAt: 'desc'
@@ -136,11 +144,11 @@ export default async function Notifications() {
 
   const hasItems = notifications.length > 0
 
-  const markAllAsReadStatus = notifications.every((notif) => notif.notificationsRead.length > 0)
+  const markAllAsReadStatus = notifications.every(notif => notif.notificationsRead.length > 0)
 
   return (
     <div className='mx-auto max-w-5xl p-6'>
-      <Header status={!markAllAsReadStatus}/>
+      <Header status={!markAllAsReadStatus} />
 
       {hasItems ? (
         <div className='divide-y rounded-lg border'>

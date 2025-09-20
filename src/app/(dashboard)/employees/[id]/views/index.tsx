@@ -8,6 +8,8 @@ import InviteButton from './invite-button'
 import ProfileTab from './tabs/profile'
 import Reportees from './tabs/reportees'
 import BackButton from '@/components/ui/buttons/back-button'
+import { Card, CardContent } from '@/components/ui/card'
+import { checkPermission } from '@/lib/authz'
 
 export default async function EmployeeDetails({ id }: { id: string }) {
   const business = await getBusinessInfo()
@@ -15,7 +17,18 @@ export default async function EmployeeDetails({ id }: { id: string }) {
     redirect('/login')
   }
 
-  const { businessId } = business?.data
+  const { email, businessId, userId, role } = business.data
+
+  const tenantUser = { email, role, tenantId: businessId, userId }
+
+  let isAllowedToView = false
+  if (checkPermission(tenantUser, 'view', 'dashboard')) {
+    isAllowedToView = true
+  }
+
+  if (!isAllowedToView) {
+    redirect('/unauthorized')
+  }
 
   const employee = await prisma.employee.findUnique({
     where: {
@@ -83,15 +96,13 @@ export default async function EmployeeDetails({ id }: { id: string }) {
   ]
 
   return (
-    <div className='space-y-6'>
-      <BackButton path='/employees'/>
+    <div className='flex h-[calc(100vh-120px)] w-full flex-col space-y-6'>
+      <BackButton path='/employees' className='w-fit self-start py-2' />
       {/* Shows invite button if employee is not invited */}
-
       <InviteButton employee={employee} hasNotBeenInvited={!employee.inviteUser} />
-
       {/* Header Section */}
-      <div className='overflow-hidden rounded-xl border'>
-        <div className='flex flex-col items-center gap-8 p-4 lg:flex-row'>
+      <Card>
+        <CardContent className='flex flex-col items-center gap-8 p-4 lg:flex-row'>
           <Avatar className='h-[80px] w-[80px]'>
             <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
             <AvatarFallback>CN</AvatarFallback>
@@ -115,12 +126,12 @@ export default async function EmployeeDetails({ id }: { id: string }) {
               </p>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Tabs Section */}
-      <Tabs defaultValue='Profile' className='w-full'>
-        <TabsList className='mb-4'>
+      <Tabs defaultValue='Profile' className='flex h-full w-full flex-col overflow-hidden'>
+        <TabsList className='mb-4 flex self-start'>
           {tabs.map(tab => (
             <TabsTrigger key={tab.tab} value={tab.tab}>
               {tab.tab}
@@ -128,11 +139,13 @@ export default async function EmployeeDetails({ id }: { id: string }) {
           ))}
         </TabsList>
 
-        {tabs.map(tab => (
-          <TabsContent key={tab.tab} value={tab.tab}>
-            <div className='h-full'>{tab.content}</div>
-          </TabsContent>
-        ))}
+        <div className='flex-1 overflow-y-auto'>
+          {tabs.map(tab => (
+            <TabsContent key={tab.tab} value={tab.tab} className='h-full'>
+              {tab.content}
+            </TabsContent>
+          ))}
+        </div>
       </Tabs>
     </div>
   )

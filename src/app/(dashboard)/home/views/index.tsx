@@ -5,7 +5,7 @@ import OrganizationTab from './tabs/organization'
 
 export default function Home() {
   return (
-    <div className='flex h-full w-full flex-col gap-6'>
+    <div className='flex h-[calc(100vh-120px)] w-full flex-col gap-6'>
       <Tabs defaultValue='mySpace' className='flex h-full flex-col'>
         <TabsList className='flex self-start '>
           {[

@@ -8,9 +8,8 @@ import { useBusinessUser } from '@/app/(dashboard)/business-user-provider'
 import { checkPermission } from '@/lib/authz'
 import dynamic from 'next/dynamic'
 
-
-const DynamicForm  = dynamic(() => import('./form'), {
-  ssr:false
+const DynamicForm = dynamic(() => import('./form'), {
+  ssr: false
 })
 
 type DesignationTabProps = {
@@ -20,6 +19,24 @@ type DesignationTabProps = {
 const DesignationTab = ({ designations }: DesignationTabProps) => {
   const [showForm, setShowForm] = React.useState(false)
   const [designation, setDesignation] = React.useState<Designation | null>(null)
+
+  const { businessUser } = useBusinessUser()
+
+  let isAllowedToCreate = false
+  let isAllowedToDelete = false
+  let isAllowedToEdit = false
+
+  if (businessUser) {
+    if (checkPermission(businessUser, 'create', 'designation')) {
+      isAllowedToCreate = true
+    }
+    if (checkPermission(businessUser, 'delete', 'designation')) {
+      isAllowedToDelete = true
+    }
+    if (checkPermission(businessUser, 'update', 'designation')) {
+      isAllowedToEdit = true
+    }
+  }
 
   const toggleForm = () => {
     setShowForm(!showForm)
@@ -42,7 +59,10 @@ const DesignationTab = ({ designations }: DesignationTabProps) => {
 
   const tableData: TableData = {
     editMode: 'toggle',
-    visibleActions: ['edit', 'delete'],
+    visibleActions: [
+      ...(isAllowedToEdit ? (['edit'] as const) : []),
+      ...(isAllowedToDelete ? (['delete'] as const) : [])
+    ],
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
       { header: 'Total Employees', accessorKey: 'totalEmployees' }
@@ -57,34 +77,10 @@ const DesignationTab = ({ designations }: DesignationTabProps) => {
     toggleForm()
   }
 
-  const { businessUser } = useBusinessUser()
-
-  let isAllowedToCreate = false
-  let isAllowedToDelete = false
-  let isAllowedToEdit = false
-
-  if (businessUser) {
-    if (checkPermission(businessUser, 'create', 'designation')) {
-      isAllowedToCreate = true
-    }
-    if (checkPermission(businessUser, 'delete', 'designation')) {
-      isAllowedToDelete = true
-    }
-    if (checkPermission(businessUser, 'update', 'designation')) {
-      isAllowedToEdit = true
-    }
-  }
-
   return (
     <div className='flex flex-col items-end gap-6'>
       {isAllowedToCreate && <DynamicForm designation={designation} showForm={showForm} toggleForm={toggleForm} />}
-      <SharedTable
-        tableData={tableData}
-        onEdit={onEdit}
-        onDelete={deleteDesignation}
-        isAllowedToDelete={isAllowedToDelete}
-        isAllowedToEdit={isAllowedToEdit}
-      />
+      <SharedTable tableData={tableData} onEdit={onEdit} onDelete={deleteDesignation} />
     </div>
   )
 }

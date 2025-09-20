@@ -61,7 +61,8 @@ export default async function OnLeaveTab() {
   const data = Object.entries(groupByDate)
 
   return (
-    <Accordion type='single' collapsible className='w-full'>
+  <div className='flex flex-col h-full '>
+      <Accordion type='single' collapsible className='w-full'>
       {data.length > 0 ? (
         data.map(([date, leaves]) => (
           <AccordionItem value={date} key={date}>
@@ -91,8 +92,11 @@ export default async function OnLeaveTab() {
           </AccordionItem>
         ))
       ) : (
-        <p className='mt-10 text-center text-sm text-muted-foreground'>No leaves found</p>
+        <div>
+          <p className='mt-20 text-center text-sm text-muted-foreground'>No leaves found</p>
+        </div>
       )}
     </Accordion>
+  </div>
   )
 }

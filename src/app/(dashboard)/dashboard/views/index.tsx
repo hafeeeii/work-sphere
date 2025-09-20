@@ -15,21 +15,10 @@ const Dashboard = async () => {
     return null
   }
 
-  const tenantUser = await prisma.tenantUser.findUnique({
-    where: {
-      userId_tenantId: {
-        tenantId: business.data.businessId,
-        userId: business.data.userId
-      }
-    },
-    include: {
-      user: true
-    }
-  })
+   const { email, businessId, userId, role, userName } = business.data
 
-  if (!tenantUser) {
-    return null
-  }
+
+  const tenantUser = { email, role, tenantId: businessId, userId }
 
   let isAllowedToView = false
   if (checkPermission(tenantUser, 'update', 'dashboard')) {
@@ -128,7 +117,7 @@ const Dashboard = async () => {
     <main className='mx-auto max-w-7xl px-6'>
       {/* Welcome Section */}
       <div className='mb-4'>
-        <h2 className='mb-2 text-3xl font-bold text-foreground'>Welcome back, {tenantUser.user?.name} </h2>
+        <h2 className='mb-2 text-3xl font-bold text-foreground'>Welcome back, {userName} </h2>
         <p className='text-muted-foreground'>Here&apos;s what&apos;s happening at your workspace today.</p>
       </div>
 

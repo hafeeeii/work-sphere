@@ -5,7 +5,7 @@ import { getBusinessInfo } from '@/lib/business'
 import { getDaysCount } from '@/lib/date'
 import { getOrCreateLeaveBalanceForUser } from '@/lib/leave'
 import prisma from '@/lib/prisma'
-import { LeaveType } from '@prisma/client'
+import { LeaveStatus, LeaveType } from '@prisma/client'
 import { format } from 'date-fns'
 import { ArrowRight, CalendarIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
@@ -22,62 +22,65 @@ export default async function LeaveSummaryTab({ searchParams }: { searchParams: 
     redirect('/login')
   }
 
-
   const [leaveBalances, leaveTypes, pastLeaves, upcomingLeaves] = await Promise.all([
+    // leave balances
     getOrCreateLeaveBalanceForUser(business.data.businessId, business.data.userId, year),
-  prisma.leaveType.findMany({
-    where: {
-      tenantId: business.data.businessId
-    }
-  }),
-  prisma.leave.findMany({
-    where: {
-      tenantId: business.data.businessId,
-      userId: business.data.userId,
-      to: {
-        lt: new Date(),
-        gte: new Date(from)
-      },
-      from: {
-        lte: new Date(to)
+    // leave types
+    prisma.leaveType.findMany({
+      where: {
+        tenantId: business.data.businessId
       }
-    },
-    include: {
-      leaveType: {
-        select: {
-          name: true
+    }),
+    // past leaves
+    prisma.leave.findMany({
+      where: {
+        tenantId: business.data.businessId,
+        userId: business.data.userId,
+        status: LeaveStatus.APPROVED,
+        to: {
+          lt: new Date(),
+          gte: new Date(from)
+        },
+        from: {
+          lte: new Date(to)
+        }
+      },
+      include: {
+        leaveType: {
+          select: {
+            name: true
+          }
         }
       }
-    }
-  }),
-   await prisma.leave.findMany({
-    where: {
-      tenantId: business.data.businessId,
-      userId: business.data.userId,
-      from: {
-        gte: new Date(),
-        lte: new Date(to)
+    }),
+    // upcoming leaves
+    await prisma.leave.findMany({
+      where: {
+        tenantId: business.data.businessId,
+        userId: business.data.userId,
+        status: LeaveStatus.APPROVED,
+        from: {
+          gte: new Date(),
+          lte: new Date(to)
+        },
+        to: {
+          gte: new Date(from),
+          lte: new Date(to)
+        }
       },
-      to: {
-        gte: new Date(from),
-        lte: new Date(to)
-      }
-    },
-    include: {
-      leaveType: {
-        select: {
-          name: true
+      include: {
+        leaveType: {
+          select: {
+            name: true
+          }
         }
       }
-    }
-  })
-
+    })
   ])
-
 
   const limitedLeaves = leaveBalances.slice(0, 6)
 
-  const updatedLeaveTypes = (leaveTypes).reduce((acc, type) => {
+  const updatedLeaveTypes = leaveTypes.reduce((acc, type) => {
     const balance = leaveBalances.find(b => b.leaveTypeId === type.id)
     if (!(balance?.available === 0 && balance.available !== null)) {
       acc.push(type)

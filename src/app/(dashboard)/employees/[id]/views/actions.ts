@@ -1,5 +1,6 @@
 'use server'
 import { EmailTemplate } from "@/components/email-template"
+import { checkPermission } from "@/lib/authz"
 import { getBusinessInfo } from "@/lib/business"
 import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
@@ -19,14 +20,24 @@ export async function inviteEmployee(prevState: unknown, formData: FormData) {
         }
     }
 
+
     try {
         const business = await getBusinessInfo()
+
 
         if (!business.status || !business.data) {
             return business
         }
+        const { businessId, userId, businessName, role, email } = business.data
 
-        const { businessId, userId, businessName } = business.data
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'view', 'invite-user')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
         const userAlreadyExists = await prisma.user.findUnique({
             where: {

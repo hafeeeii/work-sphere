@@ -5,14 +5,15 @@ import { designationSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { getBusinessInfo } from "@/lib/business";
 import { getErrorMessage } from "@/lib/error";
+import { checkPermission } from "@/lib/authz";
 
 export async function saveDesignation(prevState: unknown, formData: FormData) {
     const parsed = designationSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
-                  return {
-            status:false,
-            message:'Validation failed',
+        return {
+            status: false,
+            message: 'Validation failed',
             error: parsed.error.message
         }
     }
@@ -23,19 +24,30 @@ export async function saveDesignation(prevState: unknown, formData: FormData) {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'create', 'designation')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
 
-            await prisma.designation.create({
-                data: {
-                    ...rest,
-                    tenantId: businessId,
-                },
-            });
+
+        await prisma.designation.create({
+            data: {
+                ...rest,
+                tenantId: businessId,
+            },
+        });
 
         revalidatePath("/settings");
 
@@ -46,7 +58,7 @@ export async function saveDesignation(prevState: unknown, formData: FormData) {
     } catch (error) {
         return {
             status: false,
-            message:getErrorMessage(error), 
+            message: getErrorMessage(error),
             error,
         };
     }
@@ -56,9 +68,9 @@ export async function updateDesignation(prevState: unknown, formData: FormData) 
     const parsed = designationSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
-                return {
-            status:false,
-            message:'Validation failed',
+        return {
+            status: false,
+            message: 'Validation failed',
             error: parsed.error.message
         }
     }
@@ -66,11 +78,22 @@ export async function updateDesignation(prevState: unknown, formData: FormData) 
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'update', 'designation')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
+
 
         const designation = await prisma.designation.findUnique({
             where: {
@@ -102,7 +125,7 @@ export async function updateDesignation(prevState: unknown, formData: FormData) 
     } catch (error) {
         return {
             status: false,
-            message:getErrorMessage(error),
+            message: getErrorMessage(error),
             error,
         };
     }
@@ -120,11 +143,22 @@ export async function deleteDesignation(id: string) {
         const business = await getBusinessInfo()
 
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'delete', 'designation')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
+
 
         const designation = await prisma.designation.findUnique({
             where: {

@@ -13,19 +13,21 @@ export default async function MyDataTab({ searchParams }: { searchParams: { [key
   ]
 
   return (
-    <Tabs defaultValue={tabs[0].tab} className='h-full'>
-      <TabsList >
+    <Tabs defaultValue={tabs[0].tab} className='h-full flex flex-col '>
+      <TabsList className='self-start'>
         {tabs.map(tab => (
           <TabsTrigger key={tab.tab} value={tab.tab}>
             {tab.tab}
           </TabsTrigger>
         ))}
       </TabsList>
-      {tabs.map(tab => (
+     <div className='h-full overflow-y-auto'>
+       {tabs.map(tab => (
         <TabsContent key={tab.tab} value={tab.tab} className='h-full'>
-          <div className='h-full'>{tab.content}</div>
+          {tab.content}
         </TabsContent>
       ))}
+     </div>
     </Tabs>
   )
 }

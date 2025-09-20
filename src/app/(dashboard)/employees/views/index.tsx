@@ -13,6 +13,25 @@ type EmployeeListProps = {
 }
 
 const EmployeeList = ({ employees }: EmployeeListProps) => {
+  const router = useRouter()
+  const { businessUser } = useBusinessUser()
+
+  let isAllowedToCreate = false
+  let isAllowedToDelete = false
+  let isAllowedToEdit = false
+
+  if (businessUser) {
+    if (checkPermission(businessUser, 'create', 'employee')) {
+      isAllowedToCreate = true
+    }
+    if (checkPermission(businessUser, 'delete', 'employee')) {
+      isAllowedToDelete = true
+    }
+    if (checkPermission(businessUser, 'update', 'employee')) {
+      isAllowedToEdit = true
+    }
+  }
+
   const processedEmployees =
     employees?.map(employee => {
       return {
@@ -38,7 +57,7 @@ const EmployeeList = ({ employees }: EmployeeListProps) => {
 
   const tableData: TableData = {
     editMode: 'toggle',
-    visibleActions: ['details', 'delete'],
+    visibleActions: [...(isAllowedToEdit ? (['details'] as const) : []), ...(isAllowedToDelete ? (['delete'] as const) : [])],
     detailsRedirectPath: '/employees',
     columnData: [
       { header: 'Name', accessorKey: 'name', sortable: true, filterable: true },
@@ -51,41 +70,19 @@ const EmployeeList = ({ employees }: EmployeeListProps) => {
     data: processedEmployees
   }
 
-  const router = useRouter()
-  const { businessUser } = useBusinessUser()
-
-  let isAllowedToCreate = false
-  let isAllowedToDelete = false
-  let isAllowedToEdit = false
-
-  if (businessUser) {
-    if (checkPermission(businessUser, 'create', 'employee')) {
-      isAllowedToCreate = true
-    }
-    if (checkPermission(businessUser, 'delete', 'employee')) {
-      isAllowedToDelete = true
-    }
-    if (checkPermission(businessUser, 'update', 'employee')) {
-      isAllowedToEdit = true
-    }
-  }
-
   return (
-  <div className='mt-4 flex flex-col items-end gap-6 '>
-    {isAllowedToCreate && (
-      <Button onClick={() => router.push('/employees/form/personal-details')}>
-        <PlusIcon />
-        Create Employee
-      </Button>
-    )}
-  <SharedTable
-    tableData={tableData}
-    onDelete={deleteEmployee}
-    isAllowedToDelete={isAllowedToDelete}
-    isAllowedToEdit={isAllowedToEdit}
-  />
-</div>
-
+    <div className='mt-4 flex flex-col items-end gap-6'>
+      {isAllowedToCreate && (
+        <Button onClick={() => router.push('/employees/form/personal-details')}>
+          <PlusIcon />
+          Create Employee
+        </Button>
+      )}
+      <SharedTable
+        tableData={tableData}
+        onDelete={deleteEmployee}
+      />
+    </div>
   )
 }
 

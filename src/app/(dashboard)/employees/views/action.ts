@@ -1,5 +1,6 @@
 'use server'
 import { EmailTemplate } from "@/components/email-template"
+import { checkPermission } from "@/lib/authz"
 import { getBusinessInfo } from "@/lib/business"
 import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
@@ -30,13 +31,22 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
             return business
         }
 
-        const { businessId, userId, businessName } = business.data
+        const { businessId, userId, businessName, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'create', 'employee')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
         // check if employee with same email already exists 
 
         const employee = await prisma.employee.findUnique({
             where: {
-                tenantId_email:{
+                tenantId_email: {
                     tenantId: businessId,
                     email: parsed.data.workEmail
                 }
@@ -64,13 +74,13 @@ export async function saveEmployee(prevState: unknown, formData: FormData) {
 
 
         if (inviteUser) {
-            
+
             const userAlreadyExists = await prisma.user.findUnique({
                 where: {
                     email: parsed.data.workEmail
                 }
             })
-            
+
             if (userAlreadyExists) {
                 // checks if user already part of the business
                 const userAlreadyPartOfBusiness = await prisma.tenantUser.findUnique({
@@ -157,11 +167,21 @@ export async function updateEmployee(prevState: unknown, formData: FormData) {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+      
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'update', 'employee')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
         const employee = await prisma.employee.findUnique({
             where: {
@@ -222,11 +242,21 @@ export async function deleteEmployee(id: string) {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+       
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'delete', 'employee')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
         const employee = await prisma.employee.findUnique({
             where: {

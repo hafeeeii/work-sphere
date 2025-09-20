@@ -5,6 +5,7 @@ import { departmentSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { getBusinessInfo } from "@/lib/business";
 import { getErrorMessage } from "@/lib/error";
+import { checkPermission } from "@/lib/authz";
 
 // CREATE
 export async function saveDepartment(prevState: unknown, formData: FormData) {
@@ -23,11 +24,22 @@ export async function saveDepartment(prevState: unknown, formData: FormData) {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'create', 'department')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
+
 
 
         await prisma.department.create({
@@ -66,11 +78,21 @@ export async function updateDepartment(prevState: unknown, formData: FormData) {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'update', 'department')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
         const department = await prisma.department.findUnique({
             where: {
@@ -120,11 +142,21 @@ export async function deleteDepartment(id: string) {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'delete', 'department')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
         const department = await prisma.department.findUnique({
             where: {

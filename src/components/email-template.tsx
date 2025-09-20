@@ -29,7 +29,8 @@ export function EmailTemplate({ name, businessName, inviteLink, invitedBy, invit
           color: '#fff',
           textDecoration: 'none',
           borderRadius: '6px',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          cursor:'pointer'
         }}
       >
         Accept Invitation

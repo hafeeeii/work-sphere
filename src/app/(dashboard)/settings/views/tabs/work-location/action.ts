@@ -1,5 +1,6 @@
 'use server'
 
+import { checkPermission } from "@/lib/authz"
 import { getBusinessInfo } from "@/lib/business"
 import { getErrorMessage } from "@/lib/error"
 import prisma from "@/lib/prisma"
@@ -15,9 +16,9 @@ export async function saveWorkLocation(prevState: unknown,
 
 
     if (!parsed.success) {
-               return {
-            status:false,
-            message:'Validation failed',
+        return {
+            status: false,
+            message: 'Validation failed',
             error: parsed.error.message
         }
     }
@@ -28,11 +29,21 @@ export async function saveWorkLocation(prevState: unknown,
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+
+        const { businessId, userId, role, email } = business.data
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'create', 'work-location')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
         await prisma.workLocation.create({
             data: {
@@ -59,9 +70,9 @@ export async function saveWorkLocation(prevState: unknown,
 export async function updateWorkLocation(prevState: unknown, formData: FormData) {
     const parsed = workLocationSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
-               return {
-            status:false,
-            message:'Validation failed',
+        return {
+            status: false,
+            message: 'Validation failed',
             error: parsed.error.message
         }
     }
@@ -69,11 +80,21 @@ export async function updateWorkLocation(prevState: unknown, formData: FormData)
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+        const { businessId, userId, role, email } = business.data
+
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'update', 'work-location')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
 
         const workLocation = await prisma.workLocation.findUnique({
             where: {
@@ -120,11 +141,22 @@ export async function deleteWorkLocation(id: string) {
     try {
         const business = await getBusinessInfo()
 
-        if (!business.status) {
+        if (!business.status || !business.data) {
             return business
         }
 
-        const businessId = business.data?.businessId as string
+        const { businessId, userId, role, email } = business.data
+
+
+        const isAuthorized = checkPermission({ email, role, tenantId: businessId, userId }, 'delete', 'work-location')
+        if (!isAuthorized) {
+            return {
+                status: false,
+                message: 'Not authorized',
+                error: null
+            }
+        }
+
         const workLocation = await prisma.workLocation.findUnique({
             where: {
                 id: id
@@ -143,13 +175,13 @@ export async function deleteWorkLocation(id: string) {
             },
         })
 
-            revalidatePath('/settings')
+        revalidatePath('/settings')
 
-    return {
-        status: true,
-        message: 'Work location deleted successfully',
-        error: null
-    }
+        return {
+            status: true,
+            message: 'Work location deleted successfully',
+            error: null
+        }
     } catch (error) {
         return {
             status: false,
